@@ -36,6 +36,9 @@ hook_add = '''
 '''
 
 [[plugins]]
+repo = 'guns/xterm-color-table.vim'
+
+[[plugins]]
 repo = 'leafgarland/typescript-vim'
 
 [[plugins]]
