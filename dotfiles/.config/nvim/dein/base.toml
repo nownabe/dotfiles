@@ -39,6 +39,13 @@ hook_add = '''
 repo = 'guns/xterm-color-table.vim'
 
 [[plugins]]
+repo = 'Yggdroot/indentLine'
+hook_add = '''
+  let g:indentLine_char = '¦'
+  let g:indentLine_color_term = 236
+'''
+
+[[plugins]]
 repo = 'leafgarland/typescript-vim'
 
 [[plugins]]
