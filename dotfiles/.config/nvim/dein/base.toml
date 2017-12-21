@@ -38,3 +38,9 @@ hook_add = '''
 [[plugins]]
 repo = 'leafgarland/typescript-vim'
 
+[[plugins]]
+repo = 'fatih/vim-go'
+on_ft = 'go'
+hook_add = '''
+  let g:go_fmt_command = "goimports"
+'''
