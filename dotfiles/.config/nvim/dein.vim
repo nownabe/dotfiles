@@ -4,7 +4,7 @@
 " https://github.com/Shougo/dein.vim/blob/master/doc/dein.txt
 
 function! s:load(name)
-  call dein#load_toml(expand('$CONFIG/nvim/dein/') . a:name . '.toml', {'lazy', 0})
+  call dein#load_toml(expand('$CONFIG/nvim/dein/') . a:name . '.toml', {'lazy': 0})
 endfunction
 
 function! s:load_lazy(name)
