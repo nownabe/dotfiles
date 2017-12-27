@@ -4,7 +4,11 @@
 " https://github.com/Shougo/dein.vim/blob/master/doc/dein.txt
 
 function! s:load(name)
-  call dein#load_toml(expand('$CONFIG/nvim/dein/') . a:name . '.toml')
+  call dein#load_toml(expand('$CONFIG/nvim/dein/') . a:name . '.toml', {'lazy', 0})
+endfunction
+
+function! s:load_lazy(name)
+  call dein#load_toml(expand('$CONFIG/nvim/dein/') . a:name . '.toml', {'lazy': 1})
 endfunction
 
 let s:base = expand('$CACHE/dein')
@@ -26,6 +30,7 @@ let g:dein#install_log_filename = "~/dein.log"
 call dein#begin(s:base)
 
 call s:load('base')
+call s:load_lazy('lazy')
 
 if has('nvim')
   call s:load('nvim')
