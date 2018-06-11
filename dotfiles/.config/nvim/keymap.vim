@@ -13,7 +13,7 @@ if executable('rg')
     \ ['rg', '--files', '--hidden', '--glob', '!.git'])
 else
   call denite#custom#var('file_rec', 'command',
-    \ ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '--ignore', '.git', ''])
+    \ ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '.', '--ignore', '.git'])
 endif
 
 call denite#custom#map('insert', '<C-j>', '<denite:move_to_next_line>')
