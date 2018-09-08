@@ -78,3 +78,7 @@ on_ft = 'haskell'
 hook_add = '''
   let g:stylishask_config_file = '~/.stylish-haskell.yaml'
 '''
+
+[[plugins]]
+repo = 'posva/vim-vue'
+on_ft = 'vue'
