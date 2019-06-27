@@ -18,6 +18,7 @@ call s:load_config('base')
 call s:load_config('dein')
 call s:load_config('options')
 call s:load_config('keymap')
+call s:load_config('denite')
 
 syntax enable
 filetype plugin indent on
