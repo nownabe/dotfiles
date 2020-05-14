@@ -19,6 +19,12 @@ depends = ['vim-airline/vim-airline-themes']
 repo = 'vim-airline/vim-airline-themes'
 
 [[plugins]]
+repo = 'neoclide/coc.nvim'
+rev = 'release'
+on_i = 1
+merged = '0'
+
+[[plugins]]
 repo = 'w0rp/ale'
 hook_add = '''
   let g:ale_fixers = {

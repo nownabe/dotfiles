@@ -1,20 +1,4 @@
 [[plugins]]
-repo = 'zchee/deoplete-go'
-on_ft = 'go'
-on_i = 1
-hook_source = '''
-  let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
-  let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-'''
-
-[[plugins]]
-repo = 'Shougo/deoplete.nvim'
-on_i = 1
-hook_source = '''
-  let g:deoplete#enable_at_startup = 1
-'''
-
-[[plugins]]
 repo = 'eagletmt/neco-ghc'
 on_ft = 'haskell'
 on_i = 1
