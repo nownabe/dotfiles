@@ -30,11 +30,8 @@ let g:dein#install_log_filename = "~/dein.log"
 call dein#begin(s:base)
 
 call s:load('base')
+call s:load('lang')
 call s:load_lazy('lazy')
-
-if has('nvim')
-  call s:load('nvim')
-endif
 
 call dein#end()
 

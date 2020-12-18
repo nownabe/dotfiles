@@ -18,19 +18,18 @@ depends = ['vim-airline/vim-airline-themes']
 [[plugins]]
 repo = 'vim-airline/vim-airline-themes'
 
-[[plugins]]
-repo = 'neoclide/coc.nvim'
-rev = 'release'
-on_i = 1
-merged = '0'
+# [[plugins]]
+# repo = 'neoclide/coc.nvim'
+# rev = 'release'
+# on_i = 1
+# merged = '0'
 
 [[plugins]]
 repo = 'w0rp/ale'
 hook_add = '''
   let g:ale_fixers = {
-  \   'python': ['flake8'],
   \   'go': ['goimports', 'go mod', 'go vet', 'gotype', 'gosimple', 'golangserver', 'golangci-lint'],
-  \   'ruby': ['rufo', 'rubocop'],
+  \   'ruby': ['rufo'],
   \ }
   let g:ale_fix_on_save = 1
   let g:ale_echo_msg_error_str = 'E'
@@ -54,42 +53,22 @@ hook_add = '''
 '''
 
 [[plugins]]
-repo = 'leafgarland/typescript-vim'
+repo = 'Shougo/vinarise'
 
 [[plugins]]
-repo = 'fatih/vim-go'
-on_ft = 'go'
+repo = 'Shougo/denite.nvim'
+
+[[plugins]]
+repo = 'Shougo/deoplete.nvim'
 hook_add = '''
-  let g:go_fmt_command = "goimports"
+  let g:deoplete#enable_at_startup = 1
 '''
 
 [[plugins]]
-repo = 'hashivim/vim-terraform'
-hook_add = '''
-  let g:terraform_fmt_on_save = 1
-  let g:terraform_align = 1
-  let g:terraform_fold_section = 1
-'''
+repo = 'prabirshrestha/vim-lsp'
 
 [[plugins]]
-repo = 'neovimhaskell/haskell-vim'
-on_ft = 'haskell'
+repo = 'mattn/vim-lsp-settings'
 
 [[plugins]]
-repo = 'eagletmt/ghcmod-vim'
-on_ft = 'haskell'
-
-[[plugins]]
-repo = 'alx741/vim-stylishask'
-on_ft = 'haskell'
-hook_add = '''
-  let g:stylishask_config_file = '~/.stylish-haskell.yaml'
-'''
-
-[[plugins]]
-repo = 'posva/vim-vue'
-on_ft = 'vue'
-
-[[plugins]]
-repo = 'purescript-contrib/purescript-vim'
-on_ft = 'purescript'
+repo = 'lighttiger2505/deoplete-vim-lsp'
