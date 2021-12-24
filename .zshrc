@@ -4,9 +4,13 @@ zplug 'zplug/zplug', hook-build: 'zplug --self-manage'
 zplug 'nownabe/zshrc'
 zplug 'mafredri/zsh-async'
 zplug 'sindresorhus/pure', use:pure.zsh, as:theme
+zplug 'zsh-users/zsh-syntax-highlighting', defer:2
+
+[[ -z "${CODESPACES}" ]] && zplug 'asdf-vm/asdf'
 
 if ! zplug check --verbose; then
   zplug install
 fi
 
 zplug load --verbose
+
