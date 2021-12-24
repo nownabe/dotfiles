@@ -1,10 +1,6 @@
-nownabe's dotfiles
-==================
+dotfiles
+========
 
-# Usage
+dotfiles for GitHub Codespaces.
 
-```bash
-git clone https://github.com/nownabe/dotfiles.git
-cd dotfiles
-bin/apply
-```
+See [Personalizing Codespaces for your account - GitHub Docs](https://docs.github.com/ja/codespaces/customizing-your-codespace/personalizing-codespaces-for-your-account).
