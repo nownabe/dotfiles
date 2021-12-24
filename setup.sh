@@ -5,9 +5,8 @@ echo_g() {
 }
 
 ensure_directories() {
-  if [[ ! -e "$HOME/.cache" ]]; then
-    mkdir -p $HOME/.cache
-  fi
+  [[ -e "$HOME/.cache" ]] || mkdir -p $HOME/.cache
+  [[ -e "$HOME/.cache/shell" ]] || mkdir -p $HOME/.cache/shell
 }
 
 ensure_zplug() {
