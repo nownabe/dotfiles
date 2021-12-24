@@ -4,6 +4,12 @@ echo_g() {
   echo -e "\033[1;32m$*\033[m"
 }
 
+ensure_directories() {
+  if [[ ! -e "$HOME/.cache" ]]; then
+    mkdir -p $HOME/.cache
+  fi
+}
+
 ensure_zplug() {
   if [[ ! -d "$HOME/.zplug" ]]; then
     git clone https://github.com/zplug/zplug "$HOME/.zplug"
@@ -34,5 +40,6 @@ ensure_symlinks() {
   done
 }
 
+ensure_directories
 ensure_zplug
 ensure_symlinks
