@@ -24,9 +24,10 @@ ensure_symlinks() {
     dst=$HOME/$name
     echo -n "$name : "
 
-    if [[ -e $dst ]]; then
+    if [[ -L $dst ]]; then
       echo "already exists 😘"
     else
+      [[ -e $dst ]] && mv "$dst" "$dst.badkup"
       ln -s "$src" "$dst"
       echo_g "created new symbolic link! 🥳"
     fi
