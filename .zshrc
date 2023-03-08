@@ -6,7 +6,11 @@ zplug 'mafredri/zsh-async'
 zplug 'sindresorhus/pure', use:pure.zsh, as:theme, at:main
 zplug 'zsh-users/zsh-syntax-highlighting', defer:2
 
-[[ -z "${CODESPACES}" ]] && zplug 'asdf-vm/asdf'
+if [[ -z "${CODESPACES}" ]]; then
+  zplug 'asdf-vm/asdf'
+else
+  . $HOME/.asdf/asdf.sh
+fi
 
 if ! zplug check --verbose; then
   zplug install
