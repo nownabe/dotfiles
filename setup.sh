@@ -27,7 +27,7 @@ ensure_symlinks() {
 		[[ "$name" = "setup.sh" ]] && continue
 		[[ "$name" = "README.md" ]] && continue
 
-		dst=$HOME/$name
+		dst="$HOME/${src#"${basedir}/"}"
 		echo -n "$dst : "
 
 		if [[ -L $dst ]]; then
