@@ -16,23 +16,30 @@ ensure_zplug() {
 }
 
 ensure_symlinks() {
-  local basedir name src dst
+  local basedir name src dst dstdir
 
   basedir="$(cd "$(dirname "$0")" && pwd)"
 
-  find "$basedir" -name ".*" | while read -r src; do
+  find "$basedir" -type f | grep -v /.git/ | while read -r src; do
     name=$(basename "$src")
 
-    [[ "$name" = ".git" ]] && continue
     [[ "$name" = ".gitignore" ]] && continue
+    [[ "$name" = "setup.sh" ]] && continue
+    [[ "$name" = "README.md" ]] && continue
 
     dst=$HOME/$name
-    echo -n "$name : "
+    echo -n "$dst : "
 
     if [[ -L $dst ]]; then
       echo "already exists 😘"
     else
       [[ -e $dst ]] && mv "$dst" "$dst.badkup"
+
+      dstdir="$(dirname "$dst")"
+      if [[ ! -e "$dstdir" ]]; then
+        mkdir -p "$dstdir"
+      fi
+
       ln -s "$src" "$dst"
       echo_g "created new symbolic link! 🥳"
     fi
