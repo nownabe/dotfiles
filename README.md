@@ -2,6 +2,15 @@
 
 ## Setting up
 
+### Prerequisites
+
+```shell
+sudo apt update
+sudo apt install -y \
+  git \
+  zip
+```
+
 ### General
 
 Install favorites:
