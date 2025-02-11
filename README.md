@@ -6,6 +6,7 @@
 
 Install favorites:
 
+* byobu (`sudo apt install byobu`)
 * [Neovim](https://github.com/neovim/neovim)
 * [UbuntuSans Nerd Font](https://www.nerdfonts.com/font-downloadsk) (`UbuntuSansMono Nerd Font Mono`)
 
@@ -28,15 +29,23 @@ Set secrets in `.zsh.d/secrets.zsh`.
 | Key | Action | Command |
 | --- | ------ | ------- | 
 
+### Buffers
+
+| Key | Action | Command |
+| --- | ------ | ------- | 
+| `Leader + bl` | Go to the previous buffer | |
+| `Leader + bh` | Go to the next buffer | |
+| `Leader + bc` | Close the current buffer | |
+
 ### Neo-Tree
 
 | Key | Action | Command |
 | --- | ------ | ------- | 
-| Leader + e | Neotree toggle | |
-| Leader + o | Neotree focus | |
+| `Leader + e` | Neotree toggle | |
+| `Leader + o` | Neotree focus | |
 
 ### LSP Mappings
 
 | Key | Action | Command |
 | --- | ------ | ------- | 
-| Leader + lS | Symbols Outline | |
+| `Leader + lS` | Symbols Outline | |
