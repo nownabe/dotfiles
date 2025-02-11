@@ -4,20 +4,35 @@
 
 ### Prerequisites
 
+Install apt packages:
+
 ```shell
 sudo apt update
 sudo apt install -y \
+  byobu \
   git \
-  zip
+  zip \
+  zsh
 ```
 
-### General
+Install other prerequisites:
 
-Install favorites:
-
-* byobu (`sudo apt install byobu`)
-* [Neovim](https://github.com/neovim/neovim)
 * [UbuntuSans Nerd Font](https://www.nerdfonts.com/font-downloadsk) (`UbuntuSansMono Nerd Font Mono`)
+* [Neovim](https://github.com/neovim/neovim)
+* [mise](https://github.com/jdx/mise)
+
+### Mise
+
+Install tools via mise: <!-- TODO: Move this to chezmoi script -->
+
+```shell
+mise install go@latest
+mise install lua@latest
+mise install node@lts
+mise install ghq@latest
+```
+
+### Secrets
 
 Set secrets in `.zsh.d/secrets.zsh`.
 
