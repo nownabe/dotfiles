@@ -34,6 +34,8 @@ return {
         },
         ["<Leader>br"] = false,
         ["<Leader>bp"] = false,
+        ["<Leader>c"] = false,
+        ["<Leader>C"] = false,
       },
     },
   },
