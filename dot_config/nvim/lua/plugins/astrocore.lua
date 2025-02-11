@@ -13,5 +13,28 @@ return {
         wrap = true,
       },
     },
+    
+    mappings = {
+      -- first key is the mode
+      n = {
+        -- second key is the lefthand side of the map
+
+        -- mappings seen under group name "Buffer"
+        ["<Leader>bh"] = {
+          function() require("astrocore.buffer").nav(-vim.v.count1) end,
+          desc = "Previous buffer",
+        },
+        ["<Leader>bl"] = {
+          function() require("astrocore.buffer").nav(vim.v.count1) end,
+          desc = "Next buffer",
+        },
+        ["<Leader>bc"] = {
+          function() require("astrocore.buffer").close() end,
+          desc = "Close current buffer"
+        },
+        ["<Leader>br"] = false,
+        ["<Leader>bp"] = false,
+      },
+    },
   },
 }
