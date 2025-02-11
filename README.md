@@ -48,12 +48,20 @@ Set secrets in `.zsh.d/secrets.zsh`.
 
 ## Neovim
 
-### General Mappings
+### Prerequisites
+
+```shell
+luarocks install tiktoken_core # for CopilotC-Nvim/CopilotChat.nvim
+```
+
+### Key Mappings
+
+#### General Mappings
 
 | Key | Action | Command |
 | --- | ------ | ------- | 
 
-### Buffers
+#### Buffers
 
 | Key | Action | Command |
 | --- | ------ | ------- | 
@@ -61,15 +69,33 @@ Set secrets in `.zsh.d/secrets.zsh`.
 | `Leader + bh` | Go to the next buffer | |
 | `Leader + bc` | Close the current buffer | |
 
-### Neo-Tree
+#### Neo-Tree
 
 | Key | Action | Command |
 | --- | ------ | ------- | 
 | `Leader + e` | Neotree toggle | |
 | `Leader + o` | Neotree focus | |
 
-### LSP Mappings
+#### LSP Mappings
 
 | Key | Action | Command |
 | --- | ------ | ------- | 
 | `Leader + lS` | Symbols Outline | |
+
+#### GitHub Copilot Chat
+
+| Key | Action | Command |
+| --- | ------ | ------- | 
+| `Leader + ce` | Explain the selected code | |
+| `Leader + cr` | Review the selected code | |
+| `Leader + cf` | Fix the code | |
+| `Leader + co` | Optimize the selected code | |
+| `Leader + cd` | Generate docs for the selected code | |
+| `Leader + ct` | Generate tests for the selected code | |
+
+In chat:
+
+| Key | Action |
+| --- | ------ |
+| `q` | Close the chat window |
+| `Ctrl + s` | Submit the current prompt |
