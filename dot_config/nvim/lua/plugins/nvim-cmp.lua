@@ -48,9 +48,6 @@ return {
       return vim_item
     end)
 
-    -- local colors = require("astronvim.config.colors")
-    -- vim.api.nvim_set_hl(0, "CmpItemMenu", { fg = colors.fg, bg = "NONE", italic = true })
-
     return opts
   end,
 }
