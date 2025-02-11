@@ -13,7 +13,7 @@ return {
         wrap = true,
       },
     },
-    
+
     mappings = {
       -- first key is the mode
       n = {
