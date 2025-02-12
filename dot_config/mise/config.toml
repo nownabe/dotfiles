@@ -1,0 +1,6 @@
+[tools]
+chezmoi = "latest"
+ghq = "latest"
+go = "latest"
+lua = "latest"
+node = "lts"
