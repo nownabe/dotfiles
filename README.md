@@ -11,6 +11,7 @@ sudo apt update
 sudo apt install -y \
   byobu \
   git \
+  libyaml-dev \
   zip \
   zsh
 ```
