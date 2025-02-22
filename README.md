@@ -2,34 +2,18 @@
 
 ## Setting up
 
-### Prerequisites
-
-Install apt packages:
-
-```shell
-sudo apt update
-sudo apt install -y \
-  byobu \
-  git \
-  libyaml-dev \
-  zip \
-  zsh
-```
-
-Install other prerequisites:
-
-- [UbuntuSans Nerd Font](https://www.nerdfonts.com/font-downloadsk) (`UbuntuSansMono Nerd Font Mono`)
-- [Neovim](https://github.com/neovim/neovim)
-- [mise](https://github.com/jdx/mise)
-
 ### Chezmoi
 
 ```shell
-mise install chezmoi@latest
-chezmoi init ssh://git@github.com/nownabe/dotfiles.git
-chezmoi diff
-chezmoi apply --verbose
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply nownabe
 ```
+
+### Manual Installation
+
+Install these tools:
+
+- [UbuntuSans Nerd Font](https://www.nerdfonts.com/font-downloadsk) (`UbuntuSansMono Nerd Font Mono`)
+- [Neovim](https://github.com/neovim/neovim)
 
 ### Secrets
 
