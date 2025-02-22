@@ -22,21 +22,11 @@ Install other prerequisites:
 * [Neovim](https://github.com/neovim/neovim)
 * [mise](https://github.com/jdx/mise)
 
-### Mise
-
-Install tools via mise: <!-- TODO: Move this to chezmoi script -->
-
-```shell
-mise install go@latest && mise use -g go@latest
-mise install lua@latest && mise use -g lua@latest
-mise install node@lts && mise use -g node@lts
-mise install ghq@latest && mise use -g ghq@latest
-mise install chezmoi@latest && mise use -g chezmoi@latest
-```
 
 ### Chezmoi
 
 ```shell
+mise install chezmoi@latest
 chezmoi init ssh://git@github.com/nownabe/dotfiles.git
 chezmoi diff
 chezmoi apply --verbose
