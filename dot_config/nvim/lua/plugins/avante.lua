@@ -4,16 +4,16 @@ return {
   event = "VeryLazy",
   lazy = false,
   version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
- 
+
   -- https://github.com/yetone/avante.nvim/blob/main/lua/avante/config.lua
   opts = {
-    provider = "claude",
-    -- provider = "copilot",
+    -- provider = "claude",
+    provider = "copilot",
     -- provider = "openai",
 
     -- Now using copilot.lua and for suggestion
     -- auto_suggestions_provider = "copilot",
-    
+
     behaviour = {
       auto_focus_sidebar = true, -- Whether to automatically focus the sidebar when opening avante.nvim
       auto_suggestions = false, -- Whether to enable auto suggestions.
@@ -25,7 +25,7 @@ return {
       minimize_diff = false, -- Whether to remove unchanged lines when applying a code block
       enable_token_counting = true, -- Whether to enable token counting.
     },
-    
+
     windows = {
       input = {
         height = 4,
@@ -44,8 +44,8 @@ return {
 
     -- provider configs
     copilot = {
-      model = "gpt-4o-2024-08-06",
-      max_tokens = 4096,
+      model = "claude-3.7-sonnet",
+      max_tokens = 8000,
     },
     claude = {
       model = "claude-3-5-sonnet-20240620",
@@ -91,7 +91,7 @@ return {
     },
     {
       -- Make sure to set this up properly if you have lazy=true
-      'MeanderingProgrammer/render-markdown.nvim',
+      "MeanderingProgrammer/render-markdown.nvim",
       opts = {
         file_types = { "markdown", "Avante" },
       },
