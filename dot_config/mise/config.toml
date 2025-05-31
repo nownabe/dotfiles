@@ -1,9 +1,11 @@
 [tools]
 chezmoi = "latest"
+deno = "2.3.1"
+fzf = "0.62.0"
 ghq = "latest"
 go = "latest"
 lua = "latest"
-node = "lts"
+node = "22.15.0"
 python = "latest"
 ripgrep = "latest"
 ruby = "latest"
