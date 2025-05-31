@@ -14,6 +14,16 @@ fi
 zplug load --verbose
 
 #--------------------------------
+# Directories
+#--------------------------------
+
+cachedir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+[[ -z "$cachedir" ]] || mkdir -p "$cachedir"
+
+configdir="$HOME/.zsh.d"
+[[ -z "$configdir" ]] || mkdir -p "$configdir"
+
+#--------------------------------
 # Base settings
 #--------------------------------
 
@@ -55,7 +65,7 @@ setopt interactive_comments
 # History
 #--------------------------------
 
-export HISTFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/history"
+export HISTFILE="${cachedir}/history"
 export HISTSIZE=1000000
 export SAVEHIST=1000000
 
@@ -80,15 +90,15 @@ zstyle ':completion:*:*:cdr:*:*' menu selection
 zstyle ':completion:*' recent-dirs-insert both
 zstyle ':chpwd:*' recent-dirs-max 500
 zstyle ':chpwd:*' recent-dirs-default true
-zstyle ':chpwd:*' recent-dirs-file "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/chpwd-recent-dirs"
+zstyle ':chpwd:*' recent-dirs-file "${cachedir}/chpwd-recent-dirs"
 zstyle ':chpwd:*' recent-dirs-pushd true
 
 #--------------------------------
 # Load .zsh.d
 #--------------------------------
 
-if [[ -d "$HOME/.zsh.d" ]]; then
-  for file in "$HOME"/.zsh.d/*.zsh; do
+if [[ -d "$configdir" ]]; then
+  for file in "$configdir"/*.zsh; do
     if [[ -f "$file" ]]; then
       # shellcheck disable=SC1090
       source "$file"
@@ -96,8 +106,8 @@ if [[ -d "$HOME/.zsh.d" ]]; then
   done
 fi
 
-if [[ -d "$HOME/.zsh.d/local" ]]; then
-  for file in "$HOME"/.zsh.d/local/*.zsh; do
+if [[ -d "$configdir/local" ]]; then
+  for file in "$configdir"/local/*.zsh; do
     if [[ -f "$file" ]]; then
       # shellcheck disable=SC1090
       source "$file"
