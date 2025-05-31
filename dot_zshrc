@@ -61,6 +61,9 @@ setopt hist_reduce_blanks
 setopt correct
 setopt interactive_comments
 
+# Zle
+unsetopt beep
+
 #--------------------------------
 # History
 #--------------------------------
