@@ -1,7 +1,8 @@
-source $HOME/.zplug/init.zsh
+# shellcheck disable=SC2148
+# shellcheck disable=SC1091
+source "$HOME/.zplug/init.zsh"
 
 zplug 'zplug/zplug', hook-build: 'zplug --self-manage'
-zplug 'nownabe/zshrc', at:main
 zplug 'mafredri/zsh-async'
 zplug 'sindresorhus/pure', use:pure.zsh, as:theme, at:main
 zplug 'zsh-users/zsh-syntax-highlighting', defer:2
@@ -11,3 +12,95 @@ if ! zplug check --verbose; then
 fi
 
 zplug load --verbose
+
+#--------------------------------
+# Base settings
+#--------------------------------
+
+bindkey -e
+
+autoload -Uz compinit
+compinit -u
+
+autoload -Uz colors
+colors
+
+#--------------------------------
+# Options
+# https://zsh.sourceforge.io/Doc/Release/Options.html
+#--------------------------------
+
+# Change Directories
+setopt auto_cd
+setopt auto_pushd
+setopt pushd_ignore_dups
+
+# Completion
+setopt auto_menu
+
+# Expansion and Globbing
+setopt extended_glob
+
+# History
+setopt extended_history
+setopt hist_ignore_all_dups
+setopt share_history
+setopt hist_reduce_blanks
+
+# Input/Output
+setopt correct
+setopt interactive_comments
+
+#--------------------------------
+# History
+#--------------------------------
+
+export HISTFILE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/history"
+export HISTSIZE=1000000
+export SAVEHIST=1000000
+
+bindkey "^P" history-beginning-search-backward
+bindkey "^N" history-beginning-search-forward
+
+#--------------------------------
+# Completion
+#--------------------------------
+
+zstyle ':completion:*:default' menu select=1
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
+
+#--------------------------------
+# cdr
+#--------------------------------
+
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+zstyle ':completion:*:*:cdr:*:*' menu selection
+zstyle ':completion:*' recent-dirs-insert both
+zstyle ':chpwd:*' recent-dirs-max 500
+zstyle ':chpwd:*' recent-dirs-default true
+zstyle ':chpwd:*' recent-dirs-file "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/chpwd-recent-dirs"
+zstyle ':chpwd:*' recent-dirs-pushd true
+
+#--------------------------------
+# Load .zsh.d
+#--------------------------------
+
+if [[ -d "$HOME/.zsh.d" ]]; then
+  for file in "$HOME"/.zsh.d/*.zsh; do
+    if [[ -f "$file" ]]; then
+      # shellcheck disable=SC1090
+      source "$file"
+    fi
+  done
+fi
+
+if [[ -d "$HOME/.zsh.d/local" ]]; then
+  for file in "$HOME"/.zsh.d/local/*.zsh; do
+    if [[ -f "$file" ]]; then
+      # shellcheck disable=SC1090
+      source "$file"
+    fi
+  done
+fi
