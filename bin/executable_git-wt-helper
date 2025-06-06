@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+
+set -o nounset
+set -o errexit
+set -o pipefail
+
+show_help() {
+  cat <<'EOF'
+git-wt-helper – Git worktree helper
+
+This helper decides where you should end up and prints that path.
+
+Usage:
+  git-wt-helper <branch>
+      In a Git repo   : ensure worktree <owner>/<repo>/<branch> exists -> prints that path
+      Outside a repo  : list all worktrees, fzf starts with <branch> as the initial query
+
+  git-wt-helper
+      In a Git repo   : fzf over worktrees for the current repo only
+      Outside a repo  : fzf over every worktree under $GIT_WORKTREE_HOME
+
+Options:
+  -h, --help          Show this help and exit
+
+Environment:
+  GIT_WORKTREE_HOME   Root directory for worktrees (default: $HOME/worktrees)
+EOF
+}
+
+[[ ${1-} == -h || ${1-} == --help ]] && {
+  show_help
+  exit 0
+}
+
+###############################################################################
+
+GIT_WORKTREE_HOME="${GIT_WORKTREE_HOME:-$HOME/worktrees}"
+
+die() {
+  printf '%s\n' "$*" >&2
+  exit 1
+}
+
+get_owner_repo() {
+  local url
+  url=$(git config --get remote.origin.url) || die 'remote "origin" missing'
+  [[ $url =~ github\.com[:/]+([^/]+)/([^/.]+)(\.git)?$ ]] ||
+    die "Unsupported remote URL: $url"
+  printf '%s|%s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+}
+
+pick_with_fzf() {
+  local root=$1 init=${2-} mindepth maxdepth
+  if [[ $root == "$GIT_WORKTREE_HOME" ]]; then
+    mindepth=3
+    maxdepth=3
+  else
+    mindepth=1
+    maxdepth=1
+  fi
+  mapfile -d '' -t list < <(
+    find "$root" -mindepth "$mindepth" -maxdepth "$maxdepth" -type d -print0 2>/dev/null || true
+  )
+  ((${#list[@]})) || die "No worktrees under $root"
+  printf '%s\n' "${list[@]}" | fzf --prompt='worktree> ' --query="$init"
+}
+
+###############################################################################
+if (($#)); then # ── git-wt-helper <branch> ───────────────────────
+  branch=$1
+  if git rev-parse --is-inside-work-tree &>/dev/null; then
+    IFS='|' read -r owner repo <<<"$(get_owner_repo)"
+    tgt="$GIT_WORKTREE_HOME/$owner/$repo/$branch"
+    mkdir -p "$GIT_WORKTREE_HOME/$owner/$repo"
+    [[ -d $tgt ]] || git worktree add "$tgt" -b "$branch" >&2 || die 'git worktree add failed'
+    printf '%s\n' "$tgt"
+  else
+    pick_with_fzf "$GIT_WORKTREE_HOME" "$branch"
+  fi
+else # ── git-wt-helper (no args) ──────────────────────
+  if git rev-parse --is-inside-work-tree &>/dev/null; then
+    IFS='|' read -r owner repo <<<"$(get_owner_repo)"
+    repo_root="$GIT_WORKTREE_HOME/$owner/$repo"
+    [[ -d $repo_root ]] || die "No worktrees for this repo in $repo_root"
+    pick_with_fzf "$repo_root"
+  else
+    pick_with_fzf "$GIT_WORKTREE_HOME"
+  fi
+fi
