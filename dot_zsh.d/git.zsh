@@ -11,5 +11,18 @@ gitwt() {
   [[ -n $dest ]] && cd "$dest"
 }
 
-alias wt=gitwt
+gitroot() {
+  cd "$(git rev-parse --show-toplevel)" || return
+}
 
+git() {
+  # Check if the first argument is 'wt'
+  if [[ $1 == "wt" ]]; then
+    shift  # Remove 'wt' from the arguments
+    gitwt "$@"
+  elif [[ $1 == "root" ]]; then
+    gitroot
+  else
+    command git "$@"
+  fi
+}
