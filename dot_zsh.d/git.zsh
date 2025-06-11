@@ -5,9 +5,15 @@ gitwt() {
     return
   fi
 
+  # if -b is the first argument, back to the master worktree
+  if [[ $1 == "-b" ]]; then
+    shift  # Remove '-b' from the arguments
+    cd "$(git rev-parse --git-common-dir)/.."
+    return
+  fi
+
   local dest
   dest=$(git-wt-helper "$@") || return
-  echo "DEST: $dest"
   [[ -n $dest ]] && cd "$dest"
 }
 
