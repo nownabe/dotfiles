@@ -1,5 +1,5 @@
 if grep -qi "WSL2" /proc/version; then
-  echo -e "\033[1;32m🐧 Running inside WSL2\033[0m"
+  echo_info "🐧 Running inside WSL2"
   export IS_WSL="true"
   
   export GPG_TTY="$(tty)"
