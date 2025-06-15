@@ -3,5 +3,5 @@ if grep -qi "WSL2" /proc/version; then
   export IS_WSL="true"
   
   export GPG_TTY="$(tty)"
-  export BROWSER="/mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe"
+  export BROWSER="/usr/bin/wslview"
 fi

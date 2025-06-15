@@ -4,5 +4,6 @@ packages:
       - byobu
       - git
       - libyaml-dev
+      - wslu
       - zip
       - zsh
