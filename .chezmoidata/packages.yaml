@@ -1,0 +1,8 @@
+packages:
+  ubuntu:
+    apt:
+      - byobu
+      - git
+      - libyaml-dev
+      - zip
+      - zsh
