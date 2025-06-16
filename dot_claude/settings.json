@@ -1,8 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep:*)",
       "Bash(find:*)",
+      "Bash(go test:*)",
+      "Bash(grep:*)",
       "Bash(mkdir:*)"
     ],
     "deny": []
