@@ -25,6 +25,13 @@ return {
       maps.n["<Leader>ls"] = false
       maps.n["<Leader>lS"] = false
 
+      -- Telescope
+      local telescope = require "telescope.builtin"
+      maps.n["<Leader>ff"] = { function() telescope.find_files { hidden = true } end, desc = "Find all files" }
+      maps.n["<Leader>fF"] = { function() telescope.find_files { hidden = true } end, desc = "Find files" }
+      maps.n["<Leader>fg"] = { function() telescope.live_grep { hidden = true } end, desc = "Live grep" }
+      maps.n["<Leader>fG"] = { function() telescope.git_files() end, desc = "Find git files" }
+
       opts.mappings = astrocore.extend_tbl(opts.mappings, maps)
     end,
   },
