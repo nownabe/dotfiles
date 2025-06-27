@@ -4,7 +4,8 @@
       "Bash(grep:*)",
       "Bash(find:*)",
       "Bash(go test:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(rg:*)"
     ],
     "deny": []
   }
