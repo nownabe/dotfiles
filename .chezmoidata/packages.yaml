@@ -1,6 +1,7 @@
 packages:
   ubuntu:
     apt:
+      - apt-file
       - byobu
       - curl
       - fzf
