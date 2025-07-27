@@ -45,3 +45,12 @@
 
 [includeIf "gitdir:~/src/github.com/"]
   path = ~/.config/git/github
+
+[credential "https://github.com"]
+  helper =
+  helper = !/home/{{ .chezmoi.username }}/.local/share/mise/gh auth git-credential
+
+[credential "https://gist.github.com"]
+  helper =
+  helper = !/home/{{ .chezmoi.username }}/.local/share/mise/gh auth git-credential
+
