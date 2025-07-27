@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+gpg \
+  --batch \
+  --pinentry-mode loopback \
+  --passphrase "" \
+  --quick-gen-key "{{ .github.name }} <{{ .github.email }}>" ed25519 default never

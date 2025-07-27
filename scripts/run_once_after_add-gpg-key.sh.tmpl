@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+alias gh='/home/{{ .chezmoi.username }}/.local/share/mise/shims/gh'
+
+if ! gh auth status; then
+  gh auth login --scopes write:gpg_key
+else
+  gh auth refresh --scopes write:gpg_key
+fi
+
+fp="$(gpg --list-secret-keys --with-colons {{ .github.email | quote }} | awk -F: '/^fpr:/ {print $10; exit}')"
+
+gh gpg-key add <(gpg --armor --export "$fp")
+
+gh auth refresh --remove-scopes write:gpg_key
