@@ -5,7 +5,7 @@
   gpgsign = true
 
 [user]
-  name = nownabe
-  email = 1286807+nownabe@users.noreply.github.com
+  name = {{ .github.name }}
+  email = {{ .github.email }}
   signingkey = {{ $signingkey }}
 
