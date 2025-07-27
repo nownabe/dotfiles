@@ -6,6 +6,7 @@ packages:
       - curl
       - fzf
       - git
+      - gnupg
       - libyaml-dev
       - wslu
       - zip
