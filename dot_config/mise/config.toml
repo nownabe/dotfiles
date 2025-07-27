@@ -2,6 +2,7 @@
 chezmoi = "latest"
 deno = "latest"
 fzf = "latest"
+gh = "latest"
 ghq = "latest"
 go = "latest"
 lua = "latest"
