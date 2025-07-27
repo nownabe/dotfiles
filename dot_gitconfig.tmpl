@@ -40,11 +40,14 @@
 [rebase]
   autostash = true
 
-[credential "https://source.developers.google.com"]
-  helper = gcloud.sh
-
 [includeIf "gitdir:~/src/github.com/"]
   path = ~/.config/git/github
+
+[includeIf "gitdir:~/.local/share/chezmoi"]
+  path = ~/.config/git/github
+
+[credential "https://source.developers.google.com"]
+  helper = gcloud.sh
 
 [credential "https://github.com"]
   helper =
