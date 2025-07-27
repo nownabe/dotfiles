@@ -1,0 +1,11 @@
+{{- $cmd := printf `gpg --list-secret-keys --with-colons %q | awk -F: '/^fpr:/ {print $10; exit}'` .github.email -}}
+{{- $signingkey := trim (output "bash" "-c" $cmd) -}}
+
+[commit]
+  gpgsign = true
+
+[user]
+  name = nownabe
+  email = 1286807+nownabe@users.noreply.github.com
+  signingkey = {{ $signingkey }}
+

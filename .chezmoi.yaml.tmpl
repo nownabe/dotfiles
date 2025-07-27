@@ -1,0 +1,5 @@
+data:
+  git:
+    user:
+      name: nownabe
+      email: {{ promptStringOnce . "git.user.email" "What is your default email address for git" | quote}}
