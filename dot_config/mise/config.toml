@@ -1,4 +1,5 @@
 [tools]
+aqua = "latest"
 bun = "latest"
 chezmoi = "latest"
 deno = "latest"
