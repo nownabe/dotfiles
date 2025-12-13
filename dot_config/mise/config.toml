@@ -1,7 +1,6 @@
 [tools]
 aqua = "latest"
 aws = "latest"
-bun = "latest"
 chezmoi = "latest"
 deno = "latest"
 fzf = "latest"
