@@ -4,3 +4,4 @@ registries:
 packages:
 - name: oven-sh/bun@bun-v1.3.4
 - name: direnv/direnv@v2.37.1
+- name: mikefarah/yq@v4.50.1
