@@ -224,10 +224,11 @@ return {
     },
     opts = {
       lsp = {
+        -- Disable LSP overrides to prevent "Invalid 'data': Cannot convert given Lua table" error
         override = {
-          ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-          ["vim.lsp.util.stylize_markdown"] = true,
-          ["cmp.entry.get_documentation"] = true,
+          ["vim.lsp.util.convert_input_to_markdown_lines"] = false,
+          ["vim.lsp.util.stylize_markdown"] = false,
+          ["cmp.entry.get_documentation"] = false,
         },
       },
       routes = {

@@ -20,8 +20,9 @@ vim.opt.rtp:prepend(lazypath)
 -- Load configuration before plugins
 require("config")
 
--- Setup lazy.nvim
-require("lazy").setup("plugins", {
+-- Setup lazy.nvim (access the lazy.nvim plugin from rtp, not this file)
+local lazy = require("lazy")
+lazy.setup("plugins", {
   -- Automatically install plugins
   install = {
     colorscheme = { "catppuccin", "habamax" },
@@ -51,4 +52,3 @@ require("lazy").setup("plugins", {
     notify = false,
   },
 })
-

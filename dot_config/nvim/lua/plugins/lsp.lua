@@ -45,6 +45,7 @@ return {
           "taplo",
           "bufls",
           "ruby_ls",
+          "solargraph",
           "astro",
           "tailwindcss",
         },
@@ -53,6 +54,17 @@ return {
 
       -- Capabilities for autocompletion
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+      -- Define diagnostic signs
+      local signs = {
+        { name = "DiagnosticSignError", text = " " },
+        { name = "DiagnosticSignWarn", text = " " },
+        { name = "DiagnosticSignHint", text = " " },
+        { name = "DiagnosticSignInfo", text = " " },
+      }
+      for _, sign in ipairs(signs) do
+        vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
+      end
 
       -- Diagnostic configuration
       vim.diagnostic.config({
@@ -64,14 +76,7 @@ return {
           prefix = "●",
         },
         severity_sort = true,
-        signs = {
-          text = {
-            [vim.diagnostic.severity.ERROR] = " ",
-            [vim.diagnostic.severity.WARN] = " ",
-            [vim.diagnostic.severity.HINT] = " ",
-            [vim.diagnostic.severity.INFO] = " ",
-          },
-        },
+        signs = true,
         float = {
           border = "rounded",
           source = "always",
@@ -113,7 +118,7 @@ return {
 
         -- Enable inlay hints if supported
         if client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-          vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+          pcall(vim.lsp.inlay_hint.enable, bufnr, true)
         end
 
         -- Enable code lens if supported
@@ -123,11 +128,15 @@ return {
             buffer = bufnr,
             group = group,
             callback = function()
-              pcall(vim.lsp.codelens.refresh, { bufnr = bufnr })
+              vim.schedule(function()
+                pcall(vim.lsp.codelens.refresh)
+              end)
             end,
           })
           -- Trigger codelens refresh on attach
-          pcall(vim.lsp.codelens.refresh, { bufnr = bufnr })
+          vim.schedule(function()
+            pcall(vim.lsp.codelens.refresh)
+          end)
         end
       end
 
@@ -155,10 +164,7 @@ return {
                   globals = { "vim" },
                 },
                 workspace = {
-                  library = {
-                    [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                    [vim.fn.stdpath("config") .. "/lua"] = true,
-                  },
+                  library = vim.api.nvim_get_runtime_file("", true),
                   checkThirdParty = false,
                 },
                 telemetry = {
