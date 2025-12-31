@@ -45,7 +45,7 @@ opt.foldlevelstart = 99
 opt.foldenable = true
 
 -- Scrolling
-opt.scrolloff = 8
+opt.scrolloff = 16
 opt.sidescrolloff = 8
 
 -- Performance
