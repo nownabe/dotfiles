@@ -43,8 +43,6 @@ return {
           "dockerls",
           "terraformls",
           "taplo",
-          "bufls",
-          "ruby_ls",
           "solargraph",
           "astro",
           "tailwindcss",
