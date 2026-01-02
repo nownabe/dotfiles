@@ -245,6 +245,11 @@ return {
               ["/"] = "fuzzy_finder",
               ["D"] = "fuzzy_finder_directory",
               ["#"] = "fuzzy_sorter",
+              ["F"] = { "show_help", nowait = false, config = { title = "Find", prefix_key = "F" } },
+              ["Ff"] = "find_files_in_dir",
+              ["FF"] = "find_all_files_in_dir",
+              ["Fw"] = "find_words_in_dir",
+              ["FW"] = "find_all_words_in_dir",
               ["f"] = "filter_on_submit",
               ["<c-x>"] = "clear_filter",
               ["[g"] = "prev_git_modified",
@@ -253,6 +258,26 @@ return {
           },
           commands = {
             copy_selector = copy_selector,
+            find_files_in_dir = function(state)
+              local node = state.tree:get_node()
+              local path = node.type == "file" and node:get_parent_id() or node:get_id()
+              require("snacks").picker.files({ cwd = path })
+            end,
+            find_all_files_in_dir = function(state)
+              local node = state.tree:get_node()
+              local path = node.type == "file" and node:get_parent_id() or node:get_id()
+              require("snacks").picker.files({ cwd = path, hidden = true, ignored = true })
+            end,
+            find_words_in_dir = function(state)
+              local node = state.tree:get_node()
+              local path = node.type == "file" and node:get_parent_id() or node:get_id()
+              require("snacks").picker.grep({ cwd = path })
+            end,
+            find_all_words_in_dir = function(state)
+              local node = state.tree:get_node()
+              local path = node.type == "file" and node:get_parent_id() or node:get_id()
+              require("snacks").picker.grep({ cwd = path, hidden = true, ignored = true })
+            end,
           },
         },
         buffers = {

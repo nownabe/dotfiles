@@ -44,7 +44,7 @@ return {
             enabled = true,
             indentscope_color = "",
           },
-          telescope = {
+          snacks = {
             enabled = true,
           },
           which_key = true,

@@ -12,7 +12,7 @@ return {
           lua = { "string" },
           javascript = { "template_string" },
         },
-        disable_filetype = { "TelescopePrompt", "spectre_panel" },
+        disable_filetype = { "snacks_picker", "spectre_panel" },
         fast_wrap = {
           map = "<M-e>",
           chars = { "{", "[", "(", '"', "'" },

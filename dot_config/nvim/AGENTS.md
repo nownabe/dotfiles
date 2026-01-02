@@ -11,7 +11,7 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 - **LSP**: nvim-lspconfig + mason.nvim + mason-lspconfig.nvim
 - **Completion**: nvim-cmp + copilot.lua + copilot-cmp
 - **Syntax**: nvim-treesitter
-- **UI**: noice.nvim, which-key.nvim, alpha-nvim
+- **UI**: snacks.nvim, noice.nvim, which-key.nvim, alpha-nvim
 - **Git**: gitsigns.nvim, lazygit.nvim, diffview.nvim
 
 ## Directory Structure
@@ -31,7 +31,7 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 │   │   ├── treesitter.lua            # Syntax highlighting
 │   │   ├── lsp.lua                   # LSP configuration
 │   │   ├── completion.lua            # Completion setup
-│   │   ├── telescope.lua             # Fuzzy finder
+│   │   ├── snacks.lua                # Fuzzy finder and QoL plugins
 │   │   ├── neo-tree.lua              # File explorer
 │   │   ├── ui.lua                    # UI plugins
 │   │   ├── editor.lua                # Editor enhancements
@@ -54,13 +54,14 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 - ✅ LSP support for 22+ languages
 - ✅ Treesitter syntax highlighting
 - ✅ Intelligent code completion with Copilot
-- ✅ Fuzzy finding with Telescope
+- ✅ Fuzzy finding with Snacks Picker
 - ✅ File explorer with Neo-tree
 - ✅ Git integration with gitsigns and lazygit
 - ✅ Project-local LSP settings with neoconf
 - ✅ Format on save
 - ✅ Inlay hints and codelens
 - ✅ Custom keymaps with which-key
+- ✅ Dashboard, notifications, indent guides, and zen mode with Snacks
 
 ### Language Support
 
@@ -127,13 +128,22 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 | `<Leader>bl` | Next buffer |
 | `<Leader>bc` | Close buffer |
 
-### Telescope (Find)
+### Snacks Picker (Find)
 | Key | Action |
 |-----|--------|
 | `<Leader>ff` | Find files |
-| `<Leader>fg` | Live grep |
+| `<Leader>fF` | Find all files (hidden/ignored) |
+| `<Leader>fg` | Find git files |
+| `<Leader>fo` | Recent files |
 | `<Leader>fb` | Find buffers |
-| `<Leader>fh` | Help tags |
+| `<Leader>fw` | Find words (grep) |
+| `<Leader>fc` | Find word under cursor |
+| `<Leader>fs` | Document symbols |
+| `<Leader>fh` | Find help |
+| `<Leader>fk` | Find keymaps |
+| `<Leader>fC` | Find commands |
+| `<Leader>ft` | Find themes |
+| `<Leader>f<CR>` | Resume previous search |
 
 ### Git
 | Key | Action |
@@ -238,7 +248,7 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 - **vim-surround** - Surround text objects
 
 ### Navigation
-- **telescope.nvim** - Fuzzy finder
+- **snacks.nvim** - QoL plugins collection with picker (fuzzy finder)
 - **neo-tree.nvim** - File explorer
 - **which-key.nvim** - Keybinding hints
 
@@ -304,6 +314,14 @@ Defined in `lua/config/autocmds.lua`:
 - Restore cursor position
 - Resize splits on window resize
 - Close certain filetypes with `q`
+
+### File Permissions
+
+When creating new files, use standard Unix permissions:
+- **Regular files**: `644` (rw-r--r--) - Owner can read/write, others can read
+- **NOT** `600` (rw-------) unless the file contains sensitive data (credentials, keys, etc.)
+
+This ensures proper file accessibility while maintaining security for sensitive files.
 
 ## Troubleshooting
 
