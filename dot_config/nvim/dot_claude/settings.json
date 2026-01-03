@@ -6,7 +6,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(ls:*)",
       "Bash(chmod:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(gh issue view:*)"
     ]
   }
 }
