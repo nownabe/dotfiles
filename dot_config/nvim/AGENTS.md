@@ -38,11 +38,13 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 │   │   ├── git.lua                   # Git integration
 │   │   ├── copilot.lua               # AI assistance
 │   │   └── lang/                     # Language-specific configs
-│   │       ├── go.lua
-│   │       ├── python.lua
-│   │       ├── rust.lua
-│   │       ├── typescript.lua
-│   │       └── ... (18 more)
+│   │       ├── languages.lua         # Consolidated simple languages (22+ languages)
+│   │       ├── go.lua                # Complex: DAP + gopher.nvim + custom keymaps
+│   │       ├── lua.lua               # Complex: lazydev + lua_ls config
+│   │       ├── markdown.lua          # Complex: render-markdown plugin
+│   │       ├── python.lua            # Complex: DAP + pyright + ruff_lsp
+│   │       ├── rust.lua              # Complex: rustaceanvim + crates.nvim
+│   │       └── typescript.lua        # Complex: typescript-tools + package-info
 │   └── utils/
 │       └── init.lua                  # Helper functions
 └── AGENTS.md                         # This file
@@ -476,5 +478,5 @@ This configuration is based on AstroNvim v5.3.14 and follows the same GPL-3.0 li
 
 ---
 
-Last updated: 2025-12-31
+Last updated: 2026-01-03
 Neovim version: 0.10+
