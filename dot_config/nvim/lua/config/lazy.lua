@@ -21,8 +21,11 @@ vim.opt.rtp:prepend(lazypath)
 require("config")
 
 -- Setup lazy.nvim (access the lazy.nvim plugin from rtp, not this file)
-local lazy = require("lazy")
-lazy.setup("plugins", {
+require("lazy").setup({
+  { import = "plugins" },
+  { import = "plugins.lang" }
+}, {
+  -- https://lazy.folke.io/configuration
   -- Automatically install plugins
   install = {
     colorscheme = { "catppuccin", "habamax" },
