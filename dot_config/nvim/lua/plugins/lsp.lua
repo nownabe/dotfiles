@@ -29,7 +29,6 @@ return {
       -- Setup mason-lspconfig
       require("mason-lspconfig").setup({
         ensure_installed = {
-          "lua_ls",
           "gopls",
           "pyright",
           "rust_analyzer",
@@ -149,33 +148,6 @@ return {
         end,
 
         -- Specific server configurations
-        ["lua_ls"] = function()
-          require("lspconfig").lua_ls.setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-            settings = {
-              Lua = {
-                runtime = {
-                  version = "LuaJIT",
-                },
-                diagnostics = {
-                  globals = { "vim" },
-                },
-                workspace = {
-                  library = vim.api.nvim_get_runtime_file("", true),
-                  checkThirdParty = false,
-                },
-                telemetry = {
-                  enable = false,
-                },
-                hint = {
-                  enable = true,
-                },
-              },
-            },
-          })
-        end,
-
         ["jsonls"] = function()
           require("lspconfig").jsonls.setup({
             capabilities = capabilities,
@@ -329,20 +301,6 @@ return {
     cmd = "Neoconf",
     opts = {},
   },
-
-  -- Better Lua LSP for Neovim
-  {
-    "folke/lazydev.nvim",
-    ft = "lua",
-    opts = {
-      library = {
-        { path = "luvit-meta/library", words = { "vim%.uv" } },
-      },
-    },
-  },
-
-  -- Optional: lua types
-  { "Bilal2453/luvit-meta", lazy = true },
 
   -- LSP signature help
   {

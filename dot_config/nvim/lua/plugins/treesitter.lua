@@ -14,7 +14,6 @@ return {
         -- Install parsers for all supported languages
         ensure_installed = {
           -- Core
-          "lua",
           "vim",
           "vimdoc",
           "query",
