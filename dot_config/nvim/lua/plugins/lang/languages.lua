@@ -99,6 +99,74 @@ return {
   },
 
   -- ============================================================================
+  -- LSP Configurations with Custom Settings
+  -- ============================================================================
+
+  -- LSP configuration for jsonls
+  {
+    "neovim/nvim-lspconfig",
+    opts = {},
+    config = function()
+      local lsp_utils = require("utils.lsp")
+      require("lspconfig").jsonls.setup({
+        capabilities = lsp_utils.get_capabilities(),
+        on_attach = lsp_utils.on_attach,
+        settings = {
+          json = {
+            schemas = require("schemastore").json.schemas(),
+            validate = { enable = true },
+          },
+        },
+      })
+    end,
+  },
+
+  -- LSP configuration for yamlls
+  {
+    "neovim/nvim-lspconfig",
+    opts = {},
+    config = function()
+      local lsp_utils = require("utils.lsp")
+      require("lspconfig").yamlls.setup({
+        capabilities = lsp_utils.get_capabilities(),
+        on_attach = lsp_utils.on_attach,
+        settings = {
+          yaml = {
+            schemaStore = {
+              enable = false,
+              url = "",
+            },
+            schemas = require("schemastore").yaml.schemas(),
+          },
+        },
+      })
+    end,
+  },
+
+  -- LSP configuration for tailwindcss
+  {
+    "neovim/nvim-lspconfig",
+    opts = {},
+    config = function()
+      local lsp_utils = require("utils.lsp")
+      require("lspconfig").tailwindcss.setup({
+        capabilities = lsp_utils.get_capabilities(),
+        on_attach = lsp_utils.on_attach,
+        settings = {
+          tailwindCSS = {
+            experimental = {
+              classRegex = {
+                { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+                { "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+              },
+            },
+          },
+        },
+      })
+    end,
+  },
+
+  -- ============================================================================
   -- Simple Plugin-Based Language Support
   -- ============================================================================
 
@@ -121,29 +189,6 @@ return {
   {
     "tsandall/vim-rego",
     ft = "rego",
-  },
-
-  -- ============================================================================
-  -- Treesitter Extensions for Web Languages
-  -- ============================================================================
-
-  -- Auto tag for HTML/JSX/Vue/etc
-  {
-    "windwp/nvim-ts-autotag",
-    lazy = true,
-  },
-
-  -- Context commentstring for embedded languages
-  {
-    "JoosepAlviste/nvim-ts-context-commentstring",
-    lazy = true,
-    opts = {
-      enable_autocmd = false,
-    },
-    config = function(_, opts)
-      vim.g.skip_ts_context_commentstring_module = true
-      require("ts_context_commentstring").setup(opts)
-    end,
   },
 
   -- ============================================================================

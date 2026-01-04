@@ -11,33 +11,15 @@ return {
     },
     config = function()
       require("nvim-treesitter.configs").setup({
-        -- Install parsers for all supported languages
+        -- Install only core parsers
+        -- Language-specific parsers are managed in lua/plugins/lang/*.lua
         ensure_installed = {
-          -- Core
+          -- Core Neovim
           "vim",
           "vimdoc",
           "query",
           "regex",
-          -- Programming languages
-          "ruby",
-          -- Web
-          "html",
-          "css",
-          "astro",
-          -- Data formats
-          "json",
-          "jsonc",
-          "json5",
-          "yaml",
-          "toml",
-          "xml",
-          -- Shell/Config
-          "bash",
-          "dockerfile",
-          "proto",
-          "terraform",
-          "hcl",
-          -- Other
+          -- Git-related
           "gitignore",
           "git_config",
           "git_rebase",

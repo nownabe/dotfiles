@@ -27,20 +27,9 @@ return {
       })
 
       -- Setup mason-lspconfig
+      -- Language-specific LSP servers are managed in lua/plugins/lang/*.lua
       require("mason-lspconfig").setup({
-        ensure_installed = {
-          "html",
-          "cssls",
-          "jsonls",
-          "yamlls",
-          "bashls",
-          "dockerls",
-          "terraformls",
-          "taplo",
-          "solargraph",
-          "astro",
-          "tailwindcss",
-        },
+        ensure_installed = {},
         automatic_installation = true,
       })
 
@@ -133,59 +122,13 @@ return {
       end
 
       -- Setup handlers with mason-lspconfig
+      -- Language-specific LSP configurations are managed in lua/plugins/lang/*.lua
       require("mason-lspconfig").setup_handlers({
-        -- Default handler
+        -- Default handler for all LSP servers
         function(server_name)
           require("lspconfig")[server_name].setup({
             capabilities = capabilities,
             on_attach = on_attach,
-          })
-        end,
-
-        -- Specific server configurations
-        ["jsonls"] = function()
-          require("lspconfig").jsonls.setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-            settings = {
-              json = {
-                schemas = require("schemastore").json.schemas(),
-                validate = { enable = true },
-              },
-            },
-          })
-        end,
-
-        ["yamlls"] = function()
-          require("lspconfig").yamlls.setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-            settings = {
-              yaml = {
-                schemaStore = {
-                  enable = false,
-                  url = "",
-                },
-                schemas = require("schemastore").yaml.schemas(),
-              },
-            },
-          })
-        end,
-
-        ["tailwindcss"] = function()
-          require("lspconfig").tailwindcss.setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-            settings = {
-              tailwindCSS = {
-                experimental = {
-                  classRegex = {
-                    { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
-                    { "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
-                  },
-                },
-              },
-            },
           })
         end,
       })
@@ -203,12 +146,6 @@ return {
   -- Mason lspconfig bridge
   {
     "williamboman/mason-lspconfig.nvim",
-    lazy = true,
-  },
-
-  -- Schema store for JSON/YAML
-  {
-    "b0o/schemastore.nvim",
     lazy = true,
   },
 
