@@ -29,7 +29,6 @@ return {
       -- Setup mason-lspconfig
       require("mason-lspconfig").setup({
         ensure_installed = {
-          "rust_analyzer",
           "ts_ls",
           "html",
           "cssls",
