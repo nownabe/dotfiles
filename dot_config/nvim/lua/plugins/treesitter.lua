@@ -31,9 +31,6 @@ return {
           "yaml",
           "toml",
           "xml",
-          -- Markup
-          "markdown",
-          "markdown_inline",
           -- Shell/Config
           "bash",
           "dockerfile",

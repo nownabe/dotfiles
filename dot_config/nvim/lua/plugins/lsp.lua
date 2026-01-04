@@ -33,7 +33,6 @@ return {
           "cssls",
           "jsonls",
           "yamlls",
-          "marksman",
           "bashls",
           "dockerls",
           "terraformls",
