@@ -19,10 +19,6 @@ return {
           "query",
           "regex",
           -- Programming languages
-          "go",
-          "gomod",
-          "gosum",
-          "gowork",
           "python",
           "rust",
           "typescript",

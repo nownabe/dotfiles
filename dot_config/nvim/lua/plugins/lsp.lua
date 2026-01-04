@@ -29,7 +29,6 @@ return {
       -- Setup mason-lspconfig
       require("mason-lspconfig").setup({
         ensure_installed = {
-          "gopls",
           "pyright",
           "rust_analyzer",
           "ts_ls",
@@ -172,31 +171,6 @@ return {
                   url = "",
                 },
                 schemas = require("schemastore").yaml.schemas(),
-              },
-            },
-          })
-        end,
-
-        ["gopls"] = function()
-          require("lspconfig").gopls.setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-            settings = {
-              gopls = {
-                analyses = {
-                  unusedparams = true,
-                },
-                staticcheck = true,
-                gofumpt = true,
-                hints = {
-                  assignVariableTypes = true,
-                  compositeLiteralFields = true,
-                  compositeLiteralTypes = true,
-                  constantValues = true,
-                  functionTypeParameters = true,
-                  parameterNames = true,
-                  rangeVariableTypes = true,
-                },
               },
             },
           })

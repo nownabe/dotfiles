@@ -18,6 +18,37 @@ return {
     end,
   },
 
+  -- LSP configuration for gopls
+  {
+    "neovim/nvim-lspconfig",
+    opts = {},
+    config = function()
+      local lsp_utils = require("utils.lsp")
+      require("lspconfig").gopls.setup({
+        capabilities = lsp_utils.get_capabilities(),
+        on_attach = lsp_utils.on_attach,
+        settings = {
+          gopls = {
+            analyses = {
+              unusedparams = true,
+            },
+            staticcheck = true,
+            gofumpt = true,
+            hints = {
+              assignVariableTypes = true,
+              compositeLiteralFields = true,
+              compositeLiteralTypes = true,
+              constantValues = true,
+              functionTypeParameters = true,
+              parameterNames = true,
+              rangeVariableTypes = true,
+            },
+          },
+        },
+      })
+    end,
+  },
+
   -- Go development tools
   {
     "olexsmir/gopher.nvim",
