@@ -19,9 +19,6 @@ return {
           "query",
           "regex",
           -- Programming languages
-          "typescript",
-          "tsx",
-          "javascript",
           "ruby",
           -- Web
           "html",

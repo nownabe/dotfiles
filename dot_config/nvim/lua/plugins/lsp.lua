@@ -29,7 +29,6 @@ return {
       -- Setup mason-lspconfig
       require("mason-lspconfig").setup({
         ensure_installed = {
-          "ts_ls",
           "html",
           "cssls",
           "jsonls",
@@ -169,42 +168,6 @@ return {
                   url = "",
                 },
                 schemas = require("schemastore").yaml.schemas(),
-              },
-            },
-          })
-        end,
-
-        ["ts_ls"] = function()
-          require("lspconfig").ts_ls.setup({
-            capabilities = capabilities,
-            on_attach = function(client, bufnr)
-              -- Disable tsserver formatting in favor of prettier
-              client.server_capabilities.documentFormattingProvider = false
-              client.server_capabilities.documentRangeFormattingProvider = false
-              on_attach(client, bufnr)
-            end,
-            settings = {
-              typescript = {
-                inlayHints = {
-                  includeInlayParameterNameHints = "all",
-                  includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-                  includeInlayFunctionParameterTypeHints = true,
-                  includeInlayVariableTypeHints = true,
-                  includeInlayPropertyDeclarationTypeHints = true,
-                  includeInlayFunctionLikeReturnTypeHints = true,
-                  includeInlayEnumMemberValueHints = true,
-                },
-              },
-              javascript = {
-                inlayHints = {
-                  includeInlayParameterNameHints = "all",
-                  includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-                  includeInlayFunctionParameterTypeHints = true,
-                  includeInlayVariableTypeHints = true,
-                  includeInlayPropertyDeclarationTypeHints = true,
-                  includeInlayFunctionLikeReturnTypeHints = true,
-                  includeInlayEnumMemberValueHints = true,
-                },
               },
             },
           })
