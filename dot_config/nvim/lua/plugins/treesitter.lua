@@ -19,7 +19,6 @@ return {
           "query",
           "regex",
           -- Programming languages
-          "python",
           "rust",
           "typescript",
           "tsx",

@@ -17,6 +17,29 @@ return {
     end,
   },
 
+  -- LSP configuration for pyright
+  {
+    "neovim/nvim-lspconfig",
+    opts = {},
+    config = function()
+      local lsp_utils = require("utils.lsp")
+      require("lspconfig").pyright.setup({
+        capabilities = lsp_utils.get_capabilities(),
+        on_attach = lsp_utils.on_attach,
+        settings = {
+          python = {
+            analysis = {
+              autoSearchPaths = true,
+              diagnosticMode = "workspace",
+              useLibraryCodeForTypes = true,
+              typeCheckingMode = "basic",
+            },
+          },
+        },
+      })
+    end,
+  },
+
   -- DAP for Python
   {
     "mfussenegger/nvim-dap-python",

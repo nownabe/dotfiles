@@ -29,7 +29,6 @@ return {
       -- Setup mason-lspconfig
       require("mason-lspconfig").setup({
         ensure_installed = {
-          "pyright",
           "rust_analyzer",
           "ts_ls",
           "html",
@@ -171,23 +170,6 @@ return {
                   url = "",
                 },
                 schemas = require("schemastore").yaml.schemas(),
-              },
-            },
-          })
-        end,
-
-        ["pyright"] = function()
-          require("lspconfig").pyright.setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-            settings = {
-              python = {
-                analysis = {
-                  autoSearchPaths = true,
-                  diagnosticMode = "workspace",
-                  useLibraryCodeForTypes = true,
-                  typeCheckingMode = "basic",
-                },
               },
             },
           })
