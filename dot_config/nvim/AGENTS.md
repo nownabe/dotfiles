@@ -46,7 +46,8 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 │   │       ├── rust.lua              # Complex: rustaceanvim + crates.nvim
 │   │       └── typescript.lua        # Complex: typescript-tools + package-info
 │   └── utils/
-│       └── init.lua                  # Helper functions
+│       ├── init.lua                  # Helper functions
+│       └── lsp.lua                   # Common LSP utilities (capabilities, on_attach)
 └── AGENTS.md                         # This file
 ```
 
@@ -178,43 +179,34 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 
 ## LSP Configuration
 
+### Architecture
+
+The LSP configuration follows a **self-contained language file architecture**:
+
+- **Core files**: Contain only infrastructure (`treesitter.lua`, `lsp.lua`)
+- **Language files**: Each file manages its own parsers, LSP servers, and plugins
+- **Common utilities**: Shared LSP functions in `utils/lsp.lua`
+
+For detailed architecture and language-specific configurations, see [lua/plugins/lang/README.md](lua/plugins/lang/README.md).
+
 ### Installed Servers
-- lua_ls (Lua)
-- gopls (Go)
-- pyright (Python)
-- rust_analyzer (Rust)
-- ts_ls (TypeScript/JavaScript)
-- html (HTML)
-- cssls (CSS)
-- jsonls (JSON)
-- yamlls (YAML)
-- marksman (Markdown)
-- bashls (Bash)
-- dockerls (Docker)
-- terraformls (Terraform)
-- taplo (TOML)
-- solargraph (Ruby)
-- astro (Astro)
-- tailwindcss (Tailwind CSS)
+
+All LSP servers are managed in their respective language files in `lua/plugins/lang/`:
+
+- **Complex languages**: lua.lua, go.lua, python.lua, rust.lua, typescript.lua, markdown.lua
+- **Simple languages**: languages.lua (bash, docker, html, css, json, yaml, toml, terraform, ruby, astro, tailwind, etc.)
 
 ### Custom Configurations
 
-**lua_ls:**
-- Recognizes `vim` global
-- Includes Neovim runtime paths
-- Inlay hints enabled
+Some languages have custom LSP configurations:
 
-**gopls:**
-- Static analysis with staticcheck
-- gofumpt formatting
-- Inlay hints for types and parameters
+- **lua_ls**: Neovim development support with lazydev.nvim
+- **gopls**: gofumpt formatting, staticcheck, inlay hints
+- **ts_ls**: Formatting disabled (use prettier), inlay hints
+- **jsonls/yamlls**: Schema validation with schemastore
+- **rust_analyzer**: Managed by rustaceanvim
 
-**ts_ls:**
-- Formatting disabled (use prettier)
-- Inlay hints for parameters and types
-
-**jsonls/yamlls:**
-- JSON/YAML schema validation with schemastore
+See [lua/plugins/lang/README.md](lua/plugins/lang/README.md) for detailed configurations.
 
 ## Plugins
 
@@ -325,6 +317,174 @@ When creating new files, use standard Unix permissions:
 
 This ensures proper file accessibility while maintaining security for sensitive files.
 
+## Development Workflow
+
+### GitHub Issues
+
+Track configuration changes using GitHub Issues in the `nownabe/dotfiles` repository.
+
+#### Issue Structure
+
+**Labels:**
+- `nvim` - For all Neovim configuration issues
+
+**Assignee:**
+- `nownabe` - Assign to yourself for tracking
+
+**Title Format:**
+- `Add [feature/language/plugin]`
+- `Fix [issue description]`
+- `Refactor [component]`
+- `Migrate [component] to [new approach]`
+
+**Body Template:**
+```markdown
+## Goal
+
+[Brief description of what needs to be done]
+
+## Context
+
+[Background information, why this change is needed, current situation]
+
+## Solution
+
+### Proposed Solution
+
+[Describe the approach to solve the problem]
+
+### Rationale
+
+[Why this solution is appropriate]
+
+### Alternatives Considered
+
+[Other approaches that were considered and why they weren't chosen]
+
+## Expected Impact
+
+[Expected benefits, potential risks, affected components]
+
+## Tasks
+
+### Implementation Steps
+
+- [ ] Step 1
+- [ ] Step 2
+- [ ] Test changes
+- [ ] Update documentation
+
+### Files
+
+- `path/to/file.lua` (create/update/remove)
+
+## Notes
+
+[Any special considerations, dependencies, or technical details]
+```
+
+#### Creating Issues with gh CLI
+
+```bash
+# Create issue
+gh issue create \
+  --title "Add feature" \
+  --body-file issue_template.md \
+  --label nvim \
+  --assignee nownabe
+
+# Or interactively
+gh issue create --label nvim --assignee nownabe
+```
+
+#### Example: Language Support
+
+```markdown
+Title: Add Zig language support
+
+## Goal
+
+Add full language support for Zig including LSP and Treesitter.
+
+## Context
+
+Currently working on Zig projects but lack proper IDE features like syntax highlighting,
+code completion, and diagnostics. Need to add Zig language support following the
+self-contained language file architecture.
+
+## Solution
+
+### Proposed Solution
+
+Create a new self-contained language file `lua/plugins/lang/zig.lua` that manages:
+- Treesitter parser for syntax highlighting
+- LSP server (zls) for language intelligence
+- LSP configuration with Zig-specific settings
+
+### Rationale
+
+Follows the established self-contained language file pattern, keeping all Zig-related
+configuration in one place without modifying core files.
+
+### Alternatives Considered
+
+- Adding to `languages.lua`: Not suitable as zls requires custom configuration
+- Central configuration: Rejected in favor of self-contained approach (Issue #11)
+
+## Expected Impact
+
+**Benefits:**
+- Syntax highlighting for .zig files
+- Code completion and diagnostics
+- Go-to-definition and hover documentation
+
+**Risks:**
+- zls may require specific build configuration
+- First time adding this language, may need adjustments
+
+**Affected Components:**
+- New file: `lua/plugins/lang/zig.lua`
+
+## Tasks
+
+### Implementation Steps
+
+- [ ] Create `lua/plugins/lang/zig.lua`
+- [ ] Add Treesitter parser: `zig`
+- [ ] Add LSP server: `zls` via mason-lspconfig
+- [ ] Configure zls settings (build options, semantic tokens)
+- [ ] Test LSP attachment (`:LspInfo`)
+- [ ] Test Treesitter highlighting (`:TSInstallInfo`)
+- [ ] Test basic features (completion, diagnostics, hover)
+- [ ] Update documentation if needed
+
+### Files
+
+- `lua/plugins/lang/zig.lua` (create)
+
+## Notes
+
+- zls requires special build configuration settings for proper project detection
+- Zig 0.11+ recommended for best LSP experience
+- May need to configure build.zig path in settings
+```
+
+#### Workflow
+
+1. **Create issue** for the work
+2. **Work incrementally** with frequent testing
+3. **Test thoroughly** with appropriate health checks
+4. **Close issue** with reference in commit message (e.g., `Fixes #123`)
+
+#### Recent Issues
+
+Examples from the language configuration refactoring:
+- Issue #11: Core infrastructure verification
+- Issue #12: Lua language migration
+- Issue #13: Go language migration
+- Issue #18: LSP keymap refactoring
+- Issue #19: Simple languages migration
+
 ## Troubleshooting
 
 ### Common Issues
@@ -347,18 +507,20 @@ lsp = {
 
 #### LSP Server Not Starting
 
-Check:
 1. `:LspInfo` - Shows attached servers
 2. `:Mason` - Verify server is installed
-3. `:checkhealth` - Check for issues
-4. Server in `ensure_installed` list in `lua/plugins/lsp.lua:31-50`
+3. `:checkhealth mason` - Check for issues
+4. Verify server in the appropriate language file
+
+See [lua/plugins/lang/README.md](lua/plugins/lang/README.md#troubleshooting) for details.
 
 #### Treesitter Highlighting Not Working
 
-Check:
 1. `:TSInstallInfo` - Shows installed parsers
-2. Parser in `ensure_installed` list in `lua/plugins/treesitter.lua`
+2. Verify parser in the appropriate language file
 3. Run `:TSInstall <language>` manually
+
+See [lua/plugins/lang/README.md](lua/plugins/lang/README.md#troubleshooting) for details.
 
 #### Completion Not Working
 
@@ -381,6 +543,27 @@ Run `:checkhealth` to diagnose issues:
 ## Migration Notes
 
 This configuration was migrated from AstroNvim v5.3.14 to standalone lazy.nvim.
+
+### Recent Refactoring (2026-01-04)
+
+**Language Configuration Deduplication**: Migrated from centralized configuration to self-contained language files.
+
+**Before:**
+- `treesitter.lua`: 46 parsers (all languages)
+- `lsp.lua`: 17 LSP servers in `ensure_installed`, 7 `setup_handlers`
+- Language files: Only language-specific plugins
+
+**After:**
+- `treesitter.lua`: 10 core parsers only (vim, vimdoc, query, regex, git-related)
+- `lsp.lua`: Empty `ensure_installed`, 1 default handler only
+- Language files: Self-contained (parsers + LSP + plugins)
+- `utils/lsp.lua`: Common utilities (`get_capabilities()`, `on_attach()`)
+
+**Benefits:**
+- Each language file is self-contained and can be added/removed independently
+- No need to modify core files when adding new languages
+- Better organization and maintainability
+- Clear separation between infrastructure and language-specific code
 
 ### Key Differences from AstroNvim
 
@@ -421,23 +604,9 @@ Profile startup with:
 
 ### Adding a New Language
 
-1. Add parser to `lua/plugins/treesitter.lua`:
-```lua
-ensure_installed = {
-  -- ... existing parsers
-  "newlang",
-}
-```
+Language configurations are self-contained in `lua/plugins/lang/`. Each language file manages its own Treesitter parsers, LSP servers, and plugins.
 
-2. Add LSP server to `lua/plugins/lsp.lua`:
-```lua
-ensure_installed = {
-  -- ... existing servers
-  "newlang_ls",
-}
-```
-
-3. Optionally create `lua/plugins/lang/newlang.lua` for language-specific plugins
+For detailed instructions and examples, see [lua/plugins/lang/README.md](lua/plugins/lang/README.md).
 
 ### Adding Custom Keymaps
 
@@ -478,5 +647,5 @@ This configuration is based on AstroNvim v5.3.14 and follows the same GPL-3.0 li
 
 ---
 
-Last updated: 2026-01-03
+Last updated: 2026-01-04
 Neovim version: 0.10+
