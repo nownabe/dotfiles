@@ -55,7 +55,6 @@ function M.get_icon(name, padding)
     Spellcheck = "󰓆",
     Tab = "󰓩",
     TabClose = "󰅙",
-    Terminal = "",
     Window = "",
     WordFile = "󰈭",
   }

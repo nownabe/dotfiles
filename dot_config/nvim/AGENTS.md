@@ -270,9 +270,6 @@ See [lua/plugins/lang/README.md](lua/plugins/lang/README.md) for detailed config
 - **copilot-cmp** - Copilot completion source
 - **CopilotChat.nvim** - Copilot chat (Claude 3.7 Sonnet)
 
-### Terminal
-- **toggleterm.nvim** - Terminal manager
-
 ### Language-Specific
 - **gopher.nvim** (Go)
 - **nvim-dap-go** (Go debugging)
