@@ -12,7 +12,7 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 - **Completion**: nvim-cmp + copilot.lua + copilot-cmp
 - **Syntax**: nvim-treesitter
 - **UI**: snacks.nvim, noice.nvim, which-key.nvim, alpha-nvim
-- **Git**: gitsigns.nvim, lazygit.nvim, diffview.nvim
+- **Git**: gitsigns.nvim
 
 ## Directory Structure
 
@@ -59,7 +59,7 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 - ✅ Intelligent code completion with Copilot
 - ✅ Fuzzy finding with Snacks Picker
 - ✅ File explorer with Neo-tree
-- ✅ Git integration with gitsigns and lazygit
+- ✅ Git integration with gitsigns
 - ✅ Project-local LSP settings with neoconf
 - ✅ Format on save
 - ✅ Inlay hints and codelens
@@ -151,10 +151,6 @@ This configuration provides a full-featured IDE experience with LSP, Treesitter,
 ### Git
 | Key | Action |
 |-----|--------|
-| `<Leader>gg` | Open LazyGit |
-| `<Leader>gf` | LazyGit current file |
-| `<Leader>gd` | Open diffview |
-| `<Leader>gh` | File history |
 | `]c` | Next git hunk |
 | `[c` | Previous git hunk |
 | `<Leader>hs` | Stage hunk |
@@ -261,9 +257,6 @@ See [lua/plugins/lang/README.md](lua/plugins/lang/README.md) for detailed config
 
 ### Git
 - **gitsigns.nvim** - Git decorations
-- **lazygit.nvim** - LazyGit integration
-- **diffview.nvim** - Git diff viewer
-- **git-conflict.nvim** - Conflict resolver
 
 ### AI
 - **copilot.lua** - GitHub Copilot
