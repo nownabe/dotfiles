@@ -105,31 +105,25 @@ return {
   -- LSP configuration for jsonls
   {
     "neovim/nvim-lspconfig",
-    opts = {},
-    config = function()
-      local lsp_utils = require("utils.lsp")
-      require("lspconfig").jsonls.setup({
-        capabilities = lsp_utils.get_capabilities(),
-        on_attach = lsp_utils.on_attach,
+    opts = function(_, opts)
+      opts.servers = opts.servers or {}
+      opts.servers.jsonls = {
         settings = {
           json = {
             schemas = require("schemastore").json.schemas(),
             validate = { enable = true },
           },
         },
-      })
+      }
     end,
   },
 
   -- LSP configuration for yamlls
   {
     "neovim/nvim-lspconfig",
-    opts = {},
-    config = function()
-      local lsp_utils = require("utils.lsp")
-      require("lspconfig").yamlls.setup({
-        capabilities = lsp_utils.get_capabilities(),
-        on_attach = lsp_utils.on_attach,
+    opts = function(_, opts)
+      opts.servers = opts.servers or {}
+      opts.servers.yamlls = {
         settings = {
           yaml = {
             schemaStore = {
@@ -139,19 +133,16 @@ return {
             schemas = require("schemastore").yaml.schemas(),
           },
         },
-      })
+      }
     end,
   },
 
   -- LSP configuration for tailwindcss
   {
     "neovim/nvim-lspconfig",
-    opts = {},
-    config = function()
-      local lsp_utils = require("utils.lsp")
-      require("lspconfig").tailwindcss.setup({
-        capabilities = lsp_utils.get_capabilities(),
-        on_attach = lsp_utils.on_attach,
+    opts = function(_, opts)
+      opts.servers = opts.servers or {}
+      opts.servers.tailwindcss = {
         settings = {
           tailwindCSS = {
             experimental = {
@@ -162,7 +153,7 @@ return {
             },
           },
         },
-      })
+      }
     end,
   },
 

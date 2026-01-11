@@ -20,16 +20,14 @@ return {
   -- LSP configuration for ts_ls
   {
     "neovim/nvim-lspconfig",
-    opts = {},
-    config = function()
+    opts = function(_, opts)
       local lsp_utils = require("utils.lsp")
-      require("lspconfig").ts_ls.setup({
-        capabilities = lsp_utils.get_capabilities(),
+      opts.servers = opts.servers or {}
+      opts.servers.ts_ls = {
         on_attach = function(client, bufnr)
           -- Disable tsserver formatting in favor of prettier
           client.server_capabilities.documentFormattingProvider = false
           client.server_capabilities.documentRangeFormattingProvider = false
-          -- Call standard on_attach
           lsp_utils.on_attach(client, bufnr)
         end,
         settings = {
@@ -56,7 +54,7 @@ return {
             },
           },
         },
-      })
+      }
     end,
   },
 

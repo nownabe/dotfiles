@@ -4,13 +4,17 @@ return {
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
+    opts = {
+      servers = {},
+      setup = {},
+    },
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "hrsh7th/cmp-nvim-lsp",
       "folke/neoconf.nvim",
     },
-    config = function()
+    config = function(_, opts)
       -- Setup neoconf first for project-local settings
       require("neoconf").setup({})
 
@@ -26,15 +30,17 @@ return {
         },
       })
 
+      local lsp_utils = require("utils.lsp")
+      local capabilities = lsp_utils.get_capabilities()
+      local servers = opts.servers or {}
+      local setup = opts.setup or {}
+
       -- Setup mason-lspconfig
       -- Language-specific LSP servers are managed in lua/plugins/lang/*.lua
       require("mason-lspconfig").setup({
         ensure_installed = {},
         automatic_installation = true,
       })
-
-      -- Capabilities for autocompletion
-      local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
       -- Define diagnostic signs
       local signs = {
@@ -66,70 +72,25 @@ return {
         },
       })
 
-      -- On attach function for keymaps
-      local on_attach = function(client, bufnr)
-        local opts = { buffer = bufnr, silent = true }
-
-        -- LSP keymaps under <Leader>;
-        vim.keymap.set("n", "<Leader>;d", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "Go to definition" }))
-        vim.keymap.set("n", "<Leader>;D", vim.lsp.buf.declaration, vim.tbl_extend("force", opts, { desc = "Go to declaration" }))
-        vim.keymap.set("n", "<Leader>;i", vim.lsp.buf.implementation, vim.tbl_extend("force", opts, { desc = "Go to implementation" }))
-        vim.keymap.set("n", "<Leader>;t", vim.lsp.buf.type_definition, vim.tbl_extend("force", opts, { desc = "Go to type definition" }))
-        vim.keymap.set("n", "<Leader>;R", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "Show references" }))
-        vim.keymap.set("n", "<Leader>;r", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Rename symbol" }))
-        vim.keymap.set("n", "<Leader>;h", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover documentation" }))
-        vim.keymap.set("n", "<Leader>;s", vim.lsp.buf.signature_help, vim.tbl_extend("force", opts, { desc = "Signature help" }))
-        vim.keymap.set({ "n", "v" }, "<Leader>;a", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action" }))
-        vim.keymap.set("n", "<Leader>;f", function()
-          vim.lsp.buf.format({ async = true })
-        end, vim.tbl_extend("force", opts, { desc = "Format buffer" }))
-
-        -- Diagnostic keymaps
-        vim.keymap.set("n", "<Leader>;n", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Show diagnostic" }))
-        vim.keymap.set("n", "<Leader>;N", vim.diagnostic.setloclist, vim.tbl_extend("force", opts, { desc = "Diagnostics list" }))
-        vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, vim.tbl_extend("force", opts, { desc = "Previous diagnostic" }))
-        vim.keymap.set("n", "]d", vim.diagnostic.goto_next, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
-
-        -- Additional useful keymaps
-        vim.keymap.set("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "Go to definition" }))
-        vim.keymap.set("n", "gD", vim.lsp.buf.declaration, vim.tbl_extend("force", opts, { desc = "Go to declaration" }))
-        vim.keymap.set("n", "gr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "References" }))
-        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, vim.tbl_extend("force", opts, { desc = "Go to implementation" }))
-        vim.keymap.set("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover documentation" }))
-
-        -- Enable inlay hints if supported
-        if client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-          pcall(vim.lsp.inlay_hint.enable, bufnr, true)
-        end
-
-        -- Enable code lens if supported
-        if client.server_capabilities.codeLensProvider then
-          local group = vim.api.nvim_create_augroup("LspCodeLens_" .. bufnr, { clear = true })
-          vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-            buffer = bufnr,
-            group = group,
-            callback = function()
-              vim.schedule(function()
-                pcall(vim.lsp.codelens.refresh)
-              end)
-            end,
-          })
-          -- Trigger codelens refresh on attach
-          vim.schedule(function()
-            pcall(vim.lsp.codelens.refresh)
-          end)
-        end
-      end
-
-      -- Setup handlers with mason-lspconfig
-      -- Language-specific LSP configurations are managed in lua/plugins/lang/*.lua
+      -- Setup handlers with mason-lspconfig and per-language options from opts.servers
+      -- Language-specific options are populated in lua/plugins/lang/*.lua
       require("mason-lspconfig").setup_handlers({
-        -- Default handler for all LSP servers
         function(server_name)
-          require("lspconfig")[server_name].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-          })
+          local server_opts = servers[server_name] or {}
+          server_opts.capabilities = server_opts.capabilities or capabilities
+          server_opts.on_attach = server_opts.on_attach or lsp_utils.on_attach
+
+          if setup[server_name] then
+            if setup[server_name](server_name, server_opts) then
+              return
+            end
+          elseif setup["*"] then
+            if setup["*"](server_name, server_opts) then
+              return
+            end
+          end
+
+          require("lspconfig")[server_name].setup(server_opts)
         end,
       })
     end,

@@ -21,12 +21,9 @@ return {
   -- LSP configuration for gopls
   {
     "neovim/nvim-lspconfig",
-    opts = {},
-    config = function()
-      local lsp_utils = require("utils.lsp")
-      require("lspconfig").gopls.setup({
-        capabilities = lsp_utils.get_capabilities(),
-        on_attach = lsp_utils.on_attach,
+    opts = function(_, opts)
+      opts.servers = opts.servers or {}
+      opts.servers.gopls = {
         settings = {
           gopls = {
             analyses = {
@@ -45,7 +42,7 @@ return {
             },
           },
         },
-      })
+      }
     end,
   },
 
