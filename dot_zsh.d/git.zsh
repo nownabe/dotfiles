@@ -5,11 +5,23 @@ gitwt() {
     return
   fi
 
-  # if -b is the first argument, back to the master worktree
+  # if -b is the first argument, back to the main worktree
   if [[ $1 == "-b" ]]; then
-    shift  # Remove '-b' from the arguments
-    cd "$(git rev-parse --git-common-dir)/.."
+    shift
+    local git_common_dir
+    if git_common_dir=$(git rev-parse --git-common-dir 2>/dev/null); then
+      cd "$git_common_dir/.."
+    else
+      echo "Not in a git repository" >&2
+      return 1
+    fi
     return
+  fi
+
+  # Check if current directory exists
+  if [[ ! -d "${PWD:-}" ]]; then
+    echo "Current directory does not exist. Use 'cd' to move to a valid directory." >&2
+    return 1
   fi
 
   local dest
