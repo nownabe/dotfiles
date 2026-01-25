@@ -54,6 +54,12 @@ get_default_branch() {
   die "Cannot determine default branch"
 }
 
+# Check if worktree has uncommitted changes
+is_worktree_dirty() {
+  local worktree_path=$1
+  [[ -n $(git -C "$worktree_path" status --porcelain 2>/dev/null) ]]
+}
+
 # Check if a branch is merged into default branch (merge commit or squash)
 is_merged() {
   local branch=$1
@@ -110,6 +116,8 @@ find_unused_worktree() {
 
   while IFS=: read -r worktree_path branch; do
     [[ -z $worktree_path ]] && continue
+    # Skip if worktree has uncommitted changes
+    is_worktree_dirty "$worktree_path" && continue
     if is_merged "$branch" "$default_branch"; then
       echo "$worktree_path"
       return 0
