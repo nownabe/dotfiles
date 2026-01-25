@@ -192,9 +192,7 @@ select_with_fzf() {
         --with-nth=2 \
         --delimiter=':' \
         --preview='cd {1} && git log --oneline -10' \
-        --no-select-1 \
-        --print-query \
-        --bind 'enter:replace-query+print-query'
+        --print-query
   ) || true
 
   # First line is query, second line is selected item (if any)
@@ -205,8 +203,9 @@ select_with_fzf() {
     # User selected an existing worktree
     echo "$selected" | cut -d: -f1
   elif [[ -n $query ]]; then
-    # No selection but query entered - treat as new branch name
-    prepare_worktree_for_new_branch "$query"
+    # No selection - treat query as branch name (new or existing)
+    # Use main logic by calling the script recursively
+    exec "$0" "$query"
   fi
   # If both empty, user cancelled - return nothing
 }
