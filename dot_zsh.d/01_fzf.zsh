@@ -12,6 +12,7 @@ export FZF_DEFAULT_OPTS="
   --walker-skip=.git,node_modules
   --history=${XDG_CACHE_HOME:-$HOME/.cache}/fzf/history
   --history-size=10000
+  --bind=ctrl-j:down,ctrl-k:up
   --preview 'batcat --color=always --style=numbers --line-range :500 {}'"
 
 export FZF_CTRL_T_OPTS="--preview 'batcat --color=always --style=numbers --line-range :500 {}'"
