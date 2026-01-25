@@ -151,9 +151,8 @@ prepare_worktree_for_new_branch() {
     # Reset the worktree to default branch and create new branch
     (
       cd "$unused_worktree"
-      git checkout -q "$default_branch"
-      git pull -q --ff-only origin "$default_branch" 2>/dev/null || true
-      git checkout -q -b "$branch"
+      git fetch -q origin "$default_branch" 2>/dev/null || true
+      git checkout -q -B "$branch" "origin/$default_branch"
     ) >&2
     echo "$unused_worktree"
   else
@@ -250,8 +249,7 @@ if (($#)); then
     if unused_worktree=$(find_unused_worktree "$default_branch"); then
       (
         cd "$unused_worktree"
-        git checkout -q "$default_branch"
-        # Check out existing branch
+        # Check out existing branch (local or remote)
         if git show-ref --verify --quiet "refs/heads/$branch"; then
           git checkout -q "$branch"
         else
