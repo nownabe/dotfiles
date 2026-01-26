@@ -14,10 +14,12 @@ Manages worktrees in <repo>/.worktrees/ with automatic reuse of merged branches.
 
 Usage:
   git wt <branch>     Create new branch or switch to existing branch's worktree
+  git wt -n <branch>  Always create a new worktree (don't reuse existing ones)
   git wt              Select worktree with fzf
   git wt -b           Back to main worktree (handled by shell wrapper)
 
 Options:
+  -n                  Force creation of a new worktree
   -h, --help          Show this help and exit
 
 Behavior:
@@ -154,8 +156,8 @@ prepare_worktree_for_new_branch() {
   default_branch=$(get_default_branch)
   worktrees_dir=$(get_worktrees_dir)
 
-  # Try to find and reuse an unused worktree
-  if unused_worktree=$(find_unused_worktree "$default_branch"); then
+  # Try to find and reuse an unused worktree (unless -n flag is set)
+  if [[ $FORCE_NEW == false ]] && unused_worktree=$(find_unused_worktree "$default_branch"); then
     # Reset the worktree to default branch and create new branch
     (
       cd "$unused_worktree"
@@ -234,6 +236,16 @@ branch_exists() {
   exit 0
 }
 
+# Parse options
+FORCE_NEW=false
+while getopts "n" opt; do
+  case $opt in
+    n) FORCE_NEW=true ;;
+    *) die "Unknown option: -$opt" ;;
+  esac
+done
+shift $((OPTIND - 1))
+
 # Ensure we're in a git repository
 git rev-parse --is-inside-work-tree &>/dev/null || die "Not in a git repository"
 
@@ -252,8 +264,8 @@ if (($#)); then
     worktrees_dir=$(get_worktrees_dir)
     default_branch=$(get_default_branch)
 
-    # Try to reuse unused worktree
-    if unused_worktree=$(find_unused_worktree "$default_branch"); then
+    # Try to reuse unused worktree (unless -n flag is set)
+    if [[ $FORCE_NEW == false ]] && unused_worktree=$(find_unused_worktree "$default_branch"); then
       (
         cd "$unused_worktree"
         # Check out existing branch (local or remote)
