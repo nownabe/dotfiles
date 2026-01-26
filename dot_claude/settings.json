@@ -1,8 +1,13 @@
 {
   "permissions": {
-    "allow": ["Bash(grep:*)", "Bash(find:*)", "Bash(go test:*)"],
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(go test:*)"
+    ],
     "deny": []
   },
+  "model": "opus",
   "hooks": {
     "Stop": [
       {
@@ -25,5 +30,16 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "example-skills@anthropic-agent-skills": true,
+    "playwright@claude-plugins-official": true
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "/home/nownabe/.claude/statusline-command.sh"
   }
 }
