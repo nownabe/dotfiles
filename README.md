@@ -2,7 +2,11 @@
 
 ## Setting up
 
-### Chezmoi
+```shell
+curl -fsSL https://raw.githubusercontent.com/nownabe/dotfiles/main/setup.sh | bash
+```
+
+### Chezmoi (deprecated)
 
 ```shell
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply nownabe
