@@ -6,15 +6,6 @@
 curl -fsSL https://raw.githubusercontent.com/nownabe/dotfiles/main/setup.sh | bash
 ```
 
-This script does the following:
-
-1. Install [Nix](https://nixos.org/) via [Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer)
-2. Clone this repository to `~/src/github.com/nownabe/dotfiles`
-3. Create a symlink `~/.dotfiles` pointing to the cloned repository
-4. Apply the [Home Manager](https://nix-community.github.io/home-manager/) configuration
-
-Each step is idempotent, so the script can be run multiple times safely.
-
 ### Chezmoi (deprecated)
 
 ```shell
