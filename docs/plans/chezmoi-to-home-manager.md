@@ -598,3 +598,45 @@ For each phase:
 4. Remove the corresponding Chezmoi files
 5. Run `chezmoi apply` to confirm Chezmoi no longer manages those files
 6. Commit the changes
+
+---
+
+## Progress
+
+- [ ] **Phase 1: Packages** — Migrate mise/aqua/apt tools to `home.packages`
+  - [ ] Add packages to `home.nix`
+  - [ ] Verify with `home-manager switch --flake .`
+  - [ ] Remove `dot_config/mise/`, `dot_config/aquaproj-aqua/`, `dot_default-npm-packages`
+- [ ] **Phase 2: Shell (zsh)** — Migrate to `programs.zsh` (blocked by: Phase 1)
+  - [ ] Configure `programs.zsh` (history, aliases, plugins, initExtra)
+  - [ ] Configure `programs.fzf`, `programs.zoxide`, `programs.direnv`
+  - [ ] Verify with `home-manager switch --flake .`
+  - [ ] Remove `dot_zshrc`, `dot_zsh.d/`
+- [ ] **Phase 3: Git** — Migrate to `programs.git` (blocked by: Phase 2)
+  - [ ] Configure `programs.git` (aliases, ignores, extraConfig, signing, includes)
+  - [ ] Decide GPG signing key strategy
+  - [ ] Verify with `home-manager switch --flake .`
+  - [ ] Remove `dot_gitconfig.tmpl`, `dot_config/git/`
+- [ ] **Phase 4: Neovim** — Migrate via `xdg.configFile` (blocked by: Phase 1)
+  - [ ] Move `dot_config/nvim/` to `nvim/`
+  - [ ] Configure `programs.neovim` + `xdg.configFile."nvim"`
+  - [ ] Add treesitter build dependencies if needed
+  - [ ] Verify with `home-manager switch --flake .`
+  - [ ] Remove `dot_config/nvim/`
+- [ ] **Phase 5: Other Configs** — Claude CLI, Claude Code, bin scripts (blocked by: Phase 1)
+  - [ ] Migrate `dot_config/claude/` to `xdg.configFile`
+  - [ ] Migrate `dot_claude/` to `home.file`
+  - [ ] Migrate `bin/` scripts (rename to remove `executable_` prefix)
+  - [ ] Verify with `home-manager switch --flake .`
+  - [ ] Remove `dot_config/claude/`, `dot_claude/`
+- [ ] **Phase 6: Scripts** — Migrate or remove Chezmoi scripts (blocked by: Phase 3)
+  - [ ] Add GPG key generation as activation script
+  - [ ] Remove obsolete scripts (mise, zplug, apt)
+  - [ ] Verify with `home-manager switch --flake .`
+  - [ ] Remove `scripts/`
+- [ ] **Phase 7: Cleanup** — Remove all Chezmoi files (blocked by: Phase 4, 5, 6)
+  - [ ] Remove `.chezmoi.yaml.tmpl`, `.chezmoidata/`, `.chezmoiignore`
+  - [ ] Remove any remaining `dot_*` files
+  - [ ] Rewrite `setup.sh` for Nix-only bootstrap
+  - [ ] Update `CLAUDE.md`
+  - [ ] End-to-end verification on clean system
