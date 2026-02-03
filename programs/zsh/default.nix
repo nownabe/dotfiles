@@ -23,7 +23,7 @@
     history = {
       size = 1000000;
       save = 1000000;
-      path = "$HOME/.cache/zsh/history";
+      path = "\${XDG_CACHE_HOME:-$HOME/.cache}/zsh/history";
       extended = true;
       ignoreDups = true;
       ignoreAllDups = true;
