@@ -10,8 +10,7 @@
     "zsh/wsl.zsh".source = ./config/wsl.zsh;
     "zsh/mise.zsh".source = ./config/mise.zsh;
     "zsh/path.zsh".source = ./config/path.zsh;
-    "zsh/prompt.zsh".source = pkgs.substituteAll {
-      src = ./config/prompt.zsh;
+    "zsh/prompt.zsh".source = pkgs.replaceVars ./config/prompt.zsh {
       purePromptPath = pkgs.pure-prompt;
     };
     "zsh/keybindings.zsh".source = ./config/keybindings.zsh;
@@ -79,9 +78,12 @@
       # Ruby
       bi = "bundle install";
       be = "bundle exec";
+
+      # Nix Home Manager
+      hms = "home-manager switch --flake ~/.dotfiles";
     };
 
-    initExtra = ''
+    initContent = ''
       # Load config files from ~/.config/zsh/
       for file in "''${XDG_CONFIG_HOME:-$HOME/.config}/zsh"/*.zsh; do
         [[ -f "$file" ]] && source "$file"
