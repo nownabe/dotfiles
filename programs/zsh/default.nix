@@ -10,13 +10,10 @@
     "zsh/wsl.zsh".source = ./config/wsl.zsh;
     "zsh/mise.zsh".source = ./config/mise.zsh;
     "zsh/path.zsh".source = ./config/path.zsh;
-    "zsh/prompt.zsh".source = pkgs.writeText "prompt.zsh" ''
-      # Pure prompt setup
-      fpath+=(${pkgs.pure-prompt}/share/zsh/site-functions)
-      autoload -U promptinit
-      promptinit
-      prompt pure
-    '';
+    "zsh/prompt.zsh".source = pkgs.substituteAll {
+      src = ./config/prompt.zsh;
+      purePromptPath = pkgs.pure-prompt;
+    };
   };
 
   programs.zsh = {
