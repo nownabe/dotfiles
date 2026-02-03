@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   xdg.configFile = {
@@ -76,7 +76,19 @@
       be = "bundle exec";
     };
 
+    plugins = [
+      {
+        name = "pure";
+        src = pkgs.pure-prompt;
+        file = "share/zsh/site-functions/prompt_pure_setup";
+      }
+    ];
+
     initExtra = ''
+      # Initialize pure prompt
+      autoload -U promptinit; promptinit
+      prompt pure
+
       # Additional key bindings (not available in programs.zsh options)
       bindkey "^P" history-beginning-search-backward
       bindkey "^N" history-beginning-search-forward
