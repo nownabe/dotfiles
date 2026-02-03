@@ -10,13 +10,9 @@
     "zsh/wsl.zsh".source = ./config/wsl.zsh;
     "zsh/mise.zsh".source = ./config/mise.zsh;
     "zsh/path.zsh".source = ./config/path.zsh;
-
-    # Pure prompt (uses Nix store path interpolation)
-    "zsh/prompt.zsh".text = ''
+    "zsh/prompt.zsh".source = pkgs.writeText "prompt.zsh" ''
       # Pure prompt setup
-      # Source pure prompt from Nix store
       fpath+=(${pkgs.pure-prompt}/share/zsh/site-functions)
-
       autoload -U promptinit
       promptinit
       prompt pure
