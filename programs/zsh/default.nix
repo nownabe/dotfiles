@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   xdg.configFile = {
@@ -10,6 +10,10 @@
     "zsh/wsl.zsh".source = ./config/wsl.zsh;
     "zsh/mise.zsh".source = ./config/mise.zsh;
     "zsh/path.zsh".source = ./config/path.zsh;
+    "zsh/prompt.zsh".source = pkgs.substituteAll {
+      src = ./config/prompt.zsh;
+      purePromptPath = pkgs.pure-prompt;
+    };
   };
 
   programs.zsh = {
