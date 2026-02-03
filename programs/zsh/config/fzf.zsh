@@ -6,7 +6,7 @@ export FZF_DEFAULT_OPTS="
   --multi
   --cycle
   --walker-skip=.git,node_modules
-  --history=$HOME/.cache/fzf/history
+  --history=${XDG_CACHE_HOME:-$HOME/.cache}/fzf/history
   --history-size=10000
   --bind=ctrl-j:down,ctrl-k:up
   --preview 'batcat --color=always --style=numbers --line-range :500 {}'"
@@ -19,7 +19,7 @@ export FZF_CTRL_R_OPTS="
   --header 'Press CTRL-Y to copy command into clipboard'
   --no-preview"
 
-[[ -d "$HOME/.cache/fzf" ]] || mkdir -p "$HOME/.cache/fzf"
+[[ -d "${XDG_CACHE_HOME:-$HOME/.cache}/fzf" ]] || mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/fzf"
 
 function fzf-ghq() {
   local target_dir
@@ -31,10 +31,9 @@ function fzf-ghq() {
   zle reset-prompt
 }
 zle -N fzf-ghq
-bindkey "^[" fzf-ghq
 
 function fzf-cdr() {
-  chpwd_recent_dirs -r "$HOME/.cache/zsh/chpwd-recent-dirs"
+  chpwd_recent_dirs -r "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/chpwd-recent-dirs"
   local selected_dir=$(cdr -l | sed 's/^[0-9]\+ \+//' | fzf --query "$LBUFFER" --preview 'tree -C {}')
   if [ -n "$selected_dir" ]; then
     BUFFER="cd ${selected_dir}"
@@ -43,4 +42,3 @@ function fzf-cdr() {
   zle clear-screen
 }
 zle -N fzf-cdr
-bindkey '^O' fzf-cdr

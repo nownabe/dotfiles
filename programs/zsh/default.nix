@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   xdg.configFile = {
@@ -10,6 +10,7 @@
     "zsh/wsl.zsh".source = ./config/wsl.zsh;
     "zsh/mise.zsh".source = ./config/mise.zsh;
     "zsh/path.zsh".source = ./config/path.zsh;
+    "zsh/keybindings.zsh".source = ./config/keybindings.zsh;
   };
 
   programs.zsh = {
@@ -23,14 +24,13 @@
     history = {
       size = 1000000;
       save = 1000000;
-      path = "$HOME/.cache/zsh/history";
+      path = "\${XDG_CACHE_HOME:-$HOME/.cache}/zsh/history";
       extended = true;
       ignoreDups = true;
       ignoreAllDups = true;
       share = true;
     };
 
-    # setopt options
     setOptions = [
       "AUTO_CD"
       "AUTO_PUSHD"
@@ -76,13 +76,21 @@
       be = "bundle exec";
     };
 
+    plugins = [
+      {
+        name = "pure";
+        src = pkgs.pure-prompt;
+        file = "share/zsh/site-functions/prompt_pure_setup";
+      }
+    ];
+
     initExtra = ''
-      # Additional key bindings (not available in programs.zsh options)
-      bindkey "^P" history-beginning-search-backward
-      bindkey "^N" history-beginning-search-forward
+      # Initialize pure prompt
+      autoload -U promptinit; promptinit
+      prompt pure
 
       # Load config files from ~/.config/zsh/
-      for file in "$HOME/.config/zsh"/*.zsh; do
+      for file in "''${XDG_CONFIG_HOME:-$HOME/.config}/zsh"/*.zsh; do
         [[ -f "$file" ]] && source "$file"
       done
     '';
