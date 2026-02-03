@@ -10,6 +10,17 @@
     "zsh/wsl.zsh".source = ./config/wsl.zsh;
     "zsh/mise.zsh".source = ./config/mise.zsh;
     "zsh/path.zsh".source = ./config/path.zsh;
+
+    # Pure prompt (uses Nix store path interpolation)
+    "zsh/prompt.zsh".text = ''
+      # Pure prompt setup
+      # Source pure prompt from Nix store
+      fpath+=(${pkgs.pure-prompt}/share/zsh/site-functions)
+
+      autoload -U promptinit
+      promptinit
+      prompt pure
+    '';
   };
 
   programs.zsh = {
@@ -76,19 +87,7 @@
       be = "bundle exec";
     };
 
-    plugins = [
-      {
-        name = "pure";
-        src = pkgs.pure-prompt;
-        file = "share/zsh/site-functions/prompt_pure_setup";
-      }
-    ];
-
     initExtra = ''
-      # Initialize pure prompt
-      autoload -U promptinit; promptinit
-      prompt pure
-
       # Additional key bindings (not available in programs.zsh options)
       bindkey "^P" history-beginning-search-backward
       bindkey "^N" history-beginning-search-forward
