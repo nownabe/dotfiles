@@ -31,7 +31,6 @@ function fzf-ghq() {
   zle reset-prompt
 }
 zle -N fzf-ghq
-bindkey "^[" fzf-ghq
 
 function fzf-cdr() {
   chpwd_recent_dirs -r "$HOME/.cache/zsh/chpwd-recent-dirs"
@@ -43,4 +42,3 @@ function fzf-cdr() {
   zle clear-screen
 }
 zle -N fzf-cdr
-bindkey '^O' fzf-cdr
