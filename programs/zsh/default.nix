@@ -82,7 +82,7 @@
       bindkey "^N" history-beginning-search-forward
 
       # Load config files from ~/.config/zsh/
-      for file in "$HOME/.config/zsh"/*.zsh; do
+      for file in "''${XDG_CONFIG_HOME:-$HOME/.config}/zsh"/*.zsh; do
         [[ -f "$file" ]] && source "$file"
       done
     '';
