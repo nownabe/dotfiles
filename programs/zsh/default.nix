@@ -14,6 +14,7 @@
       src = ./config/prompt.zsh;
       purePromptPath = pkgs.pure-prompt;
     };
+    "zsh/keybindings.zsh".source = ./config/keybindings.zsh;
   };
 
   programs.zsh = {
@@ -81,10 +82,6 @@
     };
 
     initExtra = ''
-      # Additional key bindings (not available in programs.zsh options)
-      bindkey "^P" history-beginning-search-backward
-      bindkey "^N" history-beginning-search-forward
-
       # Load config files from ~/.config/zsh/
       for file in "$HOME/.config/zsh"/*.zsh; do
         [[ -f "$file" ]] && source "$file"
