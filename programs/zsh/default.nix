@@ -79,6 +79,9 @@
       # Ruby
       bi = "bundle install";
       be = "bundle exec";
+
+      # Nix Home Manager
+      hms = "home-manager switch --flake ~/.dotfiles";
     };
 
     initExtra = ''
