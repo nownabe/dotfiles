@@ -56,6 +56,7 @@ in
     mkdir -p "$(dirname "$config_file")"
 
     # Generate GPG key if it doesn't exist
+    NEW_KEY=""
     if ! ${pkgs.gnupg}/bin/gpg --list-secret-keys "${githubEmail}" >/dev/null 2>&1; then
       echo "Generating GPG key for ${githubEmail}..."
       ${pkgs.gnupg}/bin/gpg \
@@ -63,6 +64,7 @@ in
         --pinentry-mode loopback \
         --passphrase "" \
         --quick-gen-key "${githubName} <${githubEmail}>" ed25519 default never
+      NEW_KEY=1
     fi
 
     # Get GPG signing key
@@ -74,6 +76,28 @@ in
   signingkey = $signing_key
 EOF
       echo "Generated $config_file with signing key: $signing_key"
+
+      # Register GPG key to GitHub if newly generated
+      if [ -n "$NEW_KEY" ]; then
+        echo "Registering GPG key to GitHub..."
+        if ${pkgs.gh}/bin/gh auth status >/dev/null 2>&1; then
+          # Add write:gpg_key scope temporarily
+          ${pkgs.gh}/bin/gh auth refresh --scopes write:gpg_key 2>/dev/null || true
+          # Export and add the public key
+          if ${pkgs.gnupg}/bin/gpg --armor --export "$signing_key" | ${pkgs.gh}/bin/gh gpg-key add - 2>/dev/null; then
+            echo "GPG key registered to GitHub successfully"
+          else
+            echo "Warning: Failed to register GPG key to GitHub. Run manually:"
+            echo "  gpg --armor --export $signing_key | gh gpg-key add -"
+          fi
+          # Remove the scope
+          ${pkgs.gh}/bin/gh auth refresh --remove-scopes write:gpg_key 2>/dev/null || true
+        else
+          echo "Warning: gh is not authenticated. To register GPG key to GitHub, run:"
+          echo "  gh auth login"
+          echo "  gpg --armor --export $signing_key | gh gpg-key add -"
+        fi
+      fi
     else
       echo "Error: Failed to get GPG signing key" >&2
     fi
