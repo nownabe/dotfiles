@@ -98,3 +98,18 @@ Apply the following labels:
   ```
   Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
   ```
+
+### Git Workflow
+
+**Before making changes to an existing PR:**
+
+1. Check PR status: `gh pr view <PR番号> --json state`
+2. If `OPEN`: checkout the branch, add new commits (do NOT use `--amend`)
+3. If `MERGED`: checkout main, pull, create a NEW branch
+
+**Rules:**
+
+- NEVER use `git commit --amend` for PR branches
+- NEVER use `git push --force` unless explicitly requested by user
+- ALWAYS check if PR is merged before pushing to a branch
+- When PR is already merged, create a new PR from a fresh branch
