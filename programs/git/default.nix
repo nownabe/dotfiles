@@ -37,31 +37,22 @@ in
       diff.compactionHeuristic = true;
       gpg.program = "gpg";
       ghq.root = "~/src";
+      commit.gpgsign = true;
 
       # GitHub credential helper
       credential = {
         "https://github.com".helper = "!gh auth git-credential";
         "https://gist.github.com".helper = "!gh auth git-credential";
       };
-    };
 
-    # Conditional include for GitHub GPG signing
-    # The signing key is generated per machine and stored in ~/.config/git/github.local
-    includes = [
-      {
-        condition = "gitdir:~/src/github.com/";
-        path = "~/.config/git/github.local";
-      }
-      {
-        condition = "gitdir:~/.dotfiles/";
-        path = "~/.config/git/github.local";
-      }
-    ];
+      # Include signing key (generated dynamically per machine)
+      include.path = "~/.config/git/signing.local";
+    };
   };
 
-  # Generate GPG key and github.local config file
+  # Generate GPG key and signing.local config file
   home.activation.generateGitGpgConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    config_file="${config.home.homeDirectory}/.config/git/github.local"
+    config_file="${config.home.homeDirectory}/.config/git/signing.local"
     mkdir -p "$(dirname "$config_file")"
 
     # Generate GPG key if it doesn't exist
@@ -72,6 +63,7 @@ in
         --pinentry-mode loopback \
         --passphrase "" \
         --quick-gen-key "${githubName} <${githubEmail}>" ed25519 default never
+      NEW_KEY=1
     fi
 
     # Get GPG signing key
@@ -79,13 +71,29 @@ in
 
     if [ -n "$signing_key" ]; then
       cat > "$config_file" << EOF
-[commit]
-  gpgsign = true
-
 [user]
   signingkey = $signing_key
 EOF
       echo "Generated $config_file with signing key: $signing_key"
+
+      # Register GPG key to GitHub if newly generated
+      if [ -n "''${NEW_KEY:-}" ]; then
+        echo "Registering GPG key to GitHub..."
+        if ${pkgs.gh}/bin/gh auth status >/dev/null 2>&1; then
+          # Add write:gpg_key scope temporarily
+          ${pkgs.gh}/bin/gh auth refresh --scopes write:gpg_key 2>/dev/null || true
+          # Export and add the public key
+          ${pkgs.gnupg}/bin/gpg --armor --export "$signing_key" | ${pkgs.gh}/bin/gh gpg-key add - 2>/dev/null && \
+            echo "GPG key registered to GitHub successfully" || \
+            echo "Warning: Failed to register GPG key to GitHub. Run manually: gpg --armor --export $signing_key | gh gpg-key add -"
+          # Remove the scope
+          ${pkgs.gh}/bin/gh auth refresh --remove-scopes write:gpg_key 2>/dev/null || true
+        else
+          echo "Warning: gh is not authenticated. To register GPG key to GitHub, run:"
+          echo "  gh auth login"
+          echo "  gpg --armor --export $signing_key | gh gpg-key add -"
+        fi
+      fi
     else
       echo "Error: Failed to get GPG signing key" >&2
     fi
