@@ -37,31 +37,22 @@ in
       diff.compactionHeuristic = true;
       gpg.program = "gpg";
       ghq.root = "~/src";
+      commit.gpgsign = true;
 
       # GitHub credential helper
       credential = {
         "https://github.com".helper = "!gh auth git-credential";
         "https://gist.github.com".helper = "!gh auth git-credential";
       };
-    };
 
-    # Conditional include for GitHub GPG signing
-    # The signing key is generated per machine and stored in ~/.config/git/github.local
-    includes = [
-      {
-        condition = "gitdir:~/src/github.com/";
-        path = "~/.config/git/github.local";
-      }
-      {
-        condition = "gitdir:~/.dotfiles/";
-        path = "~/.config/git/github.local";
-      }
-    ];
+      # Include signing key (generated dynamically per machine)
+      include.path = "~/.config/git/signing.local";
+    };
   };
 
-  # Generate GPG key and github.local config file
+  # Generate GPG key and signing.local config file
   home.activation.generateGitGpgConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    config_file="${config.home.homeDirectory}/.config/git/github.local"
+    config_file="${config.home.homeDirectory}/.config/git/signing.local"
     mkdir -p "$(dirname "$config_file")"
 
     # Generate GPG key if it doesn't exist
@@ -79,9 +70,6 @@ in
 
     if [ -n "$signing_key" ]; then
       cat > "$config_file" << EOF
-[commit]
-  gpgsign = true
-
 [user]
   signingkey = $signing_key
 EOF
