@@ -3,6 +3,7 @@
 {
   imports = [
     ./programs/zsh
+    ./programs/git
   ];
 
   home.username = username;
@@ -11,7 +12,6 @@
 
   home.packages = with pkgs; [
     # Version control
-    git
     gh
     ghq
 
