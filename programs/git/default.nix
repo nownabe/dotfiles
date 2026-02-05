@@ -50,6 +50,18 @@ in
     };
   };
 
+  home.file = {
+    "bin/git-clean-squashed" = {
+      source = ./config/git-clean-squashed;
+      executable = true;
+    };
+
+    "bin/git-wt-helper" = {
+      source = ./config/git-wt-helper;
+      executable = true;
+    };
+  };
+
   # Generate GPG key and signing.local config file
   home.activation.generateGitGpgConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     config_file="${config.home.homeDirectory}/.config/git/signing.local"
