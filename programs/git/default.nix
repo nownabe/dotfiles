@@ -51,13 +51,13 @@ in
   };
 
   home.file = {
-    "bin/git-clean-squashed" = {
-      source = ./config/git-clean-squashed;
+    ".local/bin/git-clean-squashed" = {
+      source = ./scripts/git-clean-squashed;
       executable = true;
     };
 
-    "bin/git-wt-helper" = {
-      source = ./config/git-wt-helper;
+    ".local/bin/git-wt-helper" = {
+      source = ./scripts/git-wt-helper;
       executable = true;
     };
   };
