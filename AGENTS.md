@@ -23,7 +23,7 @@ Migrate one configuration at a time in the following order:
 
 For each step:
 - Add the configuration to `home.nix` (or a new module)
-- Verify it works with `home-manager switch --flake .`
+- Verify it works with `home-manager switch --flake .#wsl` (or `#linux`)
 - Remove the corresponding Chezmoi files
 - Use `programs.*` options when available (e.g., `programs.git`, `programs.zsh`) instead of raw file placement, as they provide type checking and option merging
 
