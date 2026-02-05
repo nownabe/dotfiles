@@ -14,17 +14,20 @@
       username = "nownabe";
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-
-      mkHome = { isWSL }: home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = { inherit username isWSL; };
-        modules = [ ./home.nix ];
-      };
     in
     {
       homeConfigurations = {
-        wsl = mkHome { isWSL = true; };
-        linux = mkHome { isWSL = false; };
+        wsl = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = { inherit username; isWSL = true; };
+          modules = [ ./home.nix ];
+        };
+
+        linux = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = { inherit username; isWSL = false; };
+          modules = [ ./home.nix ];
+        };
       };
     };
 }
