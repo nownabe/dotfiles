@@ -13,13 +13,18 @@
     let
       username = "nownabe";
       system = "x86_64-linux";
-      isWSL = true;
-    in
-    {
-      homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = nixpkgs.legacyPackages.${system};
+
+      mkHome = { isWSL }: home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
         extraSpecialArgs = { inherit username isWSL; };
         modules = [ ./home.nix ];
+      };
+    in
+    {
+      homeConfigurations = {
+        wsl = mkHome { isWSL = true; };
+        linux = mkHome { isWSL = false; };
       };
     };
 }
