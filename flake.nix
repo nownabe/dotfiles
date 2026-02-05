@@ -14,18 +14,19 @@
       username = "nownabe";
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      dotfilesDir = "/home/${username}/src/github.com/nownabe/dotfiles";
     in
     {
       homeConfigurations = {
         wsl = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          extraSpecialArgs = { inherit username; isWSL = true; };
+          extraSpecialArgs = { inherit username dotfilesDir; isWSL = true; };
           modules = [ ./home.nix ];
         };
 
         linux = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          extraSpecialArgs = { inherit username; isWSL = false; };
+          extraSpecialArgs = { inherit username dotfilesDir; isWSL = false; };
           modules = [ ./home.nix ];
         };
       };

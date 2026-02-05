@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, dotfilesDir, ... }:
 
 {
   programs.neovim = {
@@ -6,5 +6,5 @@
     defaultEditor = true;
   };
 
-  xdg.configFile."nvim".source = ./config;
+  xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/nvim/config";
 }
