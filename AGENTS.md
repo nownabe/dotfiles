@@ -10,13 +10,13 @@ Two entrypoints are available in `flake.nix`:
 - `wsl` — for WSL2 environments (includes WSL-specific scripts)
 - `linux` — for native Linux environments
 
-Apply with: `home-manager switch --flake ~/.dotfiles#wsl` (or `#linux`)
+Apply with the `hms` shell alias (defined in `programs/zsh/default.nix`), which automatically selects the correct entrypoint.
 
 ### Adding New Configurations
 
 - Add the configuration to `home.nix` (or a new module under `programs/`)
 - Use `programs.*` options when available (e.g., `programs.git`, `programs.zsh`) instead of raw file placement, as they provide type checking and option merging
-- Verify it works with `home-manager switch --flake .#wsl` (or `#linux`)
+- Verify it works with `hms`
 
 ## Directory Structure
 
