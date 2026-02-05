@@ -93,15 +93,20 @@ Apply the following labels:
 
 ### Git Workflow
 
-**Before making changes to an existing PR:**
+**Before every `git push`:**
 
-1. Check PR status: `gh pr view <PR番号> --json state`
-2. If `OPEN`: checkout the branch, add new commits (do NOT use `--amend`)
-3. If `MERGED`: checkout main, pull, create a NEW branch
+1. Find the PR for the current branch: `gh pr list --head <branch> --json number,state`
+2. If a PR exists and is `MERGED`: STOP. Do NOT push. Instead:
+   - `git checkout main && git pull`
+   - Create a new branch
+   - Cherry-pick or rewrite the commits
+   - Push and create a new PR
+3. If a PR exists and is `OPEN`: push normally
+4. If no PR exists: push normally
 
 **Rules:**
 
 - NEVER use `git commit --amend` for PR branches
 - NEVER use `git push --force` unless explicitly requested by user
-- ALWAYS check if PR is merged before pushing to a branch
+- NEVER push to a branch whose PR is already merged
 - When PR is already merged, create a new PR from a fresh branch
