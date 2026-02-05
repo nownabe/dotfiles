@@ -194,13 +194,15 @@ select_with_fzf() {
 
   fzf_out=$(
     {
-      # Add main worktree first
-      echo "$main_worktree:$default_branch (main)"
-      # Add other worktrees
-      list_worktrees
+      # Add main worktree first (format: path<TAB>display)
+      printf '%s\t%s  %s\n' "$main_worktree" "(main)" "$default_branch"
+      # Add other worktrees with name
+      list_worktrees | while IFS=: read -r path branch; do
+        printf '%s\t%s  %s\n' "$path" "$(basename "$path")" "$branch"
+      done
     } | fzf --prompt='worktree> ' \
         --with-nth=2 \
-        --delimiter=':' \
+        --delimiter=$'\t' \
         --preview='cd {1} && git log --oneline -10' \
         --print-query
   ) || true
@@ -211,7 +213,7 @@ select_with_fzf() {
 
   if [[ -n $selected ]]; then
     # User selected an existing worktree
-    echo "$selected" | cut -d: -f1
+    echo "$selected" | cut -d$'\t' -f1
   elif [[ -n $query ]]; then
     # No selection - treat query as branch name (new or existing)
     # Use main logic by calling the script recursively
