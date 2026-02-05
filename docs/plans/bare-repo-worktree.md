@@ -37,80 +37,78 @@ Migrate `git-wt-helper` to use bare clones (`ghq get --bare`) with all branches 
 | Worktree location | Directly under bare repo root as `wt-xxx` |
 | Default branch | No special treatment; just another `wt-xxx` |
 | `git wt -b` | Goes to bare repo root |
-| Non-bare repo support | Keep backward compatibility (detect bare vs non-bare) |
+| Non-bare repo support | Keep backward compatibility |
 | fzf display | `wt-xxx  branch-name` (already implemented in PR #60) |
+| Code structure | **Top-level bare/non-bare 分岐。以降は完全に別パス。共有ユーティリティのみ共通。** |
 
 ---
 
-## Phase 1: Detect Bare Repo
+## Architecture: Top-Level Branching
 
-Add bare repo detection to `git-wt-helper` and branch behavior accordingly.
-
-### Changes
-
-**New helper function:**
+各関数内部で bare/non-bare を判定するのではなく、エントリポイントで一度だけ判定し、以降は完全に分岐する。コードの重複は許容する。
 
 ```bash
-is_bare_repo() {
-  [[ $(git rev-parse --is-bare-repository 2>/dev/null) == true ]]
-}
+# Shared utilities (bare/non-bare 共通)
+die()
+get_default_branch()
+is_worktree_dirty()
+is_merged()
+
+# Non-bare path (現行コードほぼそのまま)
+nonbare_main()        # 現行の Main セクション
+nonbare_list_worktrees()
+nonbare_find_unused_worktree()
+nonbare_create_new_worktree()
+nonbare_prepare_worktree()
+nonbare_find_worktree_for_branch()
+nonbare_select_with_fzf()
+
+# Bare path (新規)
+bare_main()
+bare_list_worktrees()
+bare_find_unused_worktree()
+bare_create_new_worktree()
+bare_prepare_worktree()
+bare_find_worktree_for_branch()
+bare_select_with_fzf()
 ```
 
-**Get repo root (bare repo aware):**
+**エントリポイント:**
 
 ```bash
-get_repo_root() {
-  if is_bare_repo; then
-    git rev-parse --git-dir
-  else
-    get_main_worktree
-  fi
-}
-```
-
-**Entry point guard (line 252):**
-
-Currently: `git rev-parse --is-inside-work-tree` — fails in bare repos.
-Change to: accept bare repos as well.
-
-```bash
-git rev-parse --is-inside-work-tree &>/dev/null ||
-  is_bare_repo ||
+# Ensure we're in a git repository
+if [[ $(git rev-parse --is-bare-repository 2>/dev/null) == true ]]; then
+  bare_main "$@"
+elif git rev-parse --is-inside-work-tree &>/dev/null; then
+  nonbare_main "$@"
+else
   die "Not in a git repository"
+fi
 ```
-
-### Files Modified
-
-- `programs/git/scripts/git-wt-helper`
 
 ---
 
-## Phase 2: Worktree Directory Logic
+## Phase 1: git-wt-helper に bare パスを追加
 
-Make `get_worktrees_dir` bare-aware. In bare repos, worktrees go directly in the repo root (no `.worktrees` subdirectory).
+### 1-1. Shared utilities
 
-### Changes
+現行の以下の関数はそのまま共通で使う（bare/non-bare に依存しない）:
 
-**`get_worktrees_dir()`:**
+- `die()`
+- `get_default_branch()`
+- `is_worktree_dirty()`
+- `is_merged()`
+- `show_help()` — bare 向けの説明を追記
 
-```bash
-get_worktrees_dir() {
-  if is_bare_repo; then
-    git rev-parse --git-dir
-  else
-    local main_worktree
-    main_worktree=$(get_main_worktree)
-    echo "$main_worktree/$WORKTREES_DIR"
-  fi
-}
-```
+### 1-2. Bare path の関数群
 
-**`list_worktrees()`:**
+**`bare_list_worktrees()`**
 
-For bare repos, the first entry in `git worktree list --porcelain` is the bare repo itself (marked with `bare` instead of `branch`). It must be excluded.
+`git worktree list --porcelain` の出力から bare エントリ（`bare` 行を持つ）を除外し、worktree のみ列挙する。
 
 ```bash
-list_worktrees() {
+# Output format: <path>:<branch>
+bare_list_worktrees() {
   git worktree list --porcelain | awk '
     /^worktree / { path = substr($0, 10) }
     /^branch /   { branch = substr($0, 8); sub("refs/heads/", "", branch) }
@@ -130,64 +128,72 @@ list_worktrees() {
 }
 ```
 
-Note: For non-bare repos, the main worktree exclusion logic (`path != main`) is no longer needed if we adopt the bare model. However, for backward compatibility with non-bare repos, we should still exclude the main worktree. Refine:
+**`bare_find_unused_worktree()`**
+
+`nonbare_find_unused_worktree` と同じロジック。`bare_list_worktrees` を使う。
+
+**`bare_create_new_worktree()`**
+
+bare repo root 直下に `wt-xxx` を作成する（`.worktrees` なし）。
 
 ```bash
-list_worktrees() {
-  local main_worktree=""
-  if ! is_bare_repo; then
-    main_worktree=$(get_main_worktree)
-  fi
+bare_create_new_worktree() {
+  local repo_root=$1
+  local branch=$2
+  local default_branch=$3
+  local num=1 new_path
 
-  git worktree list --porcelain | awk -v main="$main_worktree" '
-    /^worktree / { path = substr($0, 10) }
-    /^branch /   { branch = substr($0, 8); sub("refs/heads/", "", branch) }
-    /^bare$/     { is_bare = 1 }
-    /^$/ {
-      if (!is_bare && path != main && path != "" && branch != "") {
-        print path ":" branch
-      }
-      path = ""; branch = ""; is_bare = 0
-    }
-    END {
-      if (!is_bare && path != main && path != "" && branch != "") {
-        print path ":" branch
-      }
-    }
-  '
+  while [[ -d "$repo_root/wt-$(printf '%03d' $num)" ]]; do
+    ((num++))
+  done
+
+  new_path="$repo_root/wt-$(printf '%03d' $num)"
+  git worktree add -b "$branch" "$new_path" "$default_branch" >&2
+  echo "$new_path"
 }
 ```
 
-### Files Modified
+**`bare_prepare_worktree()`**
 
-- `programs/git/scripts/git-wt-helper`
-
----
-
-## Phase 3: fzf Selection for Bare Repos
-
-Update `select_with_fzf` to handle bare repos. In bare repos there is no "main worktree" entry — all entries come from `list_worktrees`.
-
-### Changes
-
-**`select_with_fzf()`:**
+新しいブランチ用の worktree を用意する（再利用 or 新規作成）。
 
 ```bash
-select_with_fzf() {
+bare_prepare_worktree() {
+  local branch=$1
+  local default_branch repo_root unused_worktree
+
+  default_branch=$(get_default_branch)
+  repo_root=$(git rev-parse --git-dir)
+
+  if [[ $FORCE_NEW == false ]] && unused_worktree=$(bare_find_unused_worktree "$default_branch"); then
+    (
+      cd "$unused_worktree"
+      git fetch -q origin "$default_branch" 2>/dev/null || true
+      git checkout -q -B "$branch" "origin/$default_branch"
+    ) >&2
+    echo "$unused_worktree"
+  else
+    bare_create_new_worktree "$repo_root" "$branch" "$default_branch"
+  fi
+}
+```
+
+**`bare_find_worktree_for_branch()`**
+
+`nonbare_find_worktree_for_branch` と同じロジック。`bare_list_worktrees` を使う。
+
+**`bare_select_with_fzf()`**
+
+bare repo には "main worktree" エントリがないので、全て `bare_list_worktrees` から列挙。
+
+```bash
+bare_select_with_fzf() {
   local fzf_out query selected
 
   fzf_out=$(
-    {
-      if ! is_bare_repo; then
-        local main_worktree default_branch
-        main_worktree=$(get_main_worktree)
-        default_branch=$(get_default_branch)
-        printf '%s\t%s  %s\n' "$main_worktree" "(main)" "$default_branch"
-      fi
-      list_worktrees | while IFS=: read -r path branch; do
-        printf '%s\t%s  %s\n' "$path" "$(basename "$path")" "$branch"
-      done
-    } | fzf --prompt='worktree> ' \
+    bare_list_worktrees | while IFS=: read -r path branch; do
+      printf '%s\t%s  %s\n' "$path" "$(basename "$path")" "$branch"
+    done | fzf --prompt='worktree> ' \
         --with-nth=2 \
         --delimiter=$'\t' \
         --preview='cd {1} && git log --oneline -10' \
@@ -205,31 +211,71 @@ select_with_fzf() {
 }
 ```
 
+**`bare_main()`**
+
+```bash
+bare_main() {
+  if (($#)); then
+    local branch=$1
+
+    # Check if branch already has a worktree
+    if worktree_path=$(bare_find_worktree_for_branch "$branch"); then
+      echo "$worktree_path"
+      exit 0
+    fi
+
+    # Check if it's an existing branch (local or remote)
+    if branch_exists "$branch"; then
+      local default_branch repo_root
+      default_branch=$(get_default_branch)
+      repo_root=$(git rev-parse --git-dir)
+
+      if [[ $FORCE_NEW == false ]] && unused_worktree=$(bare_find_unused_worktree "$default_branch"); then
+        (
+          cd "$unused_worktree"
+          if git show-ref --verify --quiet "refs/heads/$branch"; then
+            git checkout -q "$branch"
+          else
+            git checkout -q -b "$branch" "origin/$branch"
+          fi
+        ) >&2
+        echo "$unused_worktree"
+      else
+        local num=1 new_path
+        while [[ -d "$repo_root/wt-$(printf '%03d' $num)" ]]; do
+          ((num++))
+        done
+        new_path="$repo_root/wt-$(printf '%03d' $num)"
+        git worktree add "$new_path" "$branch" >&2
+        echo "$new_path"
+      fi
+    else
+      # New branch
+      bare_prepare_worktree "$branch"
+    fi
+  else
+    bare_select_with_fzf
+  fi
+}
+```
+
+### 1-3. Non-bare path
+
+現行コードをそのまま `nonbare_main()` と `nonbare_*` 関数群にリネームするだけ。ロジック変更なし。
+
 ### Files Modified
 
 - `programs/git/scripts/git-wt-helper`
 
 ---
 
-## Phase 4: Shell Wrapper (`git wt -b`)
+## Phase 2: Shell Wrapper (`git wt -b`)
 
-Update the `gitwt` function in `programs/zsh/config/git.zsh` so that `git wt -b` works for bare repos.
+`programs/zsh/config/git.zsh` の `gitwt` 関数を更新。
 
-### Current Behavior
+### 変更内容
 
-```bash
-# git wt -b → cd to main worktree via git-common-dir
-git_common_dir=$(git rev-parse --git-common-dir 2>/dev/null)
-cd "$git_common_dir/.."
-```
-
-This works for non-bare repos where `.git` is a file pointing to the common dir, and `..` is the main worktree.
-
-### Bare Repo Behavior
-
-In a bare repo worktree, `git rev-parse --git-common-dir` returns the bare repo path itself. `cd "$git_common_dir/.."` would go one level too high.
-
-Need to detect bare repos:
+`git wt -b` で bare repo root に戻れるようにする。
 
 ```bash
 if [[ $1 == "-b" ]]; then
@@ -255,76 +301,58 @@ fi
 
 ---
 
-## Phase 5: ghq Workflow
+## Phase 3: ghq Workflow
 
-Set up an alias or wrapper for cloning with bare + initial worktree creation.
+`ghq get --bare` 後に初回 worktree を自動作成する仕組み。
 
-### Option A: Manual two-step
+### 案: `git wt` を引数なしで bare repo（worktree 0 個）で実行したとき、default branch の worktree を自動作成
 
-```bash
-ghq get --bare user/repo
-cd ~/src/github.com/user/repo
-git wt main   # creates wt-001 for main branch
-```
-
-### Option B: Shell function (recommended)
-
-Add a `ghq-bare` function or modify the existing `fzf-ghq` flow:
+`bare_select_with_fzf` または `bare_main` の先頭で worktree が 0 個なら default branch で worktree を作る。
 
 ```bash
-ghq-bare() {
-  ghq get --bare "$@"
-  local repo_path
-  repo_path=$(ghq list --full-path --exact "$1" 2>/dev/null) || return
-  cd "$repo_path"
-  git-wt-helper "$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|origin/||')"
+bare_main() {
+  # If no worktrees exist, create one for the default branch
+  if [[ -z $(bare_list_worktrees) ]]; then
+    local default_branch repo_root
+    default_branch=$(get_default_branch)
+    repo_root=$(git rev-parse --git-dir)
+    bare_create_new_worktree "$repo_root" "$default_branch" "$default_branch"
+    # If no branch argument was given, just output the new worktree
+    if (($# == 0)); then
+      return
+    fi
+  fi
+
+  # ... rest of bare_main
 }
 ```
 
-Or integrate into `git wt` itself — when run inside a bare repo with no worktrees, automatically create one for the default branch.
+これにより、ワークフローは:
 
-### Design Choice
-
-To be decided: whether to automate initial worktree creation or keep it manual. Automation is convenient but adds complexity.
+```bash
+ghq get --bare user/repo
+cd $(ghq list -p user/repo)
+git wt   # → worktree 0 個なので default branch で wt-001 を自動作成、cd される
+```
 
 ### Files Modified
 
-- `programs/zsh/config/git.zsh` (if adding shell function)
-
----
-
-## Phase 6: Migration of Existing Repos (Optional)
-
-Existing normal clones continue to work (backward compatibility maintained in all phases). Migration to bare is optional and per-repo:
-
-```bash
-# No automated migration planned.
-# New repos: ghq get --bare
-# Existing repos: keep as-is or re-clone manually
-```
+- `programs/git/scripts/git-wt-helper`
 
 ---
 
 ## Execution Order
 
 ```
-Phase 1 (Bare detection)
-  └──> Phase 2 (Worktree dir logic)
-         └──> Phase 3 (fzf selection)
-                └──> Phase 4 (Shell wrapper)
-                       └──> Phase 5 (ghq workflow)
-                              └──> Phase 6 (Migration, optional)
+Phase 1 (git-wt-helper bare パス追加)
+  └──> Phase 2 (Shell wrapper)
+         └──> Phase 3 (ghq workflow / 初回 worktree 自動作成)
 ```
-
-All phases depend on the previous one. Phase 6 is optional.
 
 ---
 
 ## Progress
 
-- [ ] **Phase 1**: Bare repo detection
-- [ ] **Phase 2**: Worktree directory logic (bare-aware)
-- [ ] **Phase 3**: fzf selection for bare repos
-- [ ] **Phase 4**: Shell wrapper `git wt -b` for bare repos
-- [ ] **Phase 5**: ghq bare clone workflow
-- [ ] **Phase 6**: Migration of existing repos (optional)
+- [ ] **Phase 1**: git-wt-helper に bare パスを追加（top-level 分岐）
+- [ ] **Phase 2**: Shell wrapper `git wt -b` の bare 対応
+- [ ] **Phase 3**: ghq bare clone + 初回 worktree 自動作成
