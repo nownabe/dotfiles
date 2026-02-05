@@ -59,6 +59,8 @@ Examples:
 
 ### Body
 
+Write all PR body content in **English**.
+
 ```markdown
 ## Summary
 <bullet points summarizing changes>
