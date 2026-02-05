@@ -84,7 +84,7 @@ in
       be = "bundle exec";
 
       # Nix Home Manager
-      hms = "home-manager switch --flake ~/.dotfiles#${hmConfig}";
+      hms = "home-manager switch --flake \"$HOME/.dotfiles#${hmConfig}\"";
     };
 
     initContent = ''
