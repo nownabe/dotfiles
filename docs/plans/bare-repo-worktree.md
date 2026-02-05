@@ -356,5 +356,5 @@ Phase 1 (Add bare path to git-wt-helper)
 ## Progress
 
 - [x] **Phase 1**: Add bare path to git-wt-helper (top-level branching)
-- [ ] **Phase 2**: Shell wrapper `git wt -b` bare support
+- [x] **Phase 2**: Shell wrapper `git wt -b` bare support
 - [ ] **Phase 3**: ghq bare clone + auto-create initial worktree
