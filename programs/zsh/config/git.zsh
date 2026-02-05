@@ -8,10 +8,10 @@ gitwt() {
     shift
     local git_common_dir
     if git_common_dir=$(git rev-parse --git-common-dir 2>/dev/null); then
-      if [[ $(git rev-parse --is-bare-repository 2>/dev/null) == true ]]; then
-        cd "$git_common_dir"
-      else
+      if [[ "$(basename "$git_common_dir")" == ".git" ]]; then
         cd "$git_common_dir/.."
+      else
+        cd "$git_common_dir"
       fi
     else
       echo "Not in a git repository" >&2
