@@ -39,8 +39,15 @@ else
   ln -s "$DOTFILES_DIR" "$DOTFILES_LINK"
 fi
 
-# 5. Apply Home Manager
-echo "Applying Home Manager configuration..."
-nix run home-manager -- switch --flake "$DOTFILES_LINK"
+# 5. Detect environment
+if grep -qi microsoft /proc/version 2>/dev/null; then
+  HM_CONFIG="wsl"
+else
+  HM_CONFIG="linux"
+fi
+
+# 6. Apply Home Manager
+echo "Applying Home Manager configuration ($HM_CONFIG)..."
+nix run home-manager -- switch --flake "$DOTFILES_LINK#$HM_CONFIG"
 
 echo "Done!"
