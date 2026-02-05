@@ -456,10 +456,9 @@ done
 shift $((OPTIND - 1))
 
 # Detect repo type and dispatch
-if [[ $(git rev-parse --is-bare-repository 2>/dev/null) == true ]]; then
-  bare_main "$@"
-elif git rev-parse --is-inside-work-tree &>/dev/null; then
+git_common_dir=$(git rev-parse --git-common-dir 2>/dev/null) || die "Not in a git repository"
+if [[ "$(basename "$git_common_dir")" == ".git" ]]; then
   nonbare_main "$@"
 else
-  die "Not in a git repository"
+  bare_main "$@"
 fi
