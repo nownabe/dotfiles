@@ -2,6 +2,8 @@
 
 {
   home.file = {
+    ".claude/settings.json".source = ./settings.json;
+
     ".claude/scripts/statusline-command.sh" = {
       source = ./scripts/statusline-command.sh;
       executable = true;
