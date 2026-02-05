@@ -4,26 +4,27 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-WORKTREES_DIR=".worktrees"
-
 show_help() {
   cat <<'EOF'
 git-wt-helper - Git worktree helper
 
-Manages worktrees in <repo>/.worktrees/ with automatic reuse of merged branches.
+Manages worktrees with automatic reuse of merged branches.
+
+Supports both bare repos (worktrees in <repo>/wt-xxx/) and
+non-bare repos (worktrees in <repo>/.worktrees/wt-xxx/).
 
 Usage:
   git wt <branch>     Create new branch or switch to existing branch's worktree
   git wt -n <branch>  Always create a new worktree (don't reuse existing ones)
   git wt              Select worktree with fzf
-  git wt -b           Back to main worktree (handled by shell wrapper)
+  git wt -b           Back to repo root (handled by shell wrapper)
 
 Options:
   -n                  Force creation of a new worktree
   -h, --help          Show this help and exit
 
 Behavior:
-  - Worktrees are stored in <repo>/.worktrees/wt-001, wt-002, ...
+  - Worktrees are stored as wt-001, wt-002, ...
   - When creating a new branch, reuses worktrees whose branches are merged
   - Detects both merge commits and squash merges
 EOF
@@ -34,10 +35,9 @@ die() {
   exit 1
 }
 
-# Get the root directory of the main worktree
-get_main_worktree() {
-  git worktree list --porcelain | head -1 | sed 's/^worktree //'
-}
+#######################################
+# Shared utilities
+#######################################
 
 # Get the default branch name (e.g., main, master)
 get_default_branch() {
@@ -81,18 +81,197 @@ is_merged() {
   [[ $cherry_result == -* ]]
 }
 
+# Check if branch exists locally or remotely
+branch_exists() {
+  local branch=$1
+  git show-ref --verify --quiet "refs/heads/$branch" ||
+    git show-ref --verify --quiet "refs/remotes/origin/$branch"
+}
+
+#######################################
+# Bare repo functions
+#######################################
+
+# List all worktrees (excluding the bare entry)
+# Output format: <path>:<branch>
+bare_list_worktrees() {
+  git worktree list --porcelain | awk '
+    /^worktree / { path = substr($0, 10) }
+    /^branch /   { branch = substr($0, 8); sub("refs/heads/", "", branch) }
+    /^bare$/     { is_bare = 1 }
+    /^$/ {
+      if (!is_bare && path != "" && branch != "") {
+        print path ":" branch
+      }
+      path = ""; branch = ""; is_bare = 0
+    }
+    END {
+      if (!is_bare && path != "" && branch != "") {
+        print path ":" branch
+      }
+    }
+  '
+}
+
+# Find an unused (merged) worktree and return its path
+bare_find_unused_worktree() {
+  local default_branch=$1
+  local worktree_path branch
+
+  while IFS=: read -r worktree_path branch; do
+    [[ -z $worktree_path ]] && continue
+    is_worktree_dirty "$worktree_path" && continue
+    if is_merged "$branch" "$default_branch"; then
+      echo "$worktree_path"
+      return 0
+    fi
+  done < <(bare_list_worktrees)
+
+  return 1
+}
+
+# Create a new worktree with the next available number
+bare_create_new_worktree() {
+  local repo_root=$1
+  local branch=$2
+  local default_branch=$3
+  local num=1 new_path
+
+  while [[ -d "$repo_root/wt-$(printf '%03d' $num)" ]]; do
+    ((num++))
+  done
+
+  new_path="$repo_root/wt-$(printf '%03d' $num)"
+  git worktree add -b "$branch" "$new_path" "$default_branch" >&2
+  echo "$new_path"
+}
+
+# Prepare a worktree for a new branch (reuse or create)
+bare_prepare_worktree() {
+  local branch=$1
+  local default_branch repo_root unused_worktree
+
+  default_branch=$(get_default_branch)
+  repo_root=$(git rev-parse --git-dir)
+
+  if [[ $FORCE_NEW == false ]] && unused_worktree=$(bare_find_unused_worktree "$default_branch"); then
+    (
+      cd "$unused_worktree"
+      git fetch -q origin "$default_branch" 2>/dev/null || true
+      git checkout -q -B "$branch" "origin/$default_branch"
+    ) >&2
+    echo "$unused_worktree"
+  else
+    bare_create_new_worktree "$repo_root" "$branch" "$default_branch"
+  fi
+}
+
+# Find worktree for an existing branch
+bare_find_worktree_for_branch() {
+  local target_branch=$1
+  local worktree_path branch
+
+  while IFS=: read -r worktree_path branch; do
+    if [[ $branch == "$target_branch" ]]; then
+      echo "$worktree_path"
+      return 0
+    fi
+  done < <(bare_list_worktrees)
+
+  return 1
+}
+
+# Select worktree with fzf, or create new branch if query doesn't match
+bare_select_with_fzf() {
+  local fzf_out query selected
+
+  fzf_out=$(
+    bare_list_worktrees | while IFS=: read -r path branch; do
+      printf '%s\t%s  %s\n' "$path" "$(basename "$path")" "$branch"
+    done | fzf --prompt='worktree> ' \
+        --with-nth=2 \
+        --delimiter=$'\t' \
+        --preview='cd {1} && git log --oneline -10' \
+        --print-query
+  ) || true
+
+  query=$(echo "$fzf_out" | sed -n '1p')
+  selected=$(echo "$fzf_out" | sed -n '2p')
+
+  if [[ -n $selected ]]; then
+    echo "$selected" | cut -d$'\t' -f1
+  elif [[ -n $query ]]; then
+    exec "$0" "$query"
+  fi
+}
+
+bare_main() {
+  if (($#)); then
+    local branch=$1
+
+    # Check if branch already has a worktree
+    if worktree_path=$(bare_find_worktree_for_branch "$branch"); then
+      echo "$worktree_path"
+      exit 0
+    fi
+
+    # Check if it's an existing branch (local or remote)
+    if branch_exists "$branch"; then
+      local default_branch repo_root
+      default_branch=$(get_default_branch)
+      repo_root=$(git rev-parse --git-dir)
+
+      if [[ $FORCE_NEW == false ]] && unused_worktree=$(bare_find_unused_worktree "$default_branch"); then
+        (
+          cd "$unused_worktree"
+          if git show-ref --verify --quiet "refs/heads/$branch"; then
+            git checkout -q "$branch"
+          else
+            git checkout -q -b "$branch" "origin/$branch"
+          fi
+        ) >&2
+        echo "$unused_worktree"
+      else
+        local num=1 new_path
+        while [[ -d "$repo_root/wt-$(printf '%03d' $num)" ]]; do
+          ((num++))
+        done
+        new_path="$repo_root/wt-$(printf '%03d' $num)"
+        git worktree add "$new_path" "$branch" >&2
+        echo "$new_path"
+      fi
+    else
+      # New branch
+      bare_prepare_worktree "$branch"
+    fi
+  else
+    bare_select_with_fzf
+  fi
+}
+
+#######################################
+# Non-bare repo functions
+#######################################
+
+WORKTREES_DIR=".worktrees"
+
+# Get the root directory of the main worktree
+nonbare_get_main_worktree() {
+  git worktree list --porcelain | head -1 | sed 's/^worktree //'
+}
+
 # Get worktrees directory path
-get_worktrees_dir() {
+nonbare_get_worktrees_dir() {
   local main_worktree
-  main_worktree=$(get_main_worktree)
+  main_worktree=$(nonbare_get_main_worktree)
   echo "$main_worktree/$WORKTREES_DIR"
 }
 
 # List all worktrees with their branches (excluding main worktree)
 # Output format: <path>:<branch>
-list_worktrees() {
+nonbare_list_worktrees() {
   local main_worktree
-  main_worktree=$(get_main_worktree)
+  main_worktree=$(nonbare_get_main_worktree)
 
   git worktree list --porcelain | awk -v main="$main_worktree" '
     /^worktree / { path = substr($0, 10) }
@@ -112,25 +291,24 @@ list_worktrees() {
 }
 
 # Find an unused (merged) worktree and return its path
-find_unused_worktree() {
+nonbare_find_unused_worktree() {
   local default_branch=$1
   local worktree_path branch
 
   while IFS=: read -r worktree_path branch; do
     [[ -z $worktree_path ]] && continue
-    # Skip if worktree has uncommitted changes
     is_worktree_dirty "$worktree_path" && continue
     if is_merged "$branch" "$default_branch"; then
       echo "$worktree_path"
       return 0
     fi
-  done < <(list_worktrees)
+  done < <(nonbare_list_worktrees)
 
   return 1
 }
 
 # Create a new worktree with the next available number
-create_new_worktree() {
+nonbare_create_new_worktree() {
   local worktrees_dir=$1
   local branch=$2
   local default_branch=$3
@@ -138,7 +316,6 @@ create_new_worktree() {
 
   mkdir -p "$worktrees_dir"
 
-  # Find next available number
   while [[ -d "$worktrees_dir/wt-$(printf '%03d' $num)" ]]; do
     ((num++))
   done
@@ -149,16 +326,14 @@ create_new_worktree() {
 }
 
 # Prepare a worktree for a new branch (reuse or create)
-prepare_worktree_for_new_branch() {
+nonbare_prepare_worktree() {
   local branch=$1
   local default_branch worktrees_dir unused_worktree
 
   default_branch=$(get_default_branch)
-  worktrees_dir=$(get_worktrees_dir)
+  worktrees_dir=$(nonbare_get_worktrees_dir)
 
-  # Try to find and reuse an unused worktree (unless -n flag is set)
-  if [[ $FORCE_NEW == false ]] && unused_worktree=$(find_unused_worktree "$default_branch"); then
-    # Reset the worktree to default branch and create new branch
+  if [[ $FORCE_NEW == false ]] && unused_worktree=$(nonbare_find_unused_worktree "$default_branch"); then
     (
       cd "$unused_worktree"
       git fetch -q origin "$default_branch" 2>/dev/null || true
@@ -166,13 +341,12 @@ prepare_worktree_for_new_branch() {
     ) >&2
     echo "$unused_worktree"
   else
-    # Create new worktree
-    create_new_worktree "$worktrees_dir" "$branch" "$default_branch"
+    nonbare_create_new_worktree "$worktrees_dir" "$branch" "$default_branch"
   fi
 }
 
 # Find worktree for an existing branch
-find_worktree_for_branch() {
+nonbare_find_worktree_for_branch() {
   local target_branch=$1
   local worktree_path branch
 
@@ -181,15 +355,15 @@ find_worktree_for_branch() {
       echo "$worktree_path"
       return 0
     fi
-  done < <(list_worktrees)
+  done < <(nonbare_list_worktrees)
 
   return 1
 }
 
 # Select worktree with fzf, or create new branch if query doesn't match
-select_with_fzf() {
+nonbare_select_with_fzf() {
   local main_worktree default_branch fzf_out query selected
-  main_worktree=$(get_main_worktree)
+  main_worktree=$(nonbare_get_main_worktree)
   default_branch=$(get_default_branch)
 
   fzf_out=$(
@@ -197,7 +371,7 @@ select_with_fzf() {
       # Add main worktree first (format: path<TAB>display)
       printf '%s\t%s  %s\n' "$main_worktree" "(main)" "$default_branch"
       # Add other worktrees with name
-      list_worktrees | while IFS=: read -r path branch; do
+      nonbare_list_worktrees | while IFS=: read -r path branch; do
         printf '%s\t%s  %s\n' "$path" "$(basename "$path")" "$branch"
       done
     } | fzf --prompt='worktree> ' \
@@ -207,26 +381,59 @@ select_with_fzf() {
         --print-query
   ) || true
 
-  # First line is query, second line is selected item (if any)
   query=$(echo "$fzf_out" | sed -n '1p')
   selected=$(echo "$fzf_out" | sed -n '2p')
 
   if [[ -n $selected ]]; then
-    # User selected an existing worktree
     echo "$selected" | cut -d$'\t' -f1
   elif [[ -n $query ]]; then
-    # No selection - treat query as branch name (new or existing)
-    # Use main logic by calling the script recursively
     exec "$0" "$query"
   fi
-  # If both empty, user cancelled - return nothing
 }
 
-# Check if branch exists locally or remotely
-branch_exists() {
-  local branch=$1
-  git show-ref --verify --quiet "refs/heads/$branch" ||
-    git show-ref --verify --quiet "refs/remotes/origin/$branch"
+nonbare_main() {
+  if (($#)); then
+    local branch=$1
+
+    # Check if branch already has a worktree
+    if worktree_path=$(nonbare_find_worktree_for_branch "$branch"); then
+      echo "$worktree_path"
+      exit 0
+    fi
+
+    # Check if it's an existing branch (local or remote)
+    if branch_exists "$branch"; then
+      local worktrees_dir default_branch
+      worktrees_dir=$(nonbare_get_worktrees_dir)
+      default_branch=$(get_default_branch)
+
+      if [[ $FORCE_NEW == false ]] && unused_worktree=$(nonbare_find_unused_worktree "$default_branch"); then
+        (
+          cd "$unused_worktree"
+          if git show-ref --verify --quiet "refs/heads/$branch"; then
+            git checkout -q "$branch"
+          else
+            git checkout -q -b "$branch" "origin/$branch"
+          fi
+        ) >&2
+        echo "$unused_worktree"
+      else
+        local num=1 new_path
+        mkdir -p "$worktrees_dir"
+        while [[ -d "$worktrees_dir/wt-$(printf '%03d' $num)" ]]; do
+          ((num++))
+        done
+        new_path="$worktrees_dir/wt-$(printf '%03d' $num)"
+        git worktree add "$new_path" "$branch" >&2
+        echo "$new_path"
+      fi
+    else
+      # New branch
+      nonbare_prepare_worktree "$branch"
+    fi
+  else
+    nonbare_select_with_fzf
+  fi
 }
 
 #######################################
@@ -248,52 +455,11 @@ while getopts "n" opt; do
 done
 shift $((OPTIND - 1))
 
-# Ensure we're in a git repository
-git rev-parse --is-inside-work-tree &>/dev/null || die "Not in a git repository"
-
-if (($#)); then
-  branch=$1
-
-  # Check if branch already has a worktree
-  if worktree_path=$(find_worktree_for_branch "$branch"); then
-    echo "$worktree_path"
-    exit 0
-  fi
-
-  # Check if it's an existing branch (local or remote)
-  if branch_exists "$branch"; then
-    # Existing branch without worktree - create worktree for it
-    worktrees_dir=$(get_worktrees_dir)
-    default_branch=$(get_default_branch)
-
-    # Try to reuse unused worktree (unless -n flag is set)
-    if [[ $FORCE_NEW == false ]] && unused_worktree=$(find_unused_worktree "$default_branch"); then
-      (
-        cd "$unused_worktree"
-        # Check out existing branch (local or remote)
-        if git show-ref --verify --quiet "refs/heads/$branch"; then
-          git checkout -q "$branch"
-        else
-          git checkout -q -b "$branch" "origin/$branch"
-        fi
-      ) >&2
-      echo "$unused_worktree"
-    else
-      # Create new worktree for existing branch
-      num=1
-      mkdir -p "$worktrees_dir"
-      while [[ -d "$worktrees_dir/wt-$(printf '%03d' $num)" ]]; do
-        ((num++))
-      done
-      new_path="$worktrees_dir/wt-$(printf '%03d' $num)"
-      git worktree add "$new_path" "$branch" >&2
-      echo "$new_path"
-    fi
-  else
-    # New branch - prepare worktree
-    prepare_worktree_for_new_branch "$branch"
-  fi
+# Detect repo type and dispatch
+if [[ $(git rev-parse --is-bare-repository 2>/dev/null) == true ]]; then
+  bare_main "$@"
+elif git rev-parse --is-inside-work-tree &>/dev/null; then
+  nonbare_main "$@"
 else
-  # No arguments - select with fzf
-  select_with_fzf
+  die "Not in a git repository"
 fi
