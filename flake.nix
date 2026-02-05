@@ -13,12 +13,21 @@
     let
       username = "nownabe";
       system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
     in
     {
-      homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.${system};
-        extraSpecialArgs = { inherit username; };
-        modules = [ ./home.nix ];
+      homeConfigurations = {
+        wsl = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = { inherit username; isWSL = true; };
+          modules = [ ./home.nix ];
+        };
+
+        linux = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = { inherit username; isWSL = false; };
+          modules = [ ./home.nix ];
+        };
       };
     };
 }

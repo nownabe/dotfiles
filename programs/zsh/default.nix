@@ -1,4 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, isWSL, ... }:
+
+let
+  hmConfig = if isWSL then "wsl" else "linux";
+in
 
 {
   xdg.configFile = {
@@ -80,7 +84,7 @@
       be = "bundle exec";
 
       # Nix Home Manager
-      hms = "home-manager switch --flake ~/.dotfiles";
+      hms = "home-manager switch --flake ~/.dotfiles#${hmConfig}";
     };
 
     initContent = ''
