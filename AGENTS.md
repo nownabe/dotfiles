@@ -83,10 +83,13 @@ Apply the following labels:
 ### Commit Messages
 
 - Same Conventional Commits format as PR titles
-- Commits made by Claude Code must include at the end:
-  ```
-  Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
-  ```
+- Do NOT include `Co-Authored-By` lines
+- Do NOT include `Generated with Claude Code` lines in commit messages or PR bodies
+
+### Workflow
+
+- When committing and creating a PR is the natural next step, do so without asking for confirmation
+- Always create a PR after committing unless the user explicitly says not to
 
 ### Git Workflow
 
