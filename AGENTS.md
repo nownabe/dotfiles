@@ -4,47 +4,34 @@ nownabe's dotfiles repository. Manages user configurations for Ubuntu (x86_64-li
 
 ## Management Tools
 
-Currently migrating incrementally from **Chezmoi** to **Nix Home Manager** (Flake-based standalone).
+Managed by **Nix Home Manager** (Flake-based standalone) via `flake.nix` + `home.nix`.
 
-- **Nix Home Manager**: Managed via `flake.nix` + `home.nix`. New configurations should be added here
-- **Chezmoi**: Managed via `dot_*` files. Remove from Chezmoi as each configuration is migrated
+Two entrypoints are available in `flake.nix`:
+- `wsl` — for WSL2 environments (includes WSL-specific scripts)
+- `linux` — for native Linux environments
 
-### Migration Strategy
+Apply with: `home-manager switch --flake ~/.dotfiles#wsl` (or `#linux`)
 
-Migrate one configuration at a time in the following order:
+### Adding New Configurations
 
-1. **Packages** — Move tool installations (currently managed by mise/aqua) to `home.packages`
-2. **Shell** — Migrate zsh configuration (`dot_zshrc`, `dot_zsh.d/`) to `programs.zsh`
-3. **Git** — Migrate git configuration (`dot_gitconfig.tmpl`) to `programs.git`
-4. **Neovim** — Migrate Neovim configuration (`dot_config/nvim/`) to `programs.neovim` or `xdg.configFile`
-5. **Other configs** — Migrate remaining dotfiles (Claude CLI, stylua, etc.)
-6. **Scripts** — Migrate Chezmoi scripts (`scripts/`) to Home Manager activation scripts or remove
-7. **Cleanup** — Remove Chezmoi files (`.chezmoi.yaml.tmpl`, `.chezmoidata/`, `dot_*`, `scripts/`)
-
-For each step:
-- Add the configuration to `home.nix` (or a new module)
-- Verify it works with `home-manager switch --flake .#wsl` (or `#linux`)
-- Remove the corresponding Chezmoi files
+- Add the configuration to `home.nix` (or a new module under `programs/`)
 - Use `programs.*` options when available (e.g., `programs.git`, `programs.zsh`) instead of raw file placement, as they provide type checking and option merging
+- Verify it works with `home-manager switch --flake .#wsl` (or `#linux`)
 
 ## Directory Structure
 
 ```
 dotfiles/
-├── flake.nix                   # Nix Flake entry point (dependency management)
+├── flake.nix                   # Nix Flake entry point (wsl / linux configs)
 ├── home.nix                    # Home Manager configuration (user environment)
-├── .chezmoi.yaml.tmpl          # Chezmoi configuration template
-├── .chezmoidata/               # Chezmoi data (git user info, etc.)
-├── bin/                        # Custom scripts
-├── dot_config/                 # ~/.config configurations
-│   ├── nvim/                   # Neovim (lazy.nvim based)
-│   ├── git/                    # Git
-│   ├── mise/                   # Mise
-│   ├── aquaproj-aqua/          # Aqua
-│   └── claude/                 # Claude CLI
-├── dot_zsh.d/                  # Zsh modular configurations
-├── dot_claude/                 # Claude Code settings
-└── scripts/                    # Chezmoi scripts (run_*)
+├── programs/                   # Modular configurations
+│   ├── zsh/                    # Zsh (programs.zsh + config files)
+│   ├── git/                    # Git (programs.git + scripts)
+│   ├── nvim/                   # Neovim (programs.neovim + config dir)
+│   └── claude/                 # Claude Code (settings.json + scripts)
+├── setup.sh                    # Bootstrap script (install Nix + apply)
+├── scripts/                    # Utility scripts
+└── archived/                   # Old Chezmoi files (kept for reference)
 ```
 
 ## Pull Request Rules
