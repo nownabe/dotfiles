@@ -5,6 +5,8 @@
     ./programs/zsh
     ./programs/git
     ./programs/nvim
+    ./programs/bin
+    ./programs/claude
   ];
 
   home.username = username;
