@@ -37,6 +37,7 @@
     zip
     unzip
     gnupg
+    claude-code
 
     # Cloud
     awscli2
