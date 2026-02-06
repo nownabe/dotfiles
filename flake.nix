@@ -13,7 +13,10 @@
     let
       username = "nownabe";
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
       dotfilesDir = "/home/${username}/src/github.com/nownabe/dotfiles";
     in
     {
