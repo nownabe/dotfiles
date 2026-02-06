@@ -50,4 +50,17 @@ fi
 echo "Applying Home Manager configuration ($HM_CONFIG)..."
 nix run home-manager -- switch --flake "$DOTFILES_LINK#$HM_CONFIG"
 
+# 7. Set zsh as default shell
+ZSH_PATH="$HOME/.nix-profile/bin/zsh"
+if [ -x "$ZSH_PATH" ]; then
+  if ! grep -qF "$ZSH_PATH" /etc/shells; then
+    echo "Adding $ZSH_PATH to /etc/shells..."
+    echo "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null
+  fi
+  if [ "$SHELL" != "$ZSH_PATH" ]; then
+    echo "Changing default shell to zsh..."
+    chsh -s "$ZSH_PATH"
+  fi
+fi
+
 echo "Done!"
