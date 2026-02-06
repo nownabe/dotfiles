@@ -157,8 +157,7 @@ bare_prepare_worktree() {
   if [[ $FORCE_NEW == false ]] && unused_worktree=$(bare_find_unused_worktree "$default_branch"); then
     (
       cd "$unused_worktree"
-      git fetch -q origin "$default_branch" 2>/dev/null || true
-      git checkout -q -B "$branch" "origin/$default_branch"
+      git checkout -q -B "$branch" "$default_branch"
     ) >&2
     echo "$unused_worktree"
   else
@@ -224,11 +223,7 @@ bare_main() {
       if [[ $FORCE_NEW == false ]] && unused_worktree=$(bare_find_unused_worktree "$default_branch"); then
         (
           cd "$unused_worktree"
-          if git show-ref --verify --quiet "refs/heads/$branch"; then
-            git checkout -q "$branch"
-          else
-            git checkout -q -b "$branch" "origin/$branch"
-          fi
+          git checkout -q "$branch"
         ) >&2
         echo "$unused_worktree"
       else
