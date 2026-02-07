@@ -152,13 +152,12 @@ bare_prepare_worktree() {
   local default_branch repo_root unused_worktree
 
   default_branch=$(get_default_branch)
-  repo_root=$(git rev-parse --git-dir)
+  repo_root=$(git rev-parse --git-common-dir)
 
   if [[ $FORCE_NEW == false ]] && unused_worktree=$(bare_find_unused_worktree "$default_branch"); then
     (
       cd "$unused_worktree"
-      git fetch -q origin "$default_branch" 2>/dev/null || true
-      git checkout -q -B "$branch" "origin/$default_branch"
+      git checkout -q -B "$branch" "$default_branch"
     ) >&2
     echo "$unused_worktree"
   else
@@ -219,16 +218,12 @@ bare_main() {
     if branch_exists "$branch"; then
       local default_branch repo_root
       default_branch=$(get_default_branch)
-      repo_root=$(git rev-parse --git-dir)
+      repo_root=$(git rev-parse --git-common-dir)
 
       if [[ $FORCE_NEW == false ]] && unused_worktree=$(bare_find_unused_worktree "$default_branch"); then
         (
           cd "$unused_worktree"
-          if git show-ref --verify --quiet "refs/heads/$branch"; then
-            git checkout -q "$branch"
-          else
-            git checkout -q -b "$branch" "origin/$branch"
-          fi
+          git checkout -q "$branch"
         ) >&2
         echo "$unused_worktree"
       else
