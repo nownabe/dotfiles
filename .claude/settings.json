@@ -28,9 +28,7 @@
       "WebSearch"
     ],
     "deny": [
-      "Read(~/.env*)",
-      "Read(**/.env)",
-      "Read(**/.env.*)",
+      "Read(**/.env*)",
       "Read(**/*.pem)",
       "Read(**/*.key)",
       "Read(**/*.p12)",
