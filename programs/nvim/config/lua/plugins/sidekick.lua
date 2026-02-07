@@ -1,6 +1,7 @@
 return {
   "folke/sidekick.nvim",
-  dependencies = { "zbirenbaum/copilot.lua" },
+  dependencies = { "copilotlsp-nvim/copilot-lsp" },
+  event = "LspAttach",
   opts = {},
   -- stylua: ignore
   keys = {

@@ -1,10 +1,20 @@
 return {
-  "zbirenbaum/copilot.lua",
-  cmd = "Copilot",
-  event = "InsertEnter",
-  opts = {
-    -- Disable copilot's own UI; sidekick.nvim handles NES
-    suggestion = { enabled = false },
-    panel = { enabled = false },
+  {
+    "copilotlsp-nvim/copilot-lsp",
+    config = function()
+      vim.lsp.config("copilot_ls", {
+        on_init = function() end,
+      })
+      vim.lsp.enable("copilot_ls")
+    end,
+  },
+  {
+    -- https://github.com/AstroNvim/AstroNvim/blob/main/lua/astronvim/plugins/mason-tool-installer.lua
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    opts = {
+      ensure_installed = {
+        "copilot-language-server",
+      },
+    },
   },
 }
