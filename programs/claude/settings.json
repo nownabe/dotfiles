@@ -13,6 +13,9 @@
     ],
     "deny": [
       "Bash(gh pr merge:*)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(sudo *)",
       "Read(**/.env*)",
       "Read(**/*.pem)",
       "Read(**/*.key)",
@@ -24,7 +27,10 @@
       "Read(**/*secret*)",
       "Read(**/*token*)",
       "Read(**/.netrc)",
-      "Read(**/.npmrc)"
+      "Read(**/.npmrc)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.gcloud/**)"
     ]
   },
   "model": "opus",
