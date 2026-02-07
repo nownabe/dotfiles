@@ -13,8 +13,18 @@
     ],
     "deny": [
       "Bash(gh pr merge:*)",
-      "Read(**/.envrc)",
-      "Read(**/.env*)"
+      "Read(**/.env*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*.p12)",
+      "Read(**/*.pfx)",
+      "Read(**/*.crt)",
+      "Read(**/*.cer)",
+      "Read(**/*credentials*)",
+      "Read(**/*secret*)",
+      "Read(**/*token*)",
+      "Read(**/.netrc)",
+      "Read(**/.npmrc)"
     ]
   },
   "model": "opus",
