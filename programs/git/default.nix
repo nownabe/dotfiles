@@ -11,7 +11,7 @@ in
     ignores = [
       ".nownabe/"
       ".shogo/"
-      ".claude/settings.local.json"
+      "**/.claude/settings.local.json"
     ];
 
     settings = {
