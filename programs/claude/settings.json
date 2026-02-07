@@ -58,6 +58,10 @@
     "example-skills@anthropic-agent-skills": true,
     "playwright@claude-plugins-official": true
   },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/scripts/statusline-command.sh"
