@@ -9,6 +9,9 @@ return {
     end,
   },
   {
+    "github/copilot.vim",
+  },
+  {
     -- https://github.com/AstroNvim/AstroNvim/blob/main/lua/astronvim/plugins/mason-tool-installer.lua
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     opts = {
