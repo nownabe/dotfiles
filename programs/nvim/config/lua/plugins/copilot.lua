@@ -8,6 +8,7 @@ return {
       vim.lsp.enable("copilot_ls")
     end,
   },
+  -- TODO: Replace copilot.vim with copilot-lsp inline completion when Neovim v0.12 is released (vim.lsp.inline_completion)
   {
     "github/copilot.vim",
   },
