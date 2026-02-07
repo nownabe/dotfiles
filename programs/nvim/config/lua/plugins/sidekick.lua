@@ -8,12 +8,10 @@ return {
     {
       "<tab>",
       function()
-        if require("sidekick").nes_jump_or_apply() then
-          return
+        if not require("sidekick").nes_jump_or_apply() then
+          return "<tab>"
         end
-        return "<tab>"
       end,
-      mode = { "i", "n" },
       expr = true,
       desc = "Goto/Apply Next Edit Suggestion",
     },
