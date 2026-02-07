@@ -26,6 +26,23 @@
       "WebFetch(domain:home-manager-options.extranix.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebSearch"
+    ],
+    "deny": [
+      "Read(~/.env*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*.p12)",
+      "Read(**/*.pfx)",
+      "Read(**/*.crt)",
+      "Read(**/*.cer)",
+      "Read(**/credentials)",
+      "Read(**/credentials.*)",
+      "Read(**/*secret*)",
+      "Read(**/*token*)",
+      "Read(**/.netrc)",
+      "Read(**/.npmrc)"
     ]
   }
 }
