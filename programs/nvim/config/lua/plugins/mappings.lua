@@ -6,7 +6,7 @@ return {
       mappings = {
         n = {
           -- Disable default mappings (astrocore / snacks.nvim)
-          ["<Leader>t"] = { "<Cmd>ToggleTerm direction=float<CR>", desc = " Toggle terminal" },
+          ["<Leader>t"] = { "<Cmd>ToggleTerm direction=float<CR>", desc = " Toggle terminal" },
           ["<Leader>tf"] = false,
           ["<Leader>th"] = false,
           ["<Leader>tl"] = false,
