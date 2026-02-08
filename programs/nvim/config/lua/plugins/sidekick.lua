@@ -16,7 +16,7 @@ return {
       desc = "Goto/Apply Next Edit Suggestion",
     },
     {
-      "<leader>sa",
+      "<leader>st",
       function() require("sidekick.cli").toggle() end,
       mode = { "n", "v" },
       desc = "Sidekick Toggle CLI",
@@ -27,7 +27,7 @@ return {
       desc = "Sidekick Select CLI",
     },
     {
-      "<leader>st",
+      "<leader>sa",
       function() require("sidekick.cli").send({ msg = "{this}" }) end,
       mode = { "x", "n" },
       desc = "Send This",
