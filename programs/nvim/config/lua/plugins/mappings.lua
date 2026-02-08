@@ -69,7 +69,7 @@ return {
           -- Cursor navigation (overrides default <Leader>h and <Leader>l)
           ["<Leader>h"] = { "^", desc = "󰜲 Move to first non-whitespace" },
           ["<Leader>l"] = { "$", desc = "󰜵 Move to end of line" },
-          ["<Leader>m"] = { "%", desc = "󰅪 Match nearest [], (), {}" },
+          ["<Leader>m"] = { "<Plug>(matchup-%)", desc = "󰅪 Match nearest [], (), {}" },
 
           -- Find files (git files in git repo, otherwise normal find)
           ["<Leader>ff"] = {
