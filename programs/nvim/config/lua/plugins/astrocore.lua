@@ -6,6 +6,7 @@ return {
       opt = {
         relativenumber = false,
         spell = true,
+        wrap = true,
       },
     },
   },
