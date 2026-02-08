@@ -20,6 +20,7 @@ return {
           ["<Leader>lr"] = false,
           ["<Leader>lR"] = false,
           ["<Leader>ls"] = false,
+          ["<Leader>lk"] = false,
           ["<Leader>lS"] = false,
 
           -- Cursor navigation (overrides default <Leader>h and <Leader>l)
@@ -31,6 +32,9 @@ return {
           ["<Leader>l"] = false,
           ["<Leader>la"] = false,
           ["<Leader>lf"] = false,
+        },
+        x = {
+          ["<Leader>la"] = false,
         },
       },
     },
