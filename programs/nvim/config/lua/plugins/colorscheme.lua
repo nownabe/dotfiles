@@ -7,12 +7,6 @@ return {
     opts = {
       flavour = "mocha",
       transparent_background = true,
-      color_overrides = {
-        mocha = {
-          surface1 = "#4F5164",
-          surface0 = "#3B3C4E",
-        },
-      },
     },
   },
 }
