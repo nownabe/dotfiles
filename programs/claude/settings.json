@@ -13,6 +13,7 @@
       "Bash(gh issue close:*)"
     ],
     "deny": [
+      "Bash(git -C :*)",
       "Bash(gh pr merge:*)",
       "Bash(curl *)",
       "Bash(wget *)",
