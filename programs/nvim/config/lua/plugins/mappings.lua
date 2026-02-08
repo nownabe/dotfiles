@@ -8,8 +8,6 @@ return {
           -- Disable default mappings (astrocore / snacks.nvim)
           ["<Leader>ld"] = false,
           ["<Leader>lD"] = false,
-          ["<Leader>li"] = false,
-          ["<Leader>lI"] = false,
           ["<Leader>lk"] = false,
           ["<Leader>ls"] = false,
           ["<Leader>lS"] = false,
@@ -42,6 +40,8 @@ return {
           ["<Leader>lL"] = false,
           ["<Leader>lr"] = false,
           ["<Leader>lR"] = false,
+          ["<Leader>li"] = false,
+          ["<Leader>lI"] = false,
         },
         v = {
           ["<Leader>l"] = false,
