@@ -1,9 +1,9 @@
 return {
   "folke/snacks.nvim",
   init = function()
-    vim.api.nvim_set_hl(0, "SnacksIndent", { fg = "#ff0000" })
+    vim.api.nvim_set_hl(0, "SnacksIndent", { fg = "#0a0a14" })
     vim.api.nvim_create_autocmd("ColorScheme", {
-      callback = function() vim.api.nvim_set_hl(0, "SnacksIndent", { fg = "#ff0000" }) end,
+      callback = function() vim.api.nvim_set_hl(0, "SnacksIndent", { fg = "#0a0a14" }) end,
     })
   end,
   opts = {
