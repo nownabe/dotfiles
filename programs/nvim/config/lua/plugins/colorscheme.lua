@@ -12,8 +12,6 @@ return {
           NormalFloat = { bg = "NONE" },
           FloatBorder = { bg = "NONE" },
           FloatTitle = { bg = "NONE" },
-          SnacksIndent = { fg = "#0a0a14" },
-          SnacksIndentScope = { fg = "#181825" },
         }
       end,
     },
