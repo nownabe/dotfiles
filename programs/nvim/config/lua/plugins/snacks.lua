@@ -3,7 +3,7 @@ return {
   opts = {
     indent = {
       indent = {
-        enabled = false,
+        char = "┊",
       },
     },
     picker = {
