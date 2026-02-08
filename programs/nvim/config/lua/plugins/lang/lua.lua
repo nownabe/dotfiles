@@ -55,11 +55,11 @@ return {
 
       if not is_aarch64 then
         opts.handlers.selene = function(source_name, methods)
-          local null_ls = require "null-ls"
+          local null_ls = require("null-ls")
           for _, method in ipairs(methods) do
-            null_ls.register(null_ls.builtins[method][source_name].with {
+            null_ls.register(null_ls.builtins[method][source_name].with({
               runtime_condition = function(params) return selene_configured(params.bufname) end,
-            })
+            }))
           end
         end
       end
