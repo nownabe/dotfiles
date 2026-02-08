@@ -1,6 +1,7 @@
 return {
   {
     "folke/which-key.nvim",
+    opts_extend = { "spec" },
     opts = {
       spec = {
         { "<Leader>h", "^", desc = "Move to first non-whitespace", icon = "󰜲", order = 1 },
