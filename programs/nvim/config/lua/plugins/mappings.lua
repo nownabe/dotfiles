@@ -16,6 +16,7 @@ return {
           ["<Leader>tu"] = false,
           ["<Leader>tv"] = false,
           ["<Leader>n"] = false,
+          ["<Leader>s"] = { desc = "󰚩 Sidekick" },
           ["<Leader>f'"] = false,
           ["<Leader>fm"] = false,
           ["<Leader>fw"] = false,
