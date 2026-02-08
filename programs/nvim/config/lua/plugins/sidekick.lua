@@ -16,13 +16,13 @@ return {
       desc = "Goto/Apply Next Edit Suggestion",
     },
     {
-      "<leader>st",
+      "<leader>ss",
       function() require("sidekick.cli").toggle() end,
       mode = { "n", "v" },
       desc = "Sidekick Toggle CLI",
     },
     {
-      "<leader>ss",
+      "<leader>sc",
       function() require("sidekick.cli").select() end,
       desc = "Sidekick Select CLI",
     },
