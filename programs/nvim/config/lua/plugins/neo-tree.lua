@@ -7,6 +7,7 @@ return {
       hide_gitignored = false,
     }
     opts.sources = { "filesystem" }
+    opts.source_selector = { winbar = false }
     opts.window.mappings["<C-h>"] = "open_split"
     opts.window.mappings["<C-v>"] = "open_vsplit"
     opts.commands = opts.commands or {}
