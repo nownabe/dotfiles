@@ -13,8 +13,15 @@ return {
           ["<Leader>lS"] = false,
 
           -- Disable default buffer mappings
+          ["<Leader>bC"] = false,
           ["<Leader>bp"] = false,
           ["<Leader>br"] = false,
+          ["<Leader>bs"] = false,
+          ["<Leader>bse"] = false,
+          ["<Leader>bsi"] = false,
+          ["<Leader>bsm"] = false,
+          ["<Leader>bsp"] = false,
+          ["<Leader>bsr"] = false,
           ["<Leader>c"] = false,
           ["<Leader>C"] = false,
 
