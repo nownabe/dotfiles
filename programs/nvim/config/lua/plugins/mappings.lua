@@ -5,21 +5,12 @@ return {
     opts = {
       mappings = {
         n = {
-          -- Disable default Language Tools group
-          ["<Leader>la"] = false,
-          ["<Leader>lA"] = false,
+          -- Disable default mappings (astrocore / snacks.nvim)
           ["<Leader>ld"] = false,
           ["<Leader>lD"] = false,
-          ["<Leader>lf"] = false,
-          ["<Leader>lG"] = false,
-          ["<Leader>lh"] = false,
           ["<Leader>li"] = false,
           ["<Leader>lI"] = false,
           ["<Leader>lk"] = false,
-          ["<Leader>ll"] = false,
-          ["<Leader>lL"] = false,
-          ["<Leader>lr"] = false,
-          ["<Leader>lR"] = false,
           ["<Leader>ls"] = false,
           ["<Leader>lS"] = false,
 
@@ -29,11 +20,6 @@ return {
           ["<Leader>m"] = { "%", desc = "󰅪 Match nearest [], (), {}" },
         },
         v = {
-          ["<Leader>l"] = false,
-          ["<Leader>la"] = false,
-          ["<Leader>lf"] = false,
-        },
-        x = {
           ["<Leader>la"] = false,
         },
       },
@@ -45,18 +31,17 @@ return {
     opts = {
       mappings = {
         n = {
+          -- Disable default Language Tools group (astrolsp)
           ["<Leader>l"] = false,
           ["<Leader>la"] = false,
           ["<Leader>lA"] = false,
           ["<Leader>lf"] = false,
+          ["<Leader>lG"] = false,
           ["<Leader>lh"] = false,
-          ["<Leader>lI"] = false,
-          ["<Leader>lk"] = false,
           ["<Leader>ll"] = false,
           ["<Leader>lL"] = false,
           ["<Leader>lr"] = false,
           ["<Leader>lR"] = false,
-          ["<Leader>lG"] = false,
         },
         v = {
           ["<Leader>l"] = false,
