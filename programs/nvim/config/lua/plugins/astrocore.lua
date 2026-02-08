@@ -13,11 +13,14 @@ return {
           ["<Leader>lf"] = false,
           ["<Leader>lG"] = false,
           ["<Leader>lh"] = false,
+          ["<Leader>li"] = false,
+          ["<Leader>lI"] = false,
           ["<Leader>ll"] = false,
           ["<Leader>lL"] = false,
           ["<Leader>lr"] = false,
           ["<Leader>lR"] = false,
           ["<Leader>ls"] = false,
+          ["<Leader>lS"] = false,
 
           -- Cursor navigation (overrides default <Leader>h and <Leader>l)
           ["<Leader>h"] = { "^", desc = "󰜲 Move to first non-whitespace" },
