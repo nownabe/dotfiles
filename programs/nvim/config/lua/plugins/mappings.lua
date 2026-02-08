@@ -12,6 +12,26 @@ return {
           ["<Leader>ls"] = false,
           ["<Leader>lS"] = false,
 
+          -- Disable default buffer mappings
+          ["<Leader>bp"] = false,
+          ["<Leader>br"] = false,
+          ["<Leader>c"] = false,
+          ["<Leader>C"] = false,
+
+          -- Buffer management (overrides default <Leader>bc and <Leader>bl)
+          ["<Leader>bh"] = {
+            function() require("astrocore.buffer").nav(-vim.v.count1) end,
+            desc = "󰜲 Previous buffer",
+          },
+          ["<Leader>bl"] = {
+            function() require("astrocore.buffer").nav(vim.v.count1) end,
+            desc = "󰜵 Next buffer",
+          },
+          ["<Leader>bc"] = {
+            function() require("astrocore.buffer").close() end,
+            desc = "󰅖 Close current buffer",
+          },
+
           -- Cursor navigation (overrides default <Leader>h and <Leader>l)
           ["<Leader>h"] = { "^", desc = "󰜲 Move to first non-whitespace" },
           ["<Leader>l"] = { "$", desc = "󰜵 Move to end of line" },
