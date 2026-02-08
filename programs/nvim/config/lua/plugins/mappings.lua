@@ -15,6 +15,8 @@ return {
           ["<Leader>tt"] = false,
           ["<Leader>tu"] = false,
           ["<Leader>tv"] = false,
+          ["<Leader>n"] = false,
+          ["<Leader>s"] = { desc = "󰚩 Sidekick" },
           ["<Leader>f'"] = false,
           ["<Leader>fm"] = false,
           ["<Leader>fw"] = false,
@@ -152,7 +154,7 @@ return {
           ["<Leader>lI"] = false,
 
           -- Language Tools group
-          ["<Leader>;"] = { desc = " Language Tools" },
+          ["<Leader>;"] = { desc = " Language Tools" },
 
           -- LSP actions
           ["<Leader>;a"] = {
@@ -241,7 +243,7 @@ return {
           ["<Leader>l"] = false,
           ["<Leader>lf"] = false,
 
-          ["<Leader>;"] = { desc = " Language Tools" },
+          ["<Leader>;"] = { desc = " Language Tools" },
           ["<Leader>;a"] = {
             function() vim.lsp.buf.code_action() end,
             desc = "Code action",
