@@ -100,6 +100,9 @@ return {
           -- Copy GitHub URL for selected lines
           ["<Leader>y"] = {
             function()
+              local line_start = vim.fn.line("v")
+              local line_end = vim.fn.line(".")
+              if line_start > line_end then line_start, line_end = line_end, line_start end
               local copy = function(url)
                 vim.fn.setreg("+", url)
                 vim.notify("Copied: " .. url)
@@ -107,10 +110,10 @@ return {
               vim.ui.select({ "Permalink (commit)", "Default branch" }, { prompt = "Copy GitHub URL" }, function(choice)
                 if not choice then return end
                 if choice == "Permalink (commit)" then
-                  Snacks.gitbrowse.open { what = "permalink", notify = false, open = copy }
+                  Snacks.gitbrowse.open { what = "permalink", line_start = line_start, line_end = line_end, notify = false, open = copy }
                 else
                   local branch = vim.trim(vim.fn.system("git rev-parse --abbrev-ref origin/HEAD")):gsub("^origin/", "")
-                  Snacks.gitbrowse.open { what = "file", branch = branch, notify = false, open = copy }
+                  Snacks.gitbrowse.open { what = "file", branch = branch, line_start = line_start, line_end = line_end, notify = false, open = copy }
                 end
               end)
             end,
