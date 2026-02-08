@@ -25,6 +25,18 @@ return {
           ["<Leader>c"] = false,
           ["<Leader>C"] = false,
 
+          -- Disable default g* LSP mappings
+          ["gD"] = false,
+          ["gd"] = false,
+          ["gI"] = false,
+          ["gra"] = false,
+          ["gri"] = false,
+          ["grn"] = false,
+          ["grr"] = false,
+          ["grt"] = false,
+          ["gy"] = false,
+          ["K"] = false,
+
           -- Buffer management (overrides default <Leader>bc and <Leader>bl)
           ["<Leader>bh"] = {
             function() require("astrocore.buffer").nav(-vim.v.count1) end,
@@ -43,6 +55,16 @@ return {
           ["<Leader>h"] = { "^", desc = "󰜲 Move to first non-whitespace" },
           ["<Leader>l"] = { "$", desc = "󰜵 Move to end of line" },
           ["<Leader>m"] = { "%", desc = "󰅪 Match nearest [], (), {}" },
+
+          -- Diagnostics
+          ["<Leader>;n"] = {
+            function() vim.diagnostic.open_float() end,
+            desc = "Hover diagnostics",
+          },
+          ["<Leader>;N"] = {
+            function() Snacks.picker.diagnostics() end,
+            desc = "Search diagnostics",
+          },
         },
         v = {
           ["<Leader>la"] = false,
@@ -69,13 +91,117 @@ return {
           ["<Leader>lR"] = false,
           ["<Leader>li"] = false,
           ["<Leader>lI"] = false,
+
+          -- Language Tools group
+          ["<Leader>;"] = { desc = " Language Tools" },
+
+          -- LSP actions
+          ["<Leader>;a"] = {
+            function() vim.lsp.buf.code_action() end,
+            desc = "Code action",
+            cond = "textDocument/codeAction",
+          },
+          ["<Leader>;A"] = {
+            function() vim.lsp.buf.code_action { context = { only = { "source" }, diagnostics = {} } } end,
+            desc = "Source action",
+            cond = "textDocument/codeAction",
+          },
+
+          -- Navigation
+          ["<Leader>;d"] = {
+            function() vim.lsp.buf.definition() end,
+            desc = "Definition",
+            cond = "textDocument/definition",
+          },
+          ["<Leader>;D"] = {
+            function() vim.lsp.buf.declaration() end,
+            desc = "Declaration",
+            cond = "textDocument/declaration",
+          },
+          ["<Leader>;t"] = {
+            function() vim.lsp.buf.type_definition() end,
+            desc = "Type definition",
+            cond = "textDocument/typeDefinition",
+          },
+          ["<Leader>;i"] = {
+            function() Snacks.picker.lsp_implementations() end,
+            desc = "Implementations",
+          },
+          ["<Leader>;r"] = {
+            function() Snacks.picker.lsp_references() end,
+            desc = "References",
+          },
+
+          -- Info
+          ["<Leader>;h"] = {
+            function() vim.lsp.buf.hover() end,
+            desc = "Hover",
+            cond = "textDocument/hover",
+          },
+          ["<Leader>;s"] = {
+            function() vim.lsp.buf.signature_help() end,
+            desc = "Signature help",
+            cond = "textDocument/signatureHelp",
+          },
+
+          -- Refactoring
+          ["<Leader>;R"] = {
+            function() vim.lsp.buf.rename() end,
+            desc = "Rename symbol",
+            cond = "textDocument/rename",
+          },
+          ["<Leader>;f"] = {
+            function() vim.lsp.buf.format(require("astrolsp").format_opts) end,
+            desc = "Format buffer",
+            cond = "textDocument/formatting",
+          },
+
+          -- CodeLens
+          ["<Leader>;L"] = {
+            function() vim.lsp.codelens.refresh() end,
+            desc = "CodeLens refresh",
+            cond = "textDocument/codeLens",
+          },
+          ["<Leader>;l"] = {
+            function() vim.lsp.codelens.run() end,
+            desc = "CodeLens run",
+            cond = "textDocument/codeLens",
+          },
+
+          -- Search
+          ["<Leader>;S"] = {
+            function() Snacks.picker.lsp_workspace_symbols() end,
+            desc = "Workspace symbols",
+          },
+          ["<Leader>;o"] = {
+            function() require("aerial").toggle() end,
+            desc = "Symbols outline",
+          },
         },
         v = {
           ["<Leader>l"] = false,
           ["<Leader>lf"] = false,
+
+          ["<Leader>;"] = { desc = " Language Tools" },
+          ["<Leader>;a"] = {
+            function() vim.lsp.buf.code_action() end,
+            desc = "Code action",
+            cond = "textDocument/codeAction",
+          },
+          ["<Leader>;f"] = {
+            function() vim.lsp.buf.format(require("astrolsp").format_opts) end,
+            desc = "Format buffer",
+            cond = "textDocument/rangeFormatting",
+          },
         },
         x = {
           ["<Leader>la"] = false,
+
+          ["<Leader>;a"] = {
+            function() vim.lsp.buf.code_action() end,
+            desc = "Code action",
+            cond = "textDocument/codeAction",
+          },
         },
       },
     },
