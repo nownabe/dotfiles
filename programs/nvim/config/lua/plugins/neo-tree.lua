@@ -8,6 +8,10 @@ return {
     }
     opts.sources = { "filesystem" }
     opts.source_selector = { winbar = false }
+    opts.window.mappings["s"] = false
+    opts.window.mappings["S"] = false
+    opts.window.mappings["t"] = false
+    opts.window.mappings["w"] = false
     opts.window.mappings["<C-h>"] = "open_split"
     opts.window.mappings["<C-v>"] = "open_vsplit"
     opts.commands = opts.commands or {}
