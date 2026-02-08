@@ -7,7 +7,6 @@ return {
         n = {
           -- Disable default mappings (astrocore / snacks.nvim)
           ["<Leader>f'"] = false,
-          ["<Leader>fg"] = false,
           ["<Leader>fm"] = false,
           ["<Leader>fw"] = false,
           ["<Leader>fW"] = false,
