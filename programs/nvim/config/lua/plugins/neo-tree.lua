@@ -8,8 +8,12 @@ return {
     }
     opts.sources = { "filesystem" }
     opts.source_selector = { winbar = false }
+    opts.window.mappings["<"] = false
+    opts.window.mappings[">"] = false
     opts.window.mappings["[b"] = false
+    opts.window.mappings["[g"] = false
     opts.window.mappings["]b"] = false
+    opts.window.mappings["]g"] = false
     opts.window.mappings["P"] = false
     opts.window.mappings["<C-b>"] = false
     opts.window.mappings["<C-f>"] = false
