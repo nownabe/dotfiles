@@ -98,33 +98,23 @@ return {
           ["<Leader>la"] = false,
 
           -- Copy GitHub URL for selected lines
-          ["<Leader>gy"] = {
+          ["<Leader>y"] = {
             function()
-              Snacks.gitbrowse.open {
-                what = "file",
-                notify = false,
-                open = function(url)
-                  vim.fn.setreg("+", url)
-                  vim.notify("Copied: " .. url)
-                end,
-              }
+              local copy = function(url)
+                vim.fn.setreg("+", url)
+                vim.notify("Copied: " .. url)
+              end
+              vim.ui.select({ "Permalink (commit)", "Default branch" }, { prompt = "Copy GitHub URL" }, function(choice)
+                if not choice then return end
+                if choice == "Permalink (commit)" then
+                  Snacks.gitbrowse.open { what = "permalink", notify = false, open = copy }
+                else
+                  local branch = vim.trim(vim.fn.system("git rev-parse --abbrev-ref origin/HEAD")):gsub("^origin/", "")
+                  Snacks.gitbrowse.open { what = "file", branch = branch, notify = false, open = copy }
+                end
+              end)
             end,
-            desc = "Copy GitHub URL (current branch)",
-          },
-          ["<Leader>gY"] = {
-            function()
-              local branch = vim.trim(vim.fn.system("git rev-parse --abbrev-ref origin/HEAD")):gsub("^origin/", "")
-              Snacks.gitbrowse.open {
-                what = "file",
-                branch = branch,
-                notify = false,
-                open = function(url)
-                  vim.fn.setreg("+", url)
-                  vim.notify("Copied: " .. url)
-                end,
-              }
-            end,
-            desc = "Copy GitHub URL (default branch)",
+            desc = "Copy GitHub URL",
           },
         },
       },
