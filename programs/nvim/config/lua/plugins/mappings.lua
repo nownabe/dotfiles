@@ -29,7 +29,13 @@ return {
           ["gD"] = false,
           ["gd"] = false,
           ["gI"] = false,
+          ["gra"] = false,
+          ["gri"] = false,
+          ["grn"] = false,
+          ["grr"] = false,
+          ["grt"] = false,
           ["gy"] = false,
+          ["K"] = false,
 
           -- Buffer management (overrides default <Leader>bc and <Leader>bl)
           ["<Leader>bh"] = {
@@ -121,7 +127,7 @@ return {
             function() Snacks.picker.lsp_implementations() end,
             desc = "Implementations",
           },
-          ["<Leader>;R"] = {
+          ["<Leader>;r"] = {
             function() Snacks.picker.lsp_references() end,
             desc = "References",
           },
@@ -139,7 +145,7 @@ return {
           },
 
           -- Refactoring
-          ["<Leader>;r"] = {
+          ["<Leader>;R"] = {
             function() vim.lsp.buf.rename() end,
             desc = "Rename symbol",
             cond = "textDocument/rename",
@@ -151,12 +157,12 @@ return {
           },
 
           -- CodeLens
-          ["<Leader>;l"] = {
+          ["<Leader>;L"] = {
             function() vim.lsp.codelens.refresh() end,
             desc = "CodeLens refresh",
             cond = "textDocument/codeLens",
           },
-          ["<Leader>;L"] = {
+          ["<Leader>;l"] = {
             function() vim.lsp.codelens.run() end,
             desc = "CodeLens run",
             cond = "textDocument/codeLens",
