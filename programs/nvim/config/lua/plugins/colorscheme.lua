@@ -16,7 +16,6 @@ return {
       custom_highlights = function(colors)
         return {
           NotifyBackground = { bg = colors.base },
-          NeoTreeTabActive = { fg = colors.rosewater, bold = true },
         }
       end,
     },
