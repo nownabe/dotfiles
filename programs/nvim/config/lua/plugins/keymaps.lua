@@ -1,12 +1,35 @@
 return {
   {
-    "folke/which-key.nvim",
-    opts = function(_, opts)
-      vim.list_extend(opts.spec, {
-        { "<Leader>h", "^", desc = "Move to first non-whitespace", icon = "󰜲", order = 1 },
-        { "<Leader>l", "$", desc = "Move to end of line", icon = "󰜵", order = 2 },
-        { "<Leader>m", "%", desc = "Match nearest [], (), {}", icon = "󰅪", order = 3 },
-      })
-    end,
+    "AstroNvim/astrocore",
+    ---@type AstroCoreOpts
+    opts = {
+      mappings = {
+        n = {
+          -- Disable default Language Tools group
+          ["<Leader>la"] = false,
+          ["<Leader>lA"] = false,
+          ["<Leader>ld"] = false,
+          ["<Leader>lD"] = false,
+          ["<Leader>lf"] = false,
+          ["<Leader>lG"] = false,
+          ["<Leader>lh"] = false,
+          ["<Leader>ll"] = false,
+          ["<Leader>lL"] = false,
+          ["<Leader>lr"] = false,
+          ["<Leader>lR"] = false,
+          ["<Leader>ls"] = false,
+
+          -- Cursor navigation (overrides default <Leader>h and <Leader>l)
+          ["<Leader>h"] = { "^", desc = "󰜲 Move to first non-whitespace" },
+          ["<Leader>l"] = { "$", desc = "󰜵 Move to end of line" },
+          ["<Leader>m"] = { "%", desc = "󰅪 Match nearest [], (), {}" },
+        },
+        v = {
+          ["<Leader>l"] = false,
+          ["<Leader>la"] = false,
+          ["<Leader>lf"] = false,
+        },
+      },
+    },
   },
 }
