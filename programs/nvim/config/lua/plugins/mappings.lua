@@ -177,45 +177,6 @@ return {
             function() require("aerial").toggle() end,
             desc = "Symbols outline",
           },
-
-          -- Toggles
-          ["<Leader>uf"] = {
-            function() require("astrolsp.toggles").buffer_autoformat() end,
-            desc = "Toggle autoformat (buffer)",
-            cond = "textDocument/formatting",
-          },
-          ["<Leader>uF"] = {
-            function() require("astrolsp.toggles").autoformat() end,
-            desc = "Toggle autoformat (global)",
-            cond = "textDocument/formatting",
-          },
-          ["<Leader>u?"] = {
-            function() require("astrolsp.toggles").signature_help() end,
-            desc = "Toggle signature help",
-            cond = "textDocument/signatureHelp",
-          },
-          ["<Leader>uh"] = {
-            function() require("astrolsp.toggles").buffer_inlay_hints() end,
-            desc = "Toggle inlay hints (buffer)",
-            cond = vim.lsp.inlay_hint and "textDocument/inlayHint" or false,
-          },
-          ["<Leader>uH"] = {
-            function() require("astrolsp.toggles").inlay_hints() end,
-            desc = "Toggle inlay hints (global)",
-            cond = vim.lsp.inlay_hint and "textDocument/inlayHint" or false,
-          },
-          ["<Leader>uL"] = {
-            function() require("astrolsp.toggles").codelens() end,
-            desc = "Toggle CodeLens",
-            cond = "textDocument/codeLens",
-          },
-          ["<Leader>uY"] = {
-            function() require("astrolsp.toggles").buffer_semantic_tokens() end,
-            desc = "Toggle semantic highlight (buffer)",
-            cond = function(client)
-              return client.supports_method "textDocument/semanticTokens/full" and vim.lsp.semantic_tokens
-            end,
-          },
         },
         v = {
           ["<Leader>l"] = false,
