@@ -6,6 +6,7 @@
       "Bash(gh issue view:*)",
       "Bash(gh label create:*)",
       "Bash(gh pr create:*)",
+      "Bash(gh pr diff:*)",
       "Bash(gh pr edit:*)",
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
@@ -21,10 +22,13 @@
       "Bash(git rebase:*)",
       "Bash(git reset:*)",
       "Bash(git stash:*)",
+      "Bash(git status:*)",
       "Bash(hms)",
       "Bash(nix flake check:*)",
       "WebFetch(domain:home-manager-options.extranix.com)",
+      "WebFetch(domain:json.schemastore.org)",
       "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.schemastore.org)",
       "WebSearch"
     ]
   }
