@@ -5,6 +5,7 @@ return {
     options = {
       opt = {
         relativenumber = false,
+        spell = true,
       },
     },
   },
