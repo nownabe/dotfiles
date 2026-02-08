@@ -7,6 +7,13 @@ return {
     opts = {
       flavour = "mocha",
       transparent_background = true,
+      custom_highlights = function()
+        return {
+          NormalFloat = { bg = "NONE" },
+          FloatBorder = { bg = "NONE" },
+          FloatTitle = { bg = "NONE" },
+        }
+      end,
     },
   },
 }
