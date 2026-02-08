@@ -96,6 +96,36 @@ return {
         },
         v = {
           ["<Leader>la"] = false,
+
+          -- Copy GitHub URL for selected lines
+          ["<Leader>gy"] = {
+            function()
+              Snacks.gitbrowse.open {
+                what = "file",
+                notify = false,
+                open = function(url)
+                  vim.fn.setreg("+", url)
+                  vim.notify("Copied: " .. url)
+                end,
+              }
+            end,
+            desc = "Copy GitHub URL (current branch)",
+          },
+          ["<Leader>gY"] = {
+            function()
+              local branch = vim.trim(vim.fn.system("git rev-parse --abbrev-ref origin/HEAD")):gsub("^origin/", "")
+              Snacks.gitbrowse.open {
+                what = "file",
+                branch = branch,
+                notify = false,
+                open = function(url)
+                  vim.fn.setreg("+", url)
+                  vim.notify("Copied: " .. url)
+                end,
+              }
+            end,
+            desc = "Copy GitHub URL (default branch)",
+          },
         },
       },
     },
