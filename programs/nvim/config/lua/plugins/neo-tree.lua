@@ -17,9 +17,13 @@ return {
     opts.window.mappings["P"] = false
     opts.window.mappings["<C-b>"] = false
     opts.window.mappings["<C-f>"] = false
+    opts.window.mappings["T"] = false
+    opts.window.mappings["Tf"] = false
+    opts.window.mappings["Th"] = false
+    opts.window.mappings["Tv"] = false
     opts.window.mappings["s"] = false
     opts.window.mappings["S"] = false
-    opts.window.mappings["t"] = false
+    opts.window.mappings["t"] = "toggleterm_float"
     opts.window.mappings["w"] = false
     opts.window.mappings["<C-h>"] = "open_split"
     opts.window.mappings["<C-v>"] = "open_vsplit"
