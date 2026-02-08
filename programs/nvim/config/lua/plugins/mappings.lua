@@ -6,6 +6,11 @@ return {
       mappings = {
         n = {
           -- Disable default mappings (astrocore / snacks.nvim)
+          ["<Leader>f'"] = false,
+          ["<Leader>fg"] = false,
+          ["<Leader>fm"] = false,
+          ["<Leader>fw"] = false,
+          ["<Leader>fW"] = false,
           ["<Leader>ld"] = false,
           ["<Leader>lD"] = false,
           ["<Leader>lk"] = false,
@@ -55,6 +60,29 @@ return {
           ["<Leader>h"] = { "^", desc = "󰜲 Move to first non-whitespace" },
           ["<Leader>l"] = { "$", desc = "󰜵 Move to end of line" },
           ["<Leader>m"] = { "%", desc = "󰅪 Match nearest [], (), {}" },
+
+          -- Find files (git files in git repo, otherwise normal find)
+          ["<Leader>ff"] = {
+            function()
+              vim.fn.system("git rev-parse --is-inside-work-tree")
+              if vim.v.shell_error == 0 then
+                Snacks.picker.git_files()
+              else
+                Snacks.picker.files()
+              end
+            end,
+            desc = "Find files",
+          },
+
+          -- Grep
+          ["<Leader>fg"] = {
+            function() Snacks.picker.grep() end,
+            desc = "Grep",
+          },
+          ["<Leader>fG"] = {
+            function() Snacks.picker.grep { hidden = true, ignored = true } end,
+            desc = "Grep (all files)",
+          },
 
           -- Diagnostics
           ["<Leader>;n"] = {
