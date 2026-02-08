@@ -2,8 +2,8 @@ return {
   "folke/snacks.nvim",
   opts = {
     indent = {
-      indent = {
-        only_scope = true,
+      animate = {
+        enabled = false,
       },
     },
     picker = {
