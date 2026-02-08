@@ -7,7 +7,10 @@ return {
         n = {
           -- Disable default mappings (astrocore / snacks.nvim)
           ["<Leader>f'"] = false,
+          ["<Leader>fg"] = false,
           ["<Leader>fm"] = false,
+          ["<Leader>fw"] = false,
+          ["<Leader>fW"] = false,
           ["<Leader>ld"] = false,
           ["<Leader>lD"] = false,
           ["<Leader>lk"] = false,
@@ -69,6 +72,16 @@ return {
               end
             end,
             desc = "Find files",
+          },
+
+          -- Grep
+          ["<Leader>fg"] = {
+            function() Snacks.picker.grep() end,
+            desc = "Grep",
+          },
+          ["<Leader>fG"] = {
+            function() Snacks.picker.grep { hidden = true, ignored = true } end,
+            desc = "Grep (all files)",
           },
 
           -- Diagnostics
