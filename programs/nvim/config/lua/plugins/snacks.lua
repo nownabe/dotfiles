@@ -3,7 +3,7 @@ return {
   opts = {
     indent = {
       indent = {
-        char = "┊",
+        only_scope = true,
       },
     },
     picker = {
