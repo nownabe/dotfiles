@@ -13,11 +13,6 @@ return {
           surface0 = "#3B3C4E",
         },
       },
-      custom_highlights = function(colors)
-        return {
-          NotifyBackground = { bg = colors.base },
-        }
-      end,
     },
   },
 }
