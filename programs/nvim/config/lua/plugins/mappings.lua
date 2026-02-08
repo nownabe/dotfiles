@@ -56,6 +56,19 @@ return {
           ["<Leader>l"] = { "$", desc = "󰜵 Move to end of line" },
           ["<Leader>m"] = { "%", desc = "󰅪 Match nearest [], (), {}" },
 
+          -- Find files (git files in git repo, otherwise normal find)
+          ["<Leader>ff"] = {
+            function()
+              vim.fn.system("git rev-parse --is-inside-work-tree")
+              if vim.v.shell_error == 0 then
+                Snacks.picker.git_files()
+              else
+                Snacks.picker.files()
+              end
+            end,
+            desc = "Find files",
+          },
+
           -- Diagnostics
           ["<Leader>;n"] = {
             function() vim.diagnostic.open_float() end,
