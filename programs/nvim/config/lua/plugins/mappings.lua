@@ -15,6 +15,7 @@ return {
           ["<Leader>tt"] = false,
           ["<Leader>tu"] = false,
           ["<Leader>tv"] = false,
+          ["<Leader>n"] = false,
           ["<Leader>f'"] = false,
           ["<Leader>fm"] = false,
           ["<Leader>fw"] = false,
