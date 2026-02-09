@@ -4,19 +4,19 @@ return {
   {
     "AstroNvim/astrolsp",
     optional = true,
-    opts = function(_, opts)
-      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "nil_ls" })
-      if not opts.config then opts.config = {} end
-      opts.config.nil_ls = {
-        settings = {
-          ["nil"] = {
-            formatting = {
-              command = { "nixfmt" },
+    opts = {
+      config = {
+        nil_ls = {
+          settings = {
+            ["nil"] = {
+              formatting = {
+                command = { "nixfmt" },
+              },
             },
           },
         },
-      }
-    end,
+      },
+    },
   },
   {
     "nvim-treesitter/nvim-treesitter",
@@ -30,10 +30,9 @@ return {
   {
     "williamboman/mason-lspconfig.nvim",
     optional = true,
-    opts = {
-      -- nil_ls is installed via Nix, not Mason
-      automatic_installation = { exclude = { "nil_ls" } },
-    },
+    opts = function(_, opts)
+      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "nil_ls" })
+    end,
   },
   {
     "jay-babu/mason-null-ls.nvim",
@@ -46,7 +45,8 @@ return {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "nixfmt" })
+      opts.ensure_installed =
+        require("astrocore").list_insert_unique(opts.ensure_installed, { "nil-ls", "nixfmt" })
     end,
   },
   {
