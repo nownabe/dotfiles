@@ -29,6 +29,7 @@
     uv
 
     # Nix tools
+    nil
     statix
     deadnix
 
