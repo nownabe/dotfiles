@@ -44,6 +44,16 @@ return {
       desc = "Send Visual Selection",
     },
     {
+      "<leader>sd",
+      function() require("sidekick.cli").send({ msg = "{diagnostics}" }) end,
+      desc = "Send Diagnostics",
+    },
+    {
+      "<leader>sD",
+      function() require("sidekick.cli").send({ msg = "{diagnostics_all}" }) end,
+      desc = "Send All Diagnostics",
+    },
+    {
       "<leader>sp",
       function() require("sidekick.cli").prompt() end,
       mode = { "n", "v" },
