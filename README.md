@@ -1,87 +1,51 @@
 # dotfiles
 
-## Setting up
+nownabe's dotfiles. Manages user configurations for Ubuntu (x86_64-linux), supporting both native Ubuntu and WSL2.
+
+Managed by [Nix Home Manager](https://nix-community.github.io/home-manager/) (Flake-based standalone).
+
+## Setup
 
 ```shell
 curl -fsSL https://raw.githubusercontent.com/nownabe/dotfiles/main/setup.sh | bash
 ```
 
-### Chezmoi (deprecated)
+This will:
+
+1. Install Nix via [Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer)
+2. Clone this repository to `~/src/github.com/nownabe/dotfiles`
+3. Apply Home Manager configuration (auto-detects WSL vs native Linux)
+4. Set Zsh as the default shell
+
+## Applying Changes
 
 ```shell
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply nownabe
+hms
 ```
 
-### Manual Installation
+The `hms` alias automatically selects the correct Flake entrypoint (`wsl` or `linux`).
 
-Install these tools:
+## Directory Structure
 
-- [UbuntuSans Nerd Font](https://www.nerdfonts.com/font-downloadsk) (`UbuntuSansMono Nerd Font Mono`)
-- [Neovim](https://github.com/neovim/neovim)
-
-### Secrets
-
-Set secrets in `.zsh.d/secrets.zsh`.
-
-| name                | description                                                                  |
-| ------------------- | ---------------------------------------------------------------------------- |
-| `OPENAI_API_KEY`    | [OpenAI API Key](https://platform.openai.com/settings/organization/api-keys) |
-| `ANTHROPIC_API_KEY` | [Anthropic API Key](https://console.anthropic.com/settings/keys)             |
-
-### Windows (WSL)
-
-- Delete `Ctrl + v` keymap. Instead, use `Ctrl + Shift + v` to paste.
-
-## Neovim
-
-### Prerequisites
-
-```shell
-luarocks install tiktoken_core # for CopilotC-Nvim/CopilotChat.nvim
+```
+dotfiles/
+├── flake.nix       # Nix Flake entry point (wsl / linux configs)
+├── home.nix        # Home Manager configuration
+├── programs/       # Modular configurations
+│   ├── zsh/        # Zsh
+│   ├── git/        # Git
+│   ├── nvim/       # Neovim (AstroNvim)
+│   └── claude/     # Claude Code
+├── setup.sh        # Bootstrap script
+└── scripts/        # Utility scripts
 ```
 
-### Key Mappings
+## Manual Setup
 
-#### General Mappings
+### Font
 
-| Key | Action | Command |
-| --- | ------ | ------- |
+Install [UbuntuSans Nerd Font](https://www.nerdfonts.com/font-downloads) (`UbuntuSansMono Nerd Font Mono`).
 
-#### Buffers
+### WSL
 
-| Key           | Action                    | Command |
-| ------------- | ------------------------- | ------- |
-| `Leader + bl` | Go to the previous buffer |         |
-| `Leader + bh` | Go to the next buffer     |         |
-| `Leader + bc` | Close the current buffer  |         |
-
-#### Neo-Tree
-
-| Key          | Action         | Command |
-| ------------ | -------------- | ------- |
-| `Leader + e` | Neotree toggle |         |
-| `Leader + o` | Neotree focus  |         |
-
-#### LSP Mappings
-
-| Key           | Action          | Command |
-| ------------- | --------------- | ------- |
-| `Leader + lS` | Symbols Outline |         |
-
-#### GitHub Copilot Chat
-
-| Key           | Action                               | Command |
-| ------------- | ------------------------------------ | ------- |
-| `Leader + ce` | Explain the selected code            |         |
-| `Leader + cr` | Review the selected code             |         |
-| `Leader + cf` | Fix the code                         |         |
-| `Leader + co` | Optimize the selected code           |         |
-| `Leader + cd` | Generate docs for the selected code  |         |
-| `Leader + ct` | Generate tests for the selected code |         |
-
-In chat:
-
-| Key        | Action                    |
-| ---------- | ------------------------- |
-| `q`        | Close the chat window     |
-| `Ctrl + s` | Submit the current prompt |
+- Remove the `Ctrl+V` keybinding in Windows Terminal. Use `Ctrl+Shift+V` to paste instead.
