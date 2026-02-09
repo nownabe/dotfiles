@@ -32,6 +32,7 @@ in
       core.editor = "nvim";
       init.defaultBranch = "main";
       push.default = "simple";
+      push.autoSetupRemote = true;
       pull.rebase = true;
       rebase.autostash = true;
       diff.compactionHeuristic = true;
