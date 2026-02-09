@@ -90,6 +90,7 @@ Apply the following labels:
 
 - When committing and creating a PR is the natural next step, do so without asking for confirmation
 - Always create a PR after committing unless the user explicitly says not to
+- When stuck (unsure how to proceed, repeating mistakes, or not making progress), do NOT commit or push. Instead, ask the user for guidance first
 
 ### Git Workflow
 
