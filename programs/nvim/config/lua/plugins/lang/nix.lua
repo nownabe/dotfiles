@@ -1,11 +1,13 @@
 -- Nix language support
+-- nil_ls, statix, and deadnix are installed via Nix (home.nix)
 
 return {
   {
     "AstroNvim/astrolsp",
     optional = true,
-    opts = {
-      config = {
+    opts = function(_, opts)
+      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "nil_ls" })
+      opts.config = vim.tbl_deep_extend("force", opts.config or {}, {
         nil_ls = {
           settings = {
             ["nil"] = {
@@ -15,8 +17,8 @@ return {
             },
           },
         },
-      },
-    },
+      })
+    end,
   },
   {
     "nvim-treesitter/nvim-treesitter",
@@ -25,13 +27,6 @@ return {
       if opts.ensure_installed ~= "all" then
         opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "nix" })
       end
-    end,
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    optional = true,
-    opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "nil_ls" })
     end,
   },
   {
@@ -45,8 +40,7 @@ return {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed =
-        require("astrocore").list_insert_unique(opts.ensure_installed, { "nil", "nixfmt" })
+      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "nixfmt" })
     end,
   },
   {
