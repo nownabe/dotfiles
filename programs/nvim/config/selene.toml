@@ -1,8 +1,5 @@
 std = "neovim"
 
-[config]
-globals = ["Snacks"]
-
 [rules]
 global_usage = "allow"
 if_same_then_else = "allow"
