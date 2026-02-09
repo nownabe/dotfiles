@@ -41,6 +41,7 @@
 
     # Cloud
     awscli2
+    google-cloud-sdk
   ];
 
   programs.home-manager.enable = true;
