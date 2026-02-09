@@ -18,7 +18,7 @@ require("lazy").setup({
   { import = "plugins.lang" },
 } --[[@as LazySpec]], {
   -- Configure any other `lazy.nvim` configuration options here
-  ui = { backdrop = 100 },
+  ui = { backdrop = 100, border = "rounded" },
   performance = {
     rtp = {
       -- disable some rtp plugins, add more to your liking
