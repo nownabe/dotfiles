@@ -32,7 +32,6 @@ return {
           filetype = false,
           file_read_only = false,
           hl = status.hl.get_attributes("winbarnc", true),
-          surround = true,
           update = "BufEnter",
         }),
       },
