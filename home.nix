@@ -28,6 +28,10 @@
     # Package managers
     uv
 
+    # Nix tools
+    statix
+    deadnix
+
     # CLI tools
     ripgrep
     fzf
