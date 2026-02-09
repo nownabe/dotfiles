@@ -28,6 +28,14 @@ return {
     end,
   },
   {
+    "williamboman/mason-lspconfig.nvim",
+    optional = true,
+    opts = {
+      -- nil_ls is installed via Nix, not Mason
+      automatic_installation = { exclude = { "nil_ls" } },
+    },
+  },
+  {
     "jay-babu/mason-null-ls.nvim",
     optional = true,
     opts = function(_, opts)
