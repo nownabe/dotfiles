@@ -49,6 +49,7 @@ return {
           ["grn"] = false,
           ["grr"] = false,
           ["grt"] = false,
+          ["gl"] = false,
           ["gy"] = false,
           ["K"] = false,
 
@@ -215,6 +216,10 @@ return {
             cond = "textDocument/hover",
           },
           ["<Leader>;s"] = {
+            function() Snacks.picker.lsp_symbols() end,
+            desc = "Document symbols",
+          },
+          ["<Leader>;H"] = {
             function() vim.lsp.buf.signature_help() end,
             desc = "Signature help",
             cond = "textDocument/signatureHelp",
