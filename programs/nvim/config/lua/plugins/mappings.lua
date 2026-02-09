@@ -216,8 +216,8 @@ return {
             cond = "textDocument/hover",
           },
           ["<Leader>;s"] = {
-            function() Snacks.picker.lsp_symbols() end,
-            desc = "Document symbols",
+            function() require("aerial").toggle() end,
+            desc = "Symbols outline",
           },
           ["<Leader>;H"] = {
             function() vim.lsp.buf.signature_help() end,
@@ -255,8 +255,8 @@ return {
             desc = "Workspace symbols",
           },
           ["<Leader>;o"] = {
-            function() require("aerial").toggle() end,
-            desc = "Symbols outline",
+            function() Snacks.picker.lsp_symbols() end,
+            desc = "Document symbols",
           },
         },
         v = {
