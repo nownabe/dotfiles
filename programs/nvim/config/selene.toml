@@ -1,4 +1,7 @@
-std = "neovim+snacks"
+std = "neovim"
+
+[config]
+globals = ["Snacks"]
 
 [rules]
 global_usage = "allow"
