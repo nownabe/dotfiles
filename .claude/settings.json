@@ -25,6 +25,7 @@
       "Bash(git status:*)",
       "Bash(hms)",
       "Bash(nix flake check:*)",
+      "Read(//home/nownabe/.local/share/nvim/**)",
       "WebFetch(domain:home-manager-options.extranix.com)",
       "WebFetch(domain:json.schemastore.org)",
       "WebFetch(domain:raw.githubusercontent.com)",
