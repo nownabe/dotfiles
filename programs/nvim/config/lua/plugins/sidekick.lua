@@ -45,12 +45,12 @@ return {
     },
     {
       "<leader>sd",
-      function() require("sidekick.cli").ask({ prompt = "diagnostics", submit = true }) end,
+      function() require("sidekick.cli").send({ msg = "{diagnostics}" }) end,
       desc = "Send Diagnostics",
     },
     {
       "<leader>sD",
-      function() require("sidekick.cli").ask({ prompt = "diagnostics_all", submit = true }) end,
+      function() require("sidekick.cli").send({ msg = "{diagnostics_all}" }) end,
       desc = "Send All Diagnostics",
     },
     {
