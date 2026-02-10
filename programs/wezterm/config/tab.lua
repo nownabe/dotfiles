@@ -106,7 +106,7 @@ local function format_tab(tab, max_width)
       { Foreground = { Color = colors.active_bg } },
       { Background = { Color = colors.tab_bar_bg } },
       { Text = LEFT_PILL },
-      { Foreground = { Color = icon_color } },
+      { Foreground = { Color = colors.active_fg } },
       { Background = { Color = colors.active_bg } },
       { Text = " " .. icon },
       { Foreground = { Color = colors.active_fg } },
