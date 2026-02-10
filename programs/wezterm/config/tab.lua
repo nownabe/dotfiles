@@ -103,17 +103,14 @@ local function format_tab(tab, max_width)
 
   if tab.is_active then
     return {
-      { Foreground = { Color = colors.active_bg } },
+      { Foreground = { Color = icon_color } },
       { Background = { Color = colors.tab_bar_bg } },
       { Text = LEFT_PILL },
       { Foreground = { Color = colors.active_fg } },
-      { Background = { Color = colors.active_bg } },
-      { Text = " " .. icon },
-      { Foreground = { Color = colors.active_fg } },
-      { Background = { Color = colors.active_bg } },
+      { Background = { Color = icon_color } },
       { Attribute = { Intensity = "Bold" } },
-      { Text = " " .. label .. " " },
-      { Foreground = { Color = colors.active_bg } },
+      { Text = " " .. icon .. " " .. label .. " " },
+      { Foreground = { Color = icon_color } },
       { Background = { Color = colors.tab_bar_bg } },
       { Text = RIGHT_PILL },
     }
