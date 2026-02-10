@@ -57,7 +57,7 @@ local function get_process_info(pane)
     end
   end
 
-  return nf.dev_terminal, colors.active_bg
+  return nf.dev_terminal, "#585b70" -- surface2
 end
 
 local function get_project_name(cwd_url)
