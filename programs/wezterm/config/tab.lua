@@ -5,10 +5,11 @@ local nf = wezterm.nerdfonts
 local LEFT_PILL = nf.ple_left_half_circle_thick
 local RIGHT_PILL = nf.ple_right_half_circle_thick
 
--- Catppuccin Mocha tab colors
-local TAB_FG = "#1e1e2e"          -- base (active tab text)
-local TAB_BG = "#181825"          -- mantle (tab bar background)
-local TAB_INACTIVE_FG = "#6c7086" -- overlay0 (inactive tab text)
+-- Colors from color scheme
+local scheme = wezterm.color.get_builtin_schemes()["Catppuccin Mocha"]
+local TAB_FG = scheme.background -- base
+local TAB_BG = scheme.tab_bar.background -- mantle
+local TAB_INACTIVE_FG = scheme.tab_bar.inactive_tab.fg_color
 
 -- Process definitions: icon, color, and detection function.
 -- Each detect() checks foreground_process_name and pane title.
@@ -16,32 +17,32 @@ local TAB_INACTIVE_FG = "#6c7086" -- overlay0 (inactive tab text)
 local processes = {
   default = {
     icon = nf.dev_terminal,
-    color = "#585b70", -- surface2
+    color = scheme.brights[1], -- surface2
   },
   {
     icon = nf.linux_neovim,
-    color = "#a6e3a1", -- green
+    color = scheme.ansi[3], -- green
     detect = function(name, title)
       return name == "nvim" or name == "vim" or title:find("[Nn]vim") ~= nil
     end,
   },
   {
     icon = nf.md_docker,
-    color = "#89b4fa", -- blue
+    color = scheme.ansi[5], -- blue
     detect = function(name, title)
       return name == "docker" or title:find("[Dd]ocker") ~= nil
     end,
   },
   {
     icon = nf.md_lan,
-    color = "#f9e2af", -- yellow
+    color = scheme.ansi[4], -- yellow
     detect = function(name, title)
       return name == "ssh" or title:find("[Ss][Ss][Hh]") ~= nil
     end,
   },
   {
     icon = nf.md_robot,
-    color = "#D97757", -- claude orange
+    color = "#D97757", -- claude orange (not in scheme)
     detect = function(name, title)
       return name == "claude" or title:find("[Cc]laude") ~= nil
     end,
