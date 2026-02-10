@@ -37,12 +37,13 @@ local function get_process_info(pane)
   return nf.dev_terminal, colors.active_bg
 end
 
-local function get_project_name(cwd_uri)
-  if not cwd_uri then
+local function get_project_name(cwd_url)
+  if not cwd_url then
     return nil
   end
 
-  local cwd = cwd_uri:match("^file://[^/]*(/.*)") or cwd_uri
+  -- current_working_dir is a Url object; use file_path field
+  local cwd = cwd_url.file_path or tostring(cwd_url)
   -- Match src/github.com/<org>/<project>
   local project = cwd:match("/src/github%.com/[^/]+/([^/]+)")
   if project then
