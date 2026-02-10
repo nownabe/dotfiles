@@ -1,17 +1,14 @@
 local wezterm = require("wezterm")
 local nf = wezterm.nerdfonts
 
--- Catppuccin Mocha palette
-local colors = {
-  active_bg = "#89b4fa",  -- blue
-  active_fg = "#1e1e2e",  -- base
-  inactive_fg = "#6c7086", -- overlay0
-  tab_bar_bg = "#181825", -- mantle
-}
-
 -- Nerd Font half-circle glyphs for pill shape
 local LEFT_PILL = nf.ple_left_half_circle_thick
 local RIGHT_PILL = nf.ple_right_half_circle_thick
+
+-- Catppuccin Mocha tab colors
+local TAB_FG = "#1e1e2e" -- base (active tab text)
+local TAB_BG = "#181825" -- mantle (tab bar background)
+local TAB_INACTIVE_FG = "#6c7086" -- overlay0 (inactive tab text)
 
 -- Process definitions: icon, color, and detection function.
 -- Each detect() checks foreground_process_name and pane title.
@@ -106,23 +103,23 @@ local function format_tab(tab, max_width)
   if tab.is_active then
     return {
       { Foreground = { Color = icon_color } },
-      { Background = { Color = colors.tab_bar_bg } },
+      { Background = { Color = TAB_BG } },
       { Text = LEFT_PILL },
-      { Foreground = { Color = colors.active_fg } },
+      { Foreground = { Color = TAB_FG } },
       { Background = { Color = icon_color } },
       { Attribute = { Intensity = "Bold" } },
       { Text = " " .. icon .. " " .. label .. " " },
       { Foreground = { Color = icon_color } },
-      { Background = { Color = colors.tab_bar_bg } },
+      { Background = { Color = TAB_BG } },
       { Text = RIGHT_PILL },
     }
   else
     return {
       { Foreground = { Color = icon_color } },
-      { Background = { Color = colors.tab_bar_bg } },
+      { Background = { Color = TAB_BG } },
       { Text = "  " .. icon },
-      { Foreground = { Color = colors.inactive_fg } },
-      { Background = { Color = colors.tab_bar_bg } },
+      { Foreground = { Color = TAB_INACTIVE_FG } },
+      { Background = { Color = TAB_BG } },
       { Text = " " .. label .. "  " },
     }
   end
