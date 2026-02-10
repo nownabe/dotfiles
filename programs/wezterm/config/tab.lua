@@ -6,8 +6,8 @@ local LEFT_PILL = nf.ple_left_half_circle_thick
 local RIGHT_PILL = nf.ple_right_half_circle_thick
 
 -- Catppuccin Mocha tab colors
-local TAB_FG = "#1e1e2e" -- base (active tab text)
-local TAB_BG = "#181825" -- mantle (tab bar background)
+local TAB_FG = "#1e1e2e"          -- base (active tab text)
+local TAB_BG = "#181825"          -- mantle (tab bar background)
 local TAB_INACTIVE_FG = "#6c7086" -- overlay0 (inactive tab text)
 
 -- Process definitions: icon, color, and detection function.
@@ -83,16 +83,7 @@ local function format_tab(tab, max_width)
   local icon, icon_color = get_process_info(pane)
   local title = get_project_name(pane.current_working_dir) or "~"
 
-  -- Zoom indicator
-  local zoom = ""
-  for _, p in ipairs(tab.panes) do
-    if p.is_zoomed then
-      zoom = " " .. nf.md_magnify
-      break
-    end
-  end
-
-  local label = title .. zoom
+  local label = title
 
   -- Truncate if too long (account for pill glyphs + icon)
   local text_max = max_width - 6
