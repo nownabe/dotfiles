@@ -115,10 +115,10 @@ local function format_tab(tab, max_width)
     return {
       { Foreground = { Color = icon_color } },
       { Background = { Color = colors.tab_bar_bg } },
-      { Text = " " .. icon },
+      { Text = "  " .. icon },
       { Foreground = { Color = colors.inactive_fg } },
       { Background = { Color = colors.tab_bar_bg } },
-      { Text = " " .. label .. " " },
+      { Text = " " .. label .. "  " },
     }
   end
 end
