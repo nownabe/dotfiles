@@ -44,7 +44,7 @@ dotfiles/
 
 ### Font
 
-Install [UbuntuSansMono Nerd Font](https://www.nerdfonts.com/font-downloads) (`UbuntuSansMono Nerd Font Mono`).
+Install [UbuntuSans Nerd Font](https://www.nerdfonts.com/font-downloads) (`UbuntuSansMono Nerd Font Mono`).
 
 ### WSL
 
