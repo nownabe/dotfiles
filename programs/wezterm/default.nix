@@ -7,19 +7,15 @@
     extraConfig = ''
       local config = wezterm.config_builder()
 
-      require("font").apply_to_config(config)
-      require("appearance").apply_to_config(config)
+      require("config.font").apply_to_config(config)
+      require("config.appearance").apply_to_config(config)
 
       return config
     '';
   };
 
-  xdg.configFile = {
-    "wezterm/font.lua".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/wezterm/config/font.lua";
-    "wezterm/appearance.lua".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/wezterm/config/appearance.lua";
-  };
+  xdg.configFile."wezterm/config".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/wezterm/config";
 
   home.activation.deployWeztermToWindows = lib.mkIf isWSL (
     lib.hm.dag.entryAfter [ "linkGeneration" ] ''
