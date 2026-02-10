@@ -3,8 +3,8 @@ local nf = wezterm.nerdfonts
 
 -- Catppuccin Mocha palette
 local colors = {
-  active_bg = "#89b4fa", -- blue
-  active_fg = "#1e1e2e", -- base
+  active_bg = "#89b4fa",  -- blue
+  active_fg = "#1e1e2e",  -- base
   inactive_fg = "#6c7086", -- overlay0
   tab_bar_bg = "#181825", -- mantle
 }
@@ -13,50 +13,47 @@ local colors = {
 local LEFT_PILL = nf.ple_left_half_circle_thick
 local RIGHT_PILL = nf.ple_right_half_circle_thick
 
--- Process name -> { icon, color }
-local process_icons = {
-  nvim = { icon = nf.linux_neovim, color = "#a6e3a1" }, -- green
-  vim = { icon = nf.linux_neovim, color = "#a6e3a1" },
-  docker = { icon = nf.md_docker, color = "#89b4fa" }, -- blue
-  ssh = { icon = nf.md_lan, color = "#f9e2af" }, -- yellow
-  claude = { icon = nf.md_robot, color = "#cba6f7" }, -- mauve
-  node = { icon = nf.dev_nodejs_small, color = "#a6e3a1" },
-  python = { icon = nf.dev_python, color = "#f9e2af" },
-  ruby = { icon = nf.dev_ruby, color = "#f38ba8" }, -- red
-  go = { icon = nf.dev_go, color = "#89dceb" }, -- teal
-  cargo = { icon = nf.dev_rust, color = "#fab387" }, -- peach
-  rust = { icon = nf.dev_rust, color = "#fab387" },
-}
-
--- Map pane title keywords to process_icons keys (for WSL where
--- foreground_process_name may be unavailable)
-local title_patterns = {
-  { pattern = "[Nn]vim", key = "nvim" },
-  { pattern = "[Dd]ocker", key = "docker" },
-  { pattern = "[Ss][Ss][Hh]", key = "ssh" },
-  { pattern = "[Cc]laude", key = "claude" },
-  { pattern = "[Nn]ode", key = "node" },
-  { pattern = "[Pp]ython", key = "python" },
-  { pattern = "[Rr]uby", key = "ruby" },
+-- Process definitions: icon, color, and detection function.
+-- Each detect(pane) checks foreground_process_name and pane title.
+local processes = {
+  {
+    icon = nf.linux_neovim,
+    color = "#a6e3a1", -- green
+    detect = function(name, title)
+      return name == "nvim" or name == "vim" or title:find("[Nn]vim") ~= nil
+    end,
+  },
+  {
+    icon = nf.md_docker,
+    color = "#89b4fa", -- blue
+    detect = function(name, title)
+      return name == "docker" or title:find("[Dd]ocker") ~= nil
+    end,
+  },
+  {
+    icon = nf.md_lan,
+    color = "#f9e2af", -- yellow
+    detect = function(name, title)
+      return name == "ssh" or title:find("[Ss][Ss][Hh]") ~= nil
+    end,
+  },
+  {
+    icon = nf.md_robot,
+    color = "#D97757", -- claude orange
+    detect = function(name, title)
+      return name == "claude" or title:find("[Cc]laude") ~= nil
+    end,
+  },
 }
 
 local function get_process_info(pane)
-  -- Try foreground_process_name first (basename)
   local proc = pane.foreground_process_name or ""
-  local process_name = proc:match("([^/\\]+)$") or ""
-  local info = process_icons[process_name]
-  if info then
-    return info.icon, info.color
-  end
-
-  -- Fallback: match against pane title (useful on WSL)
+  local name = proc:match("([^/\\]+)$") or ""
   local title = pane.title or ""
-  for _, entry in ipairs(title_patterns) do
-    if title:find(entry.pattern) then
-      info = process_icons[entry.key]
-      if info then
-        return info.icon, info.color
-      end
+
+  for _, p in ipairs(processes) do
+    if p.detect(name, title) then
+      return p.icon, p.color
     end
   end
 
