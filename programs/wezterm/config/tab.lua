@@ -1,4 +1,5 @@
 local wezterm = require("wezterm")
+local nf = wezterm.nerdfonts
 
 -- Catppuccin Mocha palette
 local colors = {
@@ -8,24 +9,24 @@ local colors = {
   tab_bar_bg = "#181825", -- mantle
 }
 
+-- Nerd Font half-circle glyphs for pill shape
+local LEFT_PILL = nf.ple_left_half_circle_thick
+local RIGHT_PILL = nf.ple_right_half_circle_thick
+
 -- Process name -> { icon, color }
 local process_icons = {
-  nvim = { icon = "", color = "#a6e3a1" }, -- green
-  vim = { icon = "", color = "#a6e3a1" },
-  docker = { icon = "", color = "#89b4fa" }, -- blue
-  ssh = { icon = "󰣀", color = "#f9e2af" }, -- yellow
-  claude = { icon = "󱜚", color = "#cba6f7" }, -- mauve
-  node = { icon = "", color = "#a6e3a1" },
-  python = { icon = "", color = "#f9e2af" },
-  ruby = { icon = "", color = "#f38ba8" }, -- red
-  go = { icon = "", color = "#89dceb" }, -- teal
-  cargo = { icon = "", color = "#fab387" }, -- peach
-  rust = { icon = "", color = "#fab387" },
+  nvim = { icon = nf.linux_neovim, color = "#a6e3a1" }, -- green
+  vim = { icon = nf.linux_neovim, color = "#a6e3a1" },
+  docker = { icon = nf.md_docker, color = "#89b4fa" }, -- blue
+  ssh = { icon = nf.md_lan, color = "#f9e2af" }, -- yellow
+  claude = { icon = nf.md_robot, color = "#cba6f7" }, -- mauve
+  node = { icon = nf.dev_nodejs_small, color = "#a6e3a1" },
+  python = { icon = nf.dev_python, color = "#f9e2af" },
+  ruby = { icon = nf.dev_ruby, color = "#f38ba8" }, -- red
+  go = { icon = nf.dev_go, color = "#89dceb" }, -- teal
+  cargo = { icon = nf.dev_rust, color = "#fab387" }, -- peach
+  rust = { icon = nf.dev_rust, color = "#fab387" },
 }
-
--- Nerd Font half-circle glyphs for pill shape
-local LEFT_PILL = ""
-local RIGHT_PILL = ""
 
 local function get_process_info(pane)
   local process_name = pane.foreground_process_name:match("([^/\\]+)$") or ""
@@ -33,7 +34,7 @@ local function get_process_info(pane)
   if info then
     return info.icon, info.color
   end
-  return "", colors.active_bg
+  return nf.dev_terminal, colors.active_bg
 end
 
 local function get_project_name(cwd_uri)
@@ -60,7 +61,7 @@ local function format_tab(tab, max_width)
   local zoom = ""
   for _, p in ipairs(tab.panes) do
     if p.is_zoomed then
-      zoom = " 󰍉"
+      zoom = " " .. nf.md_magnify
       break
     end
   end
