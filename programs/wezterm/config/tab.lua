@@ -93,12 +93,12 @@ local function format_tab(tab, max_width)
     end
   end
 
-  local tab_text = icon .. " " .. title .. zoom
+  local label = title .. zoom
 
-  -- Truncate if too long (account for pill glyphs)
-  local text_max = max_width - 4
-  if #tab_text > text_max then
-    tab_text = tab_text:sub(1, text_max - 1) .. "…"
+  -- Truncate if too long (account for pill glyphs + icon)
+  local text_max = max_width - 6
+  if #label > text_max then
+    label = label:sub(1, text_max - 1) .. "…"
   end
 
   if tab.is_active then
@@ -106,10 +106,13 @@ local function format_tab(tab, max_width)
       { Foreground = { Color = colors.active_bg } },
       { Background = { Color = colors.tab_bar_bg } },
       { Text = LEFT_PILL },
+      { Foreground = { Color = icon_color } },
+      { Background = { Color = colors.active_bg } },
+      { Text = " " .. icon },
       { Foreground = { Color = colors.active_fg } },
       { Background = { Color = colors.active_bg } },
       { Attribute = { Intensity = "Bold" } },
-      { Text = " " .. tab_text .. " " },
+      { Text = " " .. label .. " " },
       { Foreground = { Color = colors.active_bg } },
       { Background = { Color = colors.tab_bar_bg } },
       { Text = RIGHT_PILL },
@@ -121,7 +124,7 @@ local function format_tab(tab, max_width)
       { Text = " " .. icon },
       { Foreground = { Color = colors.inactive_fg } },
       { Background = { Color = colors.tab_bar_bg } },
-      { Text = " " .. title .. zoom .. " " },
+      { Text = " " .. label .. " " },
     }
   end
 end
