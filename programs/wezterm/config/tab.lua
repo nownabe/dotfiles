@@ -28,12 +28,38 @@ local process_icons = {
   rust = { icon = nf.dev_rust, color = "#fab387" },
 }
 
+-- Map pane title keywords to process_icons keys (for WSL where
+-- foreground_process_name may be unavailable)
+local title_patterns = {
+  { pattern = "[Nn]vim", key = "nvim" },
+  { pattern = "[Dd]ocker", key = "docker" },
+  { pattern = "[Ss][Ss][Hh]", key = "ssh" },
+  { pattern = "[Cc]laude", key = "claude" },
+  { pattern = "[Nn]ode", key = "node" },
+  { pattern = "[Pp]ython", key = "python" },
+  { pattern = "[Rr]uby", key = "ruby" },
+}
+
 local function get_process_info(pane)
-  local process_name = pane.foreground_process_name:match("([^/\\]+)$") or ""
+  -- Try foreground_process_name first (basename)
+  local proc = pane.foreground_process_name or ""
+  local process_name = proc:match("([^/\\]+)$") or ""
   local info = process_icons[process_name]
   if info then
     return info.icon, info.color
   end
+
+  -- Fallback: match against pane title (useful on WSL)
+  local title = pane.title or ""
+  for _, entry in ipairs(title_patterns) do
+    if title:find(entry.pattern) then
+      info = process_icons[entry.key]
+      if info then
+        return info.icon, info.color
+      end
+    end
+  end
+
   return nf.dev_terminal, colors.active_bg
 end
 
