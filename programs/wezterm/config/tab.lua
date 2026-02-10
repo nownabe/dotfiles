@@ -14,8 +14,13 @@ local LEFT_PILL = nf.ple_left_half_circle_thick
 local RIGHT_PILL = nf.ple_right_half_circle_thick
 
 -- Process definitions: icon, color, and detection function.
--- Each detect(pane) checks foreground_process_name and pane title.
+-- Each detect() checks foreground_process_name and pane title.
+-- "default" is used when no other process matches.
 local processes = {
+  default = {
+    icon = nf.dev_terminal,
+    color = "#585b70", -- surface2
+  },
   {
     icon = nf.linux_neovim,
     color = "#a6e3a1", -- green
@@ -57,7 +62,7 @@ local function get_process_info(pane)
     end
   end
 
-  return nf.dev_terminal, "#585b70" -- surface2
+  return processes.default.icon, processes.default.color
 end
 
 local function get_project_name(cwd_url)
