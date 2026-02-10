@@ -12,7 +12,7 @@ function M.apply_to_config(config)
 
   -- Tab bar positioning and limits
   config.tab_bar_at_bottom = true
-  config.tab_max_width = 30
+  config.tab_max_width = 50
   config.show_new_tab_button_in_tab_bar = false
 
   -- Tab bar colors (Catppuccin Mocha)
