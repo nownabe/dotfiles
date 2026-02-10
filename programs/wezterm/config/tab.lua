@@ -11,19 +11,40 @@ local TAB_FG = scheme.background -- base
 local TAB_BG = scheme.tab_bar.background -- mantle
 local TAB_INACTIVE_FG = scheme.tab_bar.inactive_tab.fg_color
 
--- Process definitions: icon, color, and detection function.
+-- Get tab title from CWD: parse github project name or last directory component.
+local function get_title_from_cwd(pane)
+  local cwd_url = pane.current_working_dir
+  if not cwd_url then
+    return nil
+  end
+  local cwd = cwd_url.file_path or tostring(cwd_url)
+  local project = cwd:match("/src/github%.com/[^/]+/([^/]+)")
+  if project then
+    return project
+  end
+  return cwd:match("([^/]+)/?$")
+end
+
+-- Process definitions: icon, color, detection, and title function.
 -- Each detect() checks foreground_process_name and pane title.
+-- Each get_title() returns the tab label (falls back to default).
 -- "default" is used when no other process matches.
 local processes = {
   default = {
     icon = nf.dev_terminal,
     color = scheme.brights[1], -- surface2
+    get_title = function(pane)
+      return get_title_from_cwd(pane) or "~"
+    end,
   },
   {
     icon = nf.linux_neovim,
     color = scheme.ansi[3], -- green
     detect = function(name, title)
       return name == "nvim" or name == "vim" or title:find("[Nn]vim") ~= nil
+    end,
+    get_title = function(pane)
+      return get_title_from_cwd(pane) or "nvim"
     end,
   },
   {
@@ -32,6 +53,9 @@ local processes = {
     detect = function(name, title)
       return name == "docker" or title:find("[Dd]ocker") ~= nil
     end,
+    get_title = function(pane)
+      return get_title_from_cwd(pane) or "docker"
+    end,
   },
   {
     icon = nf.md_lan,
@@ -39,12 +63,18 @@ local processes = {
     detect = function(name, title)
       return name == "ssh" or title:find("[Ss][Ss][Hh]") ~= nil
     end,
+    get_title = function(pane)
+      return get_title_from_cwd(pane) or "ssh"
+    end,
   },
   {
     icon = nf.md_robot,
     color = "#D97757", -- claude orange (not in scheme)
     detect = function(name, title)
       return name == "claude" or title:find("[Cc]laude") ~= nil
+    end,
+    get_title = function(pane)
+      return get_title_from_cwd(pane) or "claude"
     end,
   },
 }
@@ -56,33 +86,17 @@ local function get_process_info(pane)
 
   for _, p in ipairs(processes) do
     if p.detect(name, title) then
-      return p.icon, p.color
+      return p.icon, p.color, p.get_title(pane)
     end
   end
 
-  return processes.default.icon, processes.default.color
-end
-
-local function get_project_name(cwd_url)
-  if not cwd_url then
-    return nil
-  end
-
-  -- current_working_dir is a Url object; use file_path field
-  local cwd = cwd_url.file_path or tostring(cwd_url)
-  -- Match src/github.com/<org>/<project>
-  local project = cwd:match("/src/github%.com/[^/]+/([^/]+)")
-  if project then
-    return project
-  end
-  -- Fallback: last directory component
-  return cwd:match("([^/]+)/?$")
+  local d = processes.default
+  return d.icon, d.color, d.get_title(pane)
 end
 
 local function format_tab(tab, max_width)
   local pane = tab.active_pane
-  local icon, icon_color = get_process_info(pane)
-  local title = get_project_name(pane.current_working_dir) or "~"
+  local icon, icon_color, title = get_process_info(pane)
 
   local label = title
 
