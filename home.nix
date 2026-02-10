@@ -6,6 +6,7 @@
     ./programs/git
     ./programs/nvim
     ./programs/claude
+    ./programs/wezterm
   ];
 
   home = {
