@@ -9,6 +9,7 @@
 
       require("config.font").apply_to_config(config)
       require("config.appearance").apply_to_config(config)
+      require("config.tab").setup()
 
       return config
     '';
