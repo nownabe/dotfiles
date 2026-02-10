@@ -1,15 +1,16 @@
 local wezterm = require("wezterm")
 local nf = wezterm.nerdfonts
-
--- Nerd Font half-circle glyphs for pill shape
-local LEFT_PILL = nf.ple_left_half_circle_thick
-local RIGHT_PILL = nf.ple_right_half_circle_thick
-
--- Colors from color scheme
 local scheme = wezterm.color.get_builtin_schemes()["Catppuccin Mocha"]
-local TAB_FG = scheme.background -- base
-local TAB_BG = scheme.tab_bar.background -- mantle
-local TAB_INACTIVE_FG = scheme.tab_bar.inactive_tab.fg_color
+
+local text_color = {
+  active = scheme.background,
+  inactive = scheme.tab_bar.inactive_tab.fg_color,
+}
+
+local tab_edge = {
+  left = nf.ple_left_half_circle_thick,
+  right = nf.ple_right_half_circle_thick,
+}
 
 -- Get tab title from CWD: parse github project name or last directory component.
 local function get_title_from_cwd(pane)
@@ -96,37 +97,47 @@ end
 
 local function format_tab(tab, max_width)
   local pane = tab.active_pane
-  local icon, icon_color, title = get_process_info(pane)
-
-  local label = title
+  local icon, color, title = get_process_info(pane)
 
   -- Truncate if too long (account for pill glyphs + icon)
   local text_max = max_width - 6
-  if #label > text_max then
-    label = label:sub(1, text_max - 1) .. "…"
+  if #title > text_max then
+    title = title:sub(1, text_max - 1) .. "…"
   end
 
   if tab.is_active then
     return {
-      { Foreground = { Color = icon_color } },
-      { Background = { Color = TAB_BG } },
-      { Text = LEFT_PILL },
-      { Foreground = { Color = TAB_FG } },
-      { Background = { Color = icon_color } },
+      -- Left edge
+      { Background = { Color = "none" } },
+      { Foreground = { Color = color } },
+      { Text = tab_edge.left },
+      -- Tab title
+      { Background = { Color = color } },
+      { Foreground = { Color = text_color.active } },
       { Attribute = { Intensity = "Bold" } },
-      { Text = " " .. icon .. " " .. label .. " " },
-      { Foreground = { Color = icon_color } },
-      { Background = { Color = TAB_BG } },
-      { Text = RIGHT_PILL },
+      { Text = " " .. icon .. " " .. title .. " " },
+      -- Right edge
+      { Background = { Color = "none" } },
+      { Foreground = { Color = color } },
+      { Text = tab_edge.right },
+      -- Right padding
+      { Background = { Color = "none" } },
+      { Foreground = { Color = "none" } },
+      { Text = " " },
     }
   else
     return {
-      { Foreground = { Color = icon_color } },
-      { Background = { Color = TAB_BG } },
+      -- Tab title
+      { Background = { Color = "none" } },
+      { Foreground = { Color = color } },
       { Text = "  " .. icon },
-      { Foreground = { Color = TAB_INACTIVE_FG } },
-      { Background = { Color = TAB_BG } },
-      { Text = " " .. label .. "  " },
+      { Background = { Color = "none" } },
+      { Foreground = { Color = text_color.inactive } },
+      { Text = " " .. title .. "  " },
+      -- Right padding
+      { Background = { Color = "none" } },
+      { Foreground = { Color = "none" } },
+      { Text = " " },
     }
   end
 end
