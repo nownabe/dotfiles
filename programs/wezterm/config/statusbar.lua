@@ -54,7 +54,7 @@ local function right_status()
   table.insert(cells, hostname)
 
   -- Date/Time
-  table.insert(cells, wezterm.strftime("%m/%d %H:%M"))
+  table.insert(cells, wezterm.strftime("%Y-%m-%d %H:%M:%S"))
 
   -- Build formatted output
   local elements = {
