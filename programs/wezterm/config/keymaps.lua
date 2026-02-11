@@ -31,12 +31,11 @@ function M.apply_to_config(config)
     -- Workspace (session) navigation
     { key = "j", mods = "CTRL|SHIFT", action = act.SwitchWorkspaceRelative(1) },
     { key = "k", mods = "CTRL|SHIFT", action = act.SwitchWorkspaceRelative(-1) },
-    { key = "s", mods = "CTRL|SHIFT", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
     {
-      key = "m",
+      key = "s",
       mods = "CTRL|SHIFT",
       action = act.PromptInputLine({
-        description = "Enter name for new workspace",
+        description = "Enter workspace name (switch to existing or create new)",
         action = wezterm.action_callback(function(window, pane, line)
           if line then
             window:perform_action(act.SwitchToWorkspace({ name = line }), pane)
