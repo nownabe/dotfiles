@@ -32,7 +32,7 @@
 
   home.activation.deployWeztermToWindows = lib.mkIf isWSL (
     lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-      win_user=$(/mnt/c/Windows/System32/cmd.exe /c "echo %USERNAME%" 2>/dev/null | tr -d '\r')
+      win_user=$(/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -Command '[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $env:USERNAME' 2>/dev/null | tr -d '\r')
       if [ -n "$win_user" ]; then
         win_config="/mnt/c/Users/$win_user/.config/wezterm"
         rm -rf "$win_config"
