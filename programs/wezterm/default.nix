@@ -13,6 +13,16 @@
       require("config.statusbar").setup()
       require("config.keymaps").apply_to_config(config)
 
+      -- Launch WSL by default when running on Windows
+      if wezterm.target_triple:find("windows") then
+        for _, domain in ipairs(wezterm.default_wsl_domains()) do
+          if domain.name:find("^WSL:Ubuntu") then
+            config.default_domain = domain.name
+            break
+          end
+        end
+      end
+
       return config
     '';
   };
