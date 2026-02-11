@@ -18,7 +18,7 @@ function M.apply_to_config(config)
   -- Tab bar colors (Catppuccin Mocha)
   config.colors = {
     tab_bar = {
-      background = "#181825", -- mantle
+      background = "none",
     },
   }
 
