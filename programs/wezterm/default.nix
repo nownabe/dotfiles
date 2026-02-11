@@ -10,6 +10,7 @@
       require("config.font").apply_to_config(config)
       require("config.appearance").apply_to_config(config)
       require("config.tab").setup()
+      require("config.keymaps").apply_to_config(config)
 
       return config
     '';
