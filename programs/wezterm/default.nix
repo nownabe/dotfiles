@@ -12,6 +12,7 @@
       require("config.tab").setup()
       require("config.statusbar").setup()
       require("config.keymaps").apply_to_config(config)
+      require("config.ssh").apply_to_config(config)
 
       -- Launch WSL by default when running on Windows
       if wezterm.target_triple:find("windows") then
