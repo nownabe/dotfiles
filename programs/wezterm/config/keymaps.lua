@@ -32,7 +32,18 @@ function M.apply_to_config(config)
     { key = "j", mods = "LEADER", action = act.SwitchWorkspaceRelative(1) },
     { key = "k", mods = "LEADER", action = act.SwitchWorkspaceRelative(-1) },
     { key = "s", mods = "LEADER", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
-    { key = "n", mods = "LEADER", action = act.SwitchToWorkspace() },
+    {
+      key = "n",
+      mods = "LEADER",
+      action = act.PromptInputLine({
+        description = "Enter name for new workspace",
+        action = wezterm.action_callback(function(window, pane, line)
+          if line then
+            window:perform_action(act.SwitchToWorkspace({ name = line }), pane)
+          end
+        end),
+      }),
+    },
 
     -- Clipboard
     { key = "c", mods = "CTRL|SHIFT", action = act.CopyTo("Clipboard") },
