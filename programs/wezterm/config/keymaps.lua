@@ -29,9 +29,9 @@ function M.apply_to_config(config)
     { key = "t", mods = "ALT", action = act.SpawnTab("CurrentPaneDomain") },
 
     -- Workspace (session) navigation
-    { key = "j", mods = "LEADER", action = act.SwitchWorkspaceRelative(1) },
-    { key = "k", mods = "LEADER", action = act.SwitchWorkspaceRelative(-1) },
-    { key = "s", mods = "LEADER", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
+    { key = "j", mods = "ALT", action = act.SwitchWorkspaceRelative(1) },
+    { key = "k", mods = "ALT", action = act.SwitchWorkspaceRelative(-1) },
+    { key = "s", mods = "ALT", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
     {
       key = "n",
       mods = "LEADER",
