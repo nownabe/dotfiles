@@ -149,7 +149,7 @@ function M.setup()
     return format_tab(tab, max_width)
   end)
 
-  local workspace_color = scheme.ansi[6] -- mauve
+  local workspace_color = scheme.brights[5] -- lavender
 
   wezterm.on("update-status", function(window)
     local workspace = window:active_workspace()
