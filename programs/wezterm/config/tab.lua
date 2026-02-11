@@ -148,6 +148,25 @@ function M.setup()
   wezterm.on("format-tab-title", function(tab, _tabs, _panes, _config, _hover, max_width)
     return format_tab(tab, max_width)
   end)
+
+  local workspace_color = scheme.ansi[6] -- mauve
+  local workspace_icon = nf.cod_window
+
+  wezterm.on("update-status", function(window)
+    local workspace = window:active_workspace()
+    window:set_left_status(wezterm.format({
+      { Background = { Color = "none" } },
+      { Foreground = { Color = workspace_color } },
+      { Text = " " .. tab_edge.left },
+      { Background = { Color = workspace_color } },
+      { Foreground = { Color = text_color.active } },
+      { Attribute = { Intensity = "Bold" } },
+      { Text = " " .. workspace_icon .. " " .. workspace .. " " },
+      { Background = { Color = "none" } },
+      { Foreground = { Color = workspace_color } },
+      { Text = tab_edge.right .. " " },
+    }))
+  end)
 end
 
 return M
