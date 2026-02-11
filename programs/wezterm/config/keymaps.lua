@@ -102,19 +102,14 @@ function M.apply_to_config(config)
     {
       key = "Space",
       mods = "CTRL|SHIFT",
-      action = wezterm.action_callback(function(window, pane)
-        window:perform_action(act.ActivateCopyMode, pane)
-        window:perform_action(act.CopyMode("ClearSelectionMode"), pane)
-        window:perform_action(act.CopyMode("ClearPattern"), pane)
-      end),
+      action = act.ActivateCopyMode,
+      -- action = wezterm.action_callback(function(window, pane)
+      --   window:perform_action(act.ActivateCopyMode, pane)
+      --   window:perform_action(act.CopyMode("ClearSelectionMode"), pane)
+      --   window:perform_action(act.CopyMode("ClearPattern"), pane)
+      -- end),
     },
   }
-
-  -- Vim-like copy mode (defined from scratch for full control)
-  local clear_and_close = act.Multiple({
-    act.CopyMode("ClearPattern"),
-    act.CopyMode("Close"),
-  })
 
   local copy_mode = {
     -- Movement: h j k l
@@ -184,8 +179,22 @@ function M.apply_to_config(config)
     },
 
     -- Exit: q Escape Ctrl+C
-    { key = "q", mods = "NONE", action = clear_and_close },
-    { key = "c", mods = "CTRL", action = clear_and_close },
+    {
+      key = "q",
+      mods = "NONE",
+      action = act.Multiple({
+        act.CopyMode("ClearPattern"),
+        act.CopyMode("Close"),
+      }),
+    },
+    {
+      key = "c",
+      mods = "CTRL",
+      action = act.Multiple({
+        act.CopyMode("ClearPattern"),
+        act.CopyMode("Close"),
+      }),
+    },
   }
 
   local search_mode = {
