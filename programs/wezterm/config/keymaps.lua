@@ -18,23 +18,23 @@ function M.apply_to_config(config)
     { key = "r", mods = "LEADER", action = act.ActivateKeyTable({ name = "resize_pane", one_shot = false }) },
 
     -- Pane focus
-    { key = "h", mods = "CTRL|SHIFT", action = act.ActivatePaneDirection("Left") },
-    { key = "j", mods = "CTRL|SHIFT", action = act.ActivatePaneDirection("Down") },
-    { key = "k", mods = "CTRL|SHIFT", action = act.ActivatePaneDirection("Up") },
-    { key = "l", mods = "CTRL|SHIFT", action = act.ActivatePaneDirection("Right") },
+    { key = "h", mods = "ALT", action = act.ActivatePaneDirection("Left") },
+    { key = "j", mods = "ALT", action = act.ActivatePaneDirection("Down") },
+    { key = "k", mods = "ALT", action = act.ActivatePaneDirection("Up") },
+    { key = "l", mods = "ALT", action = act.ActivatePaneDirection("Right") },
 
     -- Tab navigation
-    { key = "h", mods = "ALT", action = act.ActivateTabRelative(-1) },
-    { key = "l", mods = "ALT", action = act.ActivateTabRelative(1) },
+    { key = "h", mods = "CTRL|SHIFT", action = act.ActivateTabRelative(-1) },
+    { key = "l", mods = "CTRL|SHIFT", action = act.ActivateTabRelative(1) },
     { key = "n", mods = "CTRL|SHIFT", action = act.SpawnTab("CurrentPaneDomain") },
 
     -- Workspace (session) navigation
-    { key = "j", mods = "ALT", action = act.SwitchWorkspaceRelative(1) },
-    { key = "k", mods = "ALT", action = act.SwitchWorkspaceRelative(-1) },
-    { key = "s", mods = "ALT", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
+    { key = "j", mods = "CTRL|SHIFT", action = act.SwitchWorkspaceRelative(1) },
+    { key = "k", mods = "CTRL|SHIFT", action = act.SwitchWorkspaceRelative(-1) },
+    { key = "s", mods = "CTRL|SHIFT", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
     {
-      key = "n",
-      mods = "LEADER",
+      key = "m",
+      mods = "CTRL|SHIFT",
       action = act.PromptInputLine({
         description = "Enter name for new workspace",
         action = wezterm.action_callback(function(window, pane, line)
