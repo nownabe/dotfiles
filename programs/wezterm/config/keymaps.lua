@@ -72,6 +72,23 @@ function M.apply_to_config(config)
         )
       end),
     },
+    {
+      key = "r",
+      mods = "CTRL|SHIFT",
+      action = wezterm.action_callback(function(window, pane)
+        window:perform_action(
+          act.PromptInputLine({
+            description = "Enter new name for workspace: " .. window:active_workspace(),
+            action = wezterm.action_callback(function(window, pane, line)
+              if line then
+                wezterm.mux.rename_workspace(wezterm.mux.get_active_workspace(), line)
+              end
+            end),
+          }),
+          pane
+        )
+      end),
+    },
 
     -- Clipboard
     { key = "c", mods = "CTRL|SHIFT", action = act.CopyTo("Clipboard") },
