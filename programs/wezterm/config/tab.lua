@@ -33,7 +33,7 @@ end
 local processes = {
   default = {
     icon = nf.dev_terminal,
-    color = scheme.brights[1], -- surface2
+    color = scheme.brights[8], -- subtext0
     get_title = function(pane)
       return get_title_from_cwd(pane) or "~"
     end,

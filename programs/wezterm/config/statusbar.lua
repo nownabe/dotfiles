@@ -8,8 +8,8 @@ local colors = {
   red = scheme.ansi[2],
   yellow = scheme.ansi[4],
   peach = scheme.indexed and scheme.indexed[209] or "#fab387",
-  subtext0 = scheme.brights[1], -- surface2/subtext
-  overlay0 = "#6c7086",
+  subtext0 = scheme.ansi[8], -- subtext1
+  overlay0 = scheme.brights[8], -- subtext0
   surface0 = "#313244",
   base = scheme.background,
 }
