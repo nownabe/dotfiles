@@ -16,8 +16,8 @@ local colors = {
 
 -- Mode definitions: key_table name -> display label and color
 local modes = {
-  copy_mode = { label = "COPY", color = colors.yellow },
-  search_mode = { label = "COPY", color = colors.yellow },
+  copy_mode = { label = " COPY ", color = colors.yellow },
+  search_mode = { label = " COPY ", color = colors.yellow },
   resize_pane = { label = "RESIZE", color = colors.red },
 }
 local default_mode = { label = "NORMAL", color = colors.lavender }
