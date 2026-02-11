@@ -26,7 +26,7 @@ function M.apply_to_config(config)
     -- Tab navigation
     { key = "h", mods = "ALT", action = act.ActivateTabRelative(-1) },
     { key = "l", mods = "ALT", action = act.ActivateTabRelative(1) },
-    { key = "t", mods = "ALT", action = act.SpawnTab("CurrentPaneDomain") },
+    { key = "n", mods = "CTRL|SHIFT", action = act.SpawnTab("CurrentPaneDomain") },
 
     -- Workspace (session) navigation
     { key = "j", mods = "ALT", action = act.SwitchWorkspaceRelative(1) },
