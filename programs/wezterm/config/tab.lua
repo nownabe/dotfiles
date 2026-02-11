@@ -148,17 +148,6 @@ function M.setup()
   wezterm.on("format-tab-title", function(tab, _tabs, _panes, _config, _hover, max_width)
     return format_tab(tab, max_width)
   end)
-
-  local workspace_color = scheme.brights[5] -- lavender
-
-  wezterm.on("update-status", function(window)
-    local workspace = window:active_workspace()
-    window:set_left_status(wezterm.format({
-      { Background = { Color = "none" } },
-      { Foreground = { Color = workspace_color } },
-      { Text = "  " .. workspace .. "  " },
-    }))
-  end)
 end
 
 return M
