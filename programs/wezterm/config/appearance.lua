@@ -18,9 +18,12 @@ function M.apply_to_config(config)
   -- Tab bar colors (Catppuccin Mocha)
   config.colors = {
     tab_bar = {
-      background = "#181825", -- mantle
+      background = "none",
     },
   }
+
+  -- Background opacity
+  config.window_background_opacity = 0.90
 
   -- Dim inactive panes to visually distinguish the active one
   config.inactive_pane_hsb = {
