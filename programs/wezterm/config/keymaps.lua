@@ -169,9 +169,17 @@ function M.apply_to_config(config)
     },
 
     -- Search: / n N
-    { key = "/", mods = "NONE",  action = act.Search({ CaseInSensitiveString = "" }) },
-    { key = "n", mods = "NONE",  action = act.CopyMode("NextMatch") },
-    { key = "N", mods = "SHIFT", action = act.CopyMode("PriorMatch") },
+    { key = "/", mods = "NONE", action = act.Search({ CaseInSensitiveString = "" }) },
+    {
+      key = "n",
+      mods = "NONE",
+      action = act.Multiple({ act.CopyMode("NextMatch"), act.CopyMode("ClearSelectionMode") }),
+    },
+    {
+      key = "N",
+      mods = "SHIFT",
+      action = act.Multiple({ act.CopyMode("PriorMatch"), act.CopyMode("ClearSelectionMode") }),
+    },
     {
       key = "Escape",
       mods = "NONE",
@@ -198,7 +206,11 @@ function M.apply_to_config(config)
   }
 
   local search_mode = {
-    { key = "Enter", mods = "NONE", action = act.CopyMode("AcceptPattern") },
+    {
+      key = "Enter",
+      mods = "NONE",
+      action = act.Multiple({ act.CopyMode("AcceptPattern"), act.CopyMode("ClearSelectionMode") }),
+    },
     {
       key = "Escape",
       mods = "NONE",
