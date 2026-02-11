@@ -24,8 +24,8 @@ function M.apply_to_config(config)
     { key = "l", mods = "CTRL|SHIFT", action = act.ActivatePaneDirection("Right") },
 
     -- Tab navigation
-    { key = "h", mods = "ALT", action = act.ActivateTabRelative(1) },
-    { key = "l", mods = "ALT", action = act.ActivateTabRelative(-1) },
+    { key = "h", mods = "ALT", action = act.ActivateTabRelative(-1) },
+    { key = "l", mods = "ALT", action = act.ActivateTabRelative(1) },
     { key = "t", mods = "ALT", action = act.SpawnTab("CurrentPaneDomain") },
 
     -- Workspace (session) navigation
