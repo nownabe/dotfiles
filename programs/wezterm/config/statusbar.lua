@@ -16,42 +16,25 @@ local colors = {
 
 -- Mode definitions: key_table name -> display label and color
 local modes = {
-  copy_mode = { label = " COPY ", color = colors.yellow },
-  search_mode = { label = " COPY ", color = colors.yellow },
-  resize_pane = { label = " RESIZE ", color = colors.red },
+  copy_mode = { label = "COPY", color = colors.yellow },
+  search_mode = { label = "COPY", color = colors.yellow },
+  resize_pane = { label = "RESIZE", color = colors.red },
 }
-
-local edge = {
-  left = nf.ple_left_half_circle_thick,
-  right = nf.ple_right_half_circle_thick,
-}
+local default_mode = { label = "NORMAL", color = colors.lavender }
 
 local function left_status(window)
   local workspace = window:active_workspace()
   local key_table = window:active_key_table()
-  local mode = modes[key_table]
-
-  if mode then
-    return wezterm.format({
-      { Background = { Color = "none" } },
-      { Foreground = { Color = mode.color } },
-      { Text = " " .. edge.left },
-      { Background = { Color = mode.color } },
-      { Foreground = { Color = colors.base } },
-      { Attribute = { Intensity = "Bold" } },
-      { Text = mode.label },
-      { Background = { Color = "none" } },
-      { Foreground = { Color = mode.color } },
-      { Text = edge.right .. " " },
-      { Foreground = { Color = colors.lavender } },
-      { Text = workspace .. " " },
-    })
-  end
+  local mode = modes[key_table] or default_mode
 
   return wezterm.format({
     { Background = { Color = "none" } },
+    { Foreground = { Color = mode.color } },
+    { Attribute = { Intensity = "Bold" } },
+    { Text = "  " .. mode.label .. "  " },
+    { Attribute = { Intensity = "Normal" } },
     { Foreground = { Color = colors.lavender } },
-    { Text = "  " .. workspace .. "  " },
+    { Text = workspace .. "  " },
   })
 end
 
