@@ -22,6 +22,9 @@ function M.apply_to_config(config)
     },
   }
 
+  -- Background opacity
+  config.window_background_opacity = 0.90
+
   -- Dim inactive panes to visually distinguish the active one
   config.inactive_pane_hsb = {
     saturation = 0.8,
