@@ -34,14 +34,43 @@ function M.apply_to_config(config)
     {
       key = "s",
       mods = "CTRL|SHIFT",
-      action = act.PromptInputLine({
-        description = "Enter workspace name (switch to existing or create new)",
-        action = wezterm.action_callback(function(window, pane, line)
-          if line then
-            window:perform_action(act.SwitchToWorkspace({ name = line }), pane)
-          end
-        end),
-      }),
+      action = wezterm.action_callback(function(window, pane)
+        local choices = {
+          { label = "+ Create new workspace", id = "__new__" },
+        }
+        for _, name in ipairs(wezterm.mux.get_workspace_names()) do
+          table.insert(choices, { label = name, id = name })
+        end
+
+        window:perform_action(
+          act.InputSelector({
+            title = "Switch workspace",
+            choices = choices,
+            fuzzy = true,
+            action = wezterm.action_callback(function(window, pane, id, label)
+              if not id then
+                return
+              end
+              if id == "__new__" then
+                window:perform_action(
+                  act.PromptInputLine({
+                    description = "Enter name for new workspace",
+                    action = wezterm.action_callback(function(window, pane, line)
+                      if line then
+                        window:perform_action(act.SwitchToWorkspace({ name = line }), pane)
+                      end
+                    end),
+                  }),
+                  pane
+                )
+              else
+                window:perform_action(act.SwitchToWorkspace({ name = id }), pane)
+              end
+            end),
+          }),
+          pane
+        )
+      end),
     },
 
     -- Clipboard
