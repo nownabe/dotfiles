@@ -51,6 +51,9 @@
       # Cloud
       awscli2
       google-cloud-sdk
+
+      # Containers
+      docker
     ];
   };
 
