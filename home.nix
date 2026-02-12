@@ -22,6 +22,7 @@
       # Languages & runtimes
       go
       lua
+      nodejs
       python3
       ruby
       deno
