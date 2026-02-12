@@ -54,7 +54,6 @@
 
       # Containers
       docker
-      docker-compose
     ];
   };
 
