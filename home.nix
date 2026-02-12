@@ -45,6 +45,7 @@
       zip
       unzip
       gnupg
+      gnumake
       claude-code
 
       # Cloud
