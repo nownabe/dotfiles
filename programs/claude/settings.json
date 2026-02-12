@@ -36,6 +36,7 @@
     ]
   },
   "model": "opus",
+  "agentTeams": true,
   "hooks": {
     "Notification": [
       {
