@@ -49,3 +49,15 @@ Install [UbuntuSans Nerd Font](https://www.nerdfonts.com/font-downloads) (`Ubunt
 ### WSL
 
 - Remove the `Ctrl+V` keybinding in Windows Terminal. Use `Ctrl+Shift+V` to paste instead.
+
+### Docker (WSL2)
+
+Install Docker Engine via apt for systemd integration. See [official documentation](https://docs.docker.com/engine/install/ubuntu/).
+
+```shell
+sudo apt install docker.io
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+```
+
+Restart WSL to apply the group change.
