@@ -49,3 +49,7 @@ Install [UbuntuSans Nerd Font](https://www.nerdfonts.com/font-downloads) (`Ubunt
 ### WSL
 
 - Remove the `Ctrl+V` keybinding in Windows Terminal. Use `Ctrl+Shift+V` to paste instead.
+
+### Docker (WSL2)
+
+See [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/).
