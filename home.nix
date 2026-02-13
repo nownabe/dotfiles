@@ -74,6 +74,7 @@
     ssh = {
       enable = true;
       enableDefaultConfig = false;
+      includes = [ "~/.ssh/config.local" ];
       matchBlocks."*" = {
         addKeysToAgent = "yes";
       };
