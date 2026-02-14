@@ -73,24 +73,71 @@ interface HookOutput {
 
 // --- Feature: Forbidden Command Patterns ---
 
-interface ForbiddenPattern {
-  pattern: RegExp;
+interface ForbiddenPatternEntry {
+  pattern: string;
   reason: string;
   suggestion: string;
 }
 
-const forbiddenPatterns: ForbiddenPattern[] = [
-  {
-    pattern: /\bgit\s+-C\b/,
-    reason: "`git -C` is forbidden.",
-    suggestion:
-      "Run git commands from the target directory directly instead of using `git -C`.",
-  },
-];
+const FORBIDDEN_PATTERNS_FILENAME = "forbidden-patterns.json";
 
-function checkForbiddenPatterns(command: string): DenyResult | null {
-  for (const { pattern, reason, suggestion } of forbiddenPatterns) {
-    if (pattern.test(command)) {
+/**
+ * Collect directories from `startDir` up to (and including) `stopDir`.
+ * Returns paths from startDir (most specific) to stopDir (least specific).
+ */
+function collectAncestorDirs(startDir: string, stopDir: string): string[] {
+  const { resolve, dirname } = require("path") as typeof import("path");
+  const start = resolve(startDir);
+  const stop = resolve(stopDir);
+  const dirs: string[] = [];
+  let current = start;
+  for (;;) {
+    dirs.push(current);
+    if (current === stop) break;
+    const parent = dirname(current);
+    if (parent === current) break; // reached filesystem root
+    current = parent;
+  }
+  return dirs;
+}
+
+/**
+ * Load forbidden-patterns.json files from CWD up to HOME.
+ * All found patterns are merged (most specific directory first).
+ */
+function loadForbiddenPatterns(cwd: string): ForbiddenPatternEntry[] {
+  const { join } = require("path") as typeof import("path");
+  const { existsSync, readFileSync } =
+    require("fs") as typeof import("fs");
+  const home = process.env.HOME ?? "";
+  if (!home) return [];
+
+  const dirs = collectAncestorDirs(cwd, home);
+  const patterns: ForbiddenPatternEntry[] = [];
+
+  for (const dir of dirs) {
+    const filePath = join(dir, ".claude", FORBIDDEN_PATTERNS_FILENAME);
+    if (existsSync(filePath)) {
+      try {
+        const entries: ForbiddenPatternEntry[] = JSON.parse(
+          readFileSync(filePath, "utf-8"),
+        );
+        patterns.push(...entries);
+      } catch {
+        // skip malformed files
+      }
+    }
+  }
+
+  return patterns;
+}
+
+function checkForbiddenPatterns(
+  command: string,
+  patterns: ForbiddenPatternEntry[],
+): DenyResult | null {
+  for (const { pattern, reason, suggestion } of patterns) {
+    if (new RegExp(pattern).test(command)) {
       return { reason, suggestion };
     }
   }
@@ -101,14 +148,17 @@ function checkForbiddenPatterns(command: string): DenyResult | null {
 
 type Checker = (command: string) => DenyResult | null;
 
-const checkers: Checker[] = [checkForbiddenPatterns];
-
 // --- Main ---
 
 async function main() {
   const text = await Bun.stdin.text();
   const input: HookInput = JSON.parse(text);
   const command = input.tool_input.command;
+
+  const forbiddenPatterns = loadForbiddenPatterns(input.cwd);
+  const checkers: Checker[] = [
+    (cmd) => checkForbiddenPatterns(cmd, forbiddenPatterns),
+  ];
 
   for (const checker of checkers) {
     const result = checker(command);

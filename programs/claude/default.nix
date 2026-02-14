@@ -4,6 +4,8 @@
   home.file = {
     ".claude/settings.json".source = ./settings.json;
 
+    ".claude/forbidden-patterns.json".source = ./forbidden-patterns.json;
+
     ".claude/scripts/pre-bash.ts" = {
       source = ./scripts/pre-bash.ts;
     };
