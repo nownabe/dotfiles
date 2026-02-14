@@ -81,7 +81,7 @@
     "nownabe-marketplace": {
       "source": {
         "source": "github",
-        "repo": "nownabe/claude-marketplace"
+        "repo": "nownabe/claude"
       }
     }
   },
