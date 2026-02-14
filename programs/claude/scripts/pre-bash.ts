@@ -79,6 +79,18 @@ interface ForbiddenPatternEntry {
   suggestion: string;
 }
 
+/**
+ * JSON file format. Supports two forms:
+ * - Array form: ForbiddenPatternEntry[]  (patterns only, no ignores)
+ * - Object form: { patterns: ForbiddenPatternEntry[], ignore?: string[] }
+ *
+ * `ignore` lists pattern strings to exclude from the final merged set.
+ * A child-level file can use `ignore` to disable patterns defined in parent-level files.
+ */
+type ForbiddenPatternsFile =
+  | ForbiddenPatternEntry[]
+  | { patterns: ForbiddenPatternEntry[]; ignore?: string[] };
+
 const FORBIDDEN_PATTERNS_FILENAME = "forbidden-patterns.json";
 
 /**
@@ -103,7 +115,8 @@ function collectAncestorDirs(startDir: string, stopDir: string): string[] {
 
 /**
  * Load forbidden-patterns.json files from CWD up to HOME.
- * All found patterns are merged (most specific directory first).
+ * All found patterns are merged. Patterns listed in any file's `ignore`
+ * array are excluded from the final set.
  */
 function loadForbiddenPatterns(cwd: string): ForbiddenPatternEntry[] {
   const { join } = require("path") as typeof import("path");
@@ -113,23 +126,30 @@ function loadForbiddenPatterns(cwd: string): ForbiddenPatternEntry[] {
   if (!home) return [];
 
   const dirs = collectAncestorDirs(cwd, home);
-  const patterns: ForbiddenPatternEntry[] = [];
+  const allPatterns: ForbiddenPatternEntry[] = [];
+  const ignoreSet = new Set<string>();
 
   for (const dir of dirs) {
     const filePath = join(dir, ".claude", FORBIDDEN_PATTERNS_FILENAME);
-    if (existsSync(filePath)) {
-      try {
-        const entries: ForbiddenPatternEntry[] = JSON.parse(
-          readFileSync(filePath, "utf-8"),
-        );
-        patterns.push(...entries);
-      } catch {
-        // skip malformed files
+    if (!existsSync(filePath)) continue;
+    try {
+      const raw: ForbiddenPatternsFile = JSON.parse(
+        readFileSync(filePath, "utf-8"),
+      );
+      if (Array.isArray(raw)) {
+        allPatterns.push(...raw);
+      } else {
+        allPatterns.push(...raw.patterns);
+        if (raw.ignore) {
+          for (const p of raw.ignore) ignoreSet.add(p);
+        }
       }
+    } catch {
+      // skip malformed files
     }
   }
 
-  return patterns;
+  return allPatterns.filter((entry) => !ignoreSet.has(entry.pattern));
 }
 
 function checkForbiddenPatterns(
