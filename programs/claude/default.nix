@@ -2,6 +2,8 @@
 
 {
   home.file = {
+    ".claude/CLAUDE.md".source = ./CLAUDE.md;
+
     ".claude/settings.json".source = ./settings.json;
 
     ".claude/pre-bash.json".source = ./pre-bash.json;
