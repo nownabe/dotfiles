@@ -8,27 +8,42 @@
 
 // --- Types ---
 
-interface HookInput {
-  /** Current session identifier */
+/**
+ * Common input fields.
+ * @see https://code.claude.com/docs/en/hooks#common-input-fields
+ */
+interface HookCommonInput {
+  /** Current session identifier. */
   session_id: string;
-  /** Path to conversation JSON */
+  /** Path to conversation JSON. */
   transcript_path: string;
-  /** Current working directory when the hook is invoked */
+  /** Current working directory when the hook is invoked. */
   cwd: string;
-  /** Current permission mode: "default", "plan", "acceptEdits", "dontAsk", or "bypassPermissions" */
+  /** Current permission mode: "default", "plan", "acceptEdits", "dontAsk", or "bypassPermissions". */
   permission_mode: string;
-  /** Name of the event that fired */
+  /** Name of the event that fired. */
   hook_event_name: string;
-  /** Name of the tool being called */
+}
+
+/**
+ * Tool-specific input fields for PreToolUse.
+ * @see https://code.claude.com/docs/en/hooks#pretooluse-input
+ */
+interface HookInput extends HookCommonInput {
+  /** Name of the tool being called. */
   tool_name: string;
-  /** The parameters sent to the tool */
+  /** The parameters sent to the tool. */
   tool_input: {
+    /** The command to execute. */
     command: string;
+    /** Clear, concise description of what this command does. */
     description?: string;
+    /** Optional timeout in milliseconds (max 600000). */
     timeout?: number;
+    /** Set to true to run this command in the background. */
     run_in_background?: boolean;
   };
-  /** Unique identifier for this tool call */
+  /** Unique identifier for this tool call. */
   tool_use_id: string;
 }
 
@@ -37,17 +52,21 @@ interface DenyResult {
   suggestion: string;
 }
 
+/**
+ * Hook output for PreToolUse.
+ * @see https://code.claude.com/docs/en/hooks#hook-output
+ */
 interface HookOutput {
   hookSpecificOutput: {
-    /** Name of the event that fired */
+    /** Name of the event that fired. */
     hookEventName: "PreToolUse";
-    /** "allow" bypasses the permission system, "deny" prevents the tool call, "ask" prompts the user to confirm */
+    /** "allow" bypasses the permission system, "deny" prevents the tool call, "ask" prompts the user to confirm. */
     permissionDecision: "allow" | "deny" | "ask";
-    /** For "allow" and "ask", shown to the user but not Claude. For "deny", shown to Claude */
+    /** For "allow" and "ask", shown to the user but not Claude. For "deny", shown to Claude. */
     permissionDecisionReason?: string;
-    /** Modifies the tool's input parameters before execution. Combine with "allow" to auto-approve, or "ask" to show the modified input to the user */
+    /** Modifies the tool's input parameters before execution. Combine with "allow" to auto-approve, or "ask" to show the modified input to the user. */
     updatedInput?: Record<string, unknown>;
-    /** String added to Claude's context before the tool executes */
+    /** String added to Claude's context before the tool executes. */
     additionalContext?: string;
   };
 }
