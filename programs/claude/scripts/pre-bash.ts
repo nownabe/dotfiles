@@ -73,24 +73,85 @@ interface HookOutput {
 
 // --- Feature: Forbidden Command Patterns ---
 
-interface ForbiddenPattern {
-  pattern: RegExp;
-  reason: string;
-  suggestion: string;
+export type ForbiddenPatternEntry =
+  | { pattern: string; reason: string; suggestion: string; disabled?: false }
+  | { pattern: string; disabled: true };
+
+const CONFIG_FILENAME = "pre-bash.json";
+
+interface PreBashConfig {
+  forbiddenPatterns?: ForbiddenPatternEntry[];
 }
 
-const forbiddenPatterns: ForbiddenPattern[] = [
-  {
-    pattern: /\bgit\s+-C\b/,
-    reason: "`git -C` is forbidden.",
-    suggestion:
-      "Run git commands from the target directory directly instead of using `git -C`.",
-  },
-];
+/**
+ * Collect directories from `startDir` up to (and including) `stopDir`.
+ * Returns paths from startDir (most specific) to stopDir (least specific).
+ */
+export function collectAncestorDirs(startDir: string, stopDir: string): string[] {
+  const { resolve, dirname } = require("path") as typeof import("path");
+  const start = resolve(startDir);
+  const stop = resolve(stopDir);
+  const dirs: string[] = [];
+  let current = start;
+  for (;;) {
+    dirs.push(current);
+    if (current === stop) break;
+    const parent = dirname(current);
+    if (parent === current) break; // reached filesystem root
+    current = parent;
+  }
+  return dirs;
+}
 
-function checkForbiddenPatterns(command: string): DenyResult | null {
-  for (const { pattern, reason, suggestion } of forbiddenPatterns) {
-    if (pattern.test(command)) {
+/**
+ * Load pre-bash.json config files from CWD up to HOME and merge
+ * forbiddenPatterns. Files are loaded from CWD (most specific) to
+ * HOME (least specific). For duplicate pattern strings, the first
+ * occurrence (child) wins, allowing child-level files to override
+ * parent patterns (e.g. disable them).
+ */
+export function loadForbiddenPatterns(cwd: string): ActivePattern[] {
+  const { join } = require("path") as typeof import("path");
+  const { existsSync, readFileSync } =
+    require("fs") as typeof import("fs");
+  const home = process.env.HOME ?? "";
+  if (!home) return [];
+
+  const dirs = collectAncestorDirs(cwd, home);
+  const seen = new Set<string>();
+  const patterns: ForbiddenPatternEntry[] = [];
+
+  for (const dir of dirs) {
+    const filePath = join(dir, ".claude", CONFIG_FILENAME);
+    if (!existsSync(filePath)) continue;
+    try {
+      const config: PreBashConfig = JSON.parse(
+        readFileSync(filePath, "utf-8"),
+      );
+      for (const entry of config.forbiddenPatterns ?? []) {
+        if (!seen.has(entry.pattern)) {
+          seen.add(entry.pattern);
+          patterns.push(entry);
+        }
+      }
+    } catch {
+      // skip malformed files
+    }
+  }
+
+  return patterns.filter(
+    (entry): entry is ActivePattern => !entry.disabled,
+  );
+}
+
+export type ActivePattern = Extract<ForbiddenPatternEntry, { reason: string }>;
+
+export function checkForbiddenPatterns(
+  command: string,
+  patterns: ActivePattern[],
+): DenyResult | null {
+  for (const { pattern, reason, suggestion } of patterns) {
+    if (new RegExp(pattern).test(command)) {
       return { reason, suggestion };
     }
   }
@@ -101,14 +162,17 @@ function checkForbiddenPatterns(command: string): DenyResult | null {
 
 type Checker = (command: string) => DenyResult | null;
 
-const checkers: Checker[] = [checkForbiddenPatterns];
-
 // --- Main ---
 
 async function main() {
   const text = await Bun.stdin.text();
   const input: HookInput = JSON.parse(text);
   const command = input.tool_input.command;
+
+  const forbiddenPatterns = loadForbiddenPatterns(input.cwd);
+  const checkers: Checker[] = [
+    (cmd) => checkForbiddenPatterns(cmd, forbiddenPatterns),
+  ];
 
   for (const checker of checkers) {
     const result = checker(command);
@@ -130,4 +194,6 @@ async function main() {
   process.exit(0);
 }
 
-main();
+if (import.meta.main) {
+  main();
+}
