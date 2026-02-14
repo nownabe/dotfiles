@@ -77,19 +77,10 @@ interface ForbiddenPatternEntry {
   pattern: string;
   reason: string;
   suggestion: string;
+  /** Set to true to disable this pattern. A child-level file can
+   *  re-declare a parent's pattern with disabled:true to override it. */
+  disabled?: boolean;
 }
-
-/**
- * JSON file format. Supports two forms:
- * - Array form: ForbiddenPatternEntry[]  (patterns only, no ignores)
- * - Object form: { patterns: ForbiddenPatternEntry[], ignore?: string[] }
- *
- * `ignore` lists pattern strings to exclude from the final merged set.
- * A child-level file can use `ignore` to disable patterns defined in parent-level files.
- */
-type ForbiddenPatternsFile =
-  | ForbiddenPatternEntry[]
-  | { patterns: ForbiddenPatternEntry[]; ignore?: string[] };
 
 const FORBIDDEN_PATTERNS_FILENAME = "forbidden-patterns.json";
 
@@ -115,8 +106,9 @@ function collectAncestorDirs(startDir: string, stopDir: string): string[] {
 
 /**
  * Load forbidden-patterns.json files from CWD up to HOME.
- * All found patterns are merged. Patterns listed in any file's `ignore`
- * array are excluded from the final set.
+ * Files are loaded from CWD (most specific) to HOME (least specific).
+ * For duplicate pattern strings, the first occurrence (child) wins,
+ * allowing child-level files to override parent patterns (e.g. disable them).
  */
 function loadForbiddenPatterns(cwd: string): ForbiddenPatternEntry[] {
   const { join } = require("path") as typeof import("path");
@@ -126,22 +118,20 @@ function loadForbiddenPatterns(cwd: string): ForbiddenPatternEntry[] {
   if (!home) return [];
 
   const dirs = collectAncestorDirs(cwd, home);
-  const allPatterns: ForbiddenPatternEntry[] = [];
-  const ignoreSet = new Set<string>();
+  const seen = new Set<string>();
+  const patterns: ForbiddenPatternEntry[] = [];
 
   for (const dir of dirs) {
     const filePath = join(dir, ".claude", FORBIDDEN_PATTERNS_FILENAME);
     if (!existsSync(filePath)) continue;
     try {
-      const raw: ForbiddenPatternsFile = JSON.parse(
+      const entries: ForbiddenPatternEntry[] = JSON.parse(
         readFileSync(filePath, "utf-8"),
       );
-      if (Array.isArray(raw)) {
-        allPatterns.push(...raw);
-      } else {
-        allPatterns.push(...raw.patterns);
-        if (raw.ignore) {
-          for (const p of raw.ignore) ignoreSet.add(p);
+      for (const entry of entries) {
+        if (!seen.has(entry.pattern)) {
+          seen.add(entry.pattern);
+          patterns.push(entry);
         }
       }
     } catch {
@@ -149,7 +139,7 @@ function loadForbiddenPatterns(cwd: string): ForbiddenPatternEntry[] {
     }
   }
 
-  return allPatterns.filter((entry) => !ignoreSet.has(entry.pattern));
+  return patterns.filter((entry) => !entry.disabled);
 }
 
 function checkForbiddenPatterns(
