@@ -9,14 +9,27 @@
 // --- Types ---
 
 interface HookInput {
+  /** Current session identifier */
   session_id: string;
+  /** Path to conversation JSON */
+  transcript_path: string;
+  /** Current working directory when the hook is invoked */
+  cwd: string;
+  /** Current permission mode: "default", "plan", "acceptEdits", "dontAsk", or "bypassPermissions" */
+  permission_mode: string;
+  /** Name of the event that fired */
+  hook_event_name: string;
+  /** Name of the tool being called */
   tool_name: string;
+  /** The parameters sent to the tool */
   tool_input: {
     command: string;
     description?: string;
     timeout?: number;
     run_in_background?: boolean;
   };
+  /** Unique identifier for this tool call */
+  tool_use_id: string;
 }
 
 interface DenyResult {
@@ -26,10 +39,16 @@ interface DenyResult {
 
 interface HookOutput {
   hookSpecificOutput: {
+    /** Name of the event that fired */
     hookEventName: "PreToolUse";
-    permissionDecision: "deny";
-    permissionDecisionReason: string;
-    additionalContext: string;
+    /** "allow" bypasses the permission system, "deny" prevents the tool call, "ask" prompts the user to confirm */
+    permissionDecision: "allow" | "deny" | "ask";
+    /** For "allow" and "ask", shown to the user but not Claude. For "deny", shown to Claude */
+    permissionDecisionReason?: string;
+    /** Modifies the tool's input parameters before execution. Combine with "allow" to auto-approve, or "ask" to show the modified input to the user */
+    updatedInput?: Record<string, unknown>;
+    /** String added to Claude's context before the tool executes */
+    additionalContext?: string;
   };
 }
 
