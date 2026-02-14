@@ -77,7 +77,11 @@ type ForbiddenPatternEntry =
   | { pattern: string; reason: string; suggestion: string; disabled?: false }
   | { pattern: string; disabled: true };
 
-const FORBIDDEN_PATTERNS_FILENAME = "forbidden-patterns.json";
+const CONFIG_FILENAME = "pre-bash.json";
+
+interface PreBashConfig {
+  forbiddenPatterns?: ForbiddenPatternEntry[];
+}
 
 /**
  * Collect directories from `startDir` up to (and including) `stopDir`.
@@ -100,12 +104,13 @@ function collectAncestorDirs(startDir: string, stopDir: string): string[] {
 }
 
 /**
- * Load forbidden-patterns.json files from CWD up to HOME.
- * Files are loaded from CWD (most specific) to HOME (least specific).
- * For duplicate pattern strings, the first occurrence (child) wins,
- * allowing child-level files to override parent patterns (e.g. disable them).
+ * Load pre-bash.json config files from CWD up to HOME and merge
+ * forbiddenPatterns. Files are loaded from CWD (most specific) to
+ * HOME (least specific). For duplicate pattern strings, the first
+ * occurrence (child) wins, allowing child-level files to override
+ * parent patterns (e.g. disable them).
  */
-function loadForbiddenPatterns(cwd: string): ForbiddenPatternEntry[] {
+function loadForbiddenPatterns(cwd: string): ActivePattern[] {
   const { join } = require("path") as typeof import("path");
   const { existsSync, readFileSync } =
     require("fs") as typeof import("fs");
@@ -117,13 +122,13 @@ function loadForbiddenPatterns(cwd: string): ForbiddenPatternEntry[] {
   const patterns: ForbiddenPatternEntry[] = [];
 
   for (const dir of dirs) {
-    const filePath = join(dir, ".claude", FORBIDDEN_PATTERNS_FILENAME);
+    const filePath = join(dir, ".claude", CONFIG_FILENAME);
     if (!existsSync(filePath)) continue;
     try {
-      const entries: ForbiddenPatternEntry[] = JSON.parse(
+      const config: PreBashConfig = JSON.parse(
         readFileSync(filePath, "utf-8"),
       );
-      for (const entry of entries) {
+      for (const entry of config.forbiddenPatterns ?? []) {
         if (!seen.has(entry.pattern)) {
           seen.add(entry.pattern);
           patterns.push(entry);
@@ -135,8 +140,7 @@ function loadForbiddenPatterns(cwd: string): ForbiddenPatternEntry[] {
   }
 
   return patterns.filter(
-    (entry): entry is Extract<ForbiddenPatternEntry, { reason: string }> =>
-      !entry.disabled,
+    (entry): entry is ActivePattern => !entry.disabled,
   );
 }
 
