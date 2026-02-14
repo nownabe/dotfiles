@@ -113,49 +113,49 @@ function M.apply_to_config(config)
 
   local copy_mode = {
     -- Movement: h j k l
-    { key = "h",     mods = "NONE", action = act.CopyMode("MoveLeft") },
-    { key = "j",     mods = "NONE", action = act.CopyMode("MoveDown") },
-    { key = "k",     mods = "NONE", action = act.CopyMode("MoveUp") },
-    { key = "l",     mods = "NONE", action = act.CopyMode("MoveRight") },
+    { key = "h",     mods = "NONE",  action = act.CopyMode("MoveLeft") },
+    { key = "j",     mods = "NONE",  action = act.CopyMode("MoveDown") },
+    { key = "k",     mods = "NONE",  action = act.CopyMode("MoveUp") },
+    { key = "l",     mods = "NONE",  action = act.CopyMode("MoveRight") },
 
     -- Word movement: w b e
-    { key = "w",     mods = "NONE", action = act.CopyMode("MoveForwardWord") },
-    { key = "b",     mods = "NONE", action = act.CopyMode("MoveBackwardWord") },
-    { key = "e",     mods = "NONE", action = act.CopyMode("MoveForwardWordEnd") },
+    { key = "w",     mods = "NONE",  action = act.CopyMode("MoveForwardWord") },
+    { key = "b",     mods = "NONE",  action = act.CopyMode("MoveBackwardWord") },
+    { key = "e",     mods = "NONE",  action = act.CopyMode("MoveForwardWordEnd") },
 
     -- Line movement: 0 ^ $ Enter
-    { key = "0",     mods = "NONE", action = act.CopyMode("MoveToStartOfLine") },
-    { key = "^",     mods = "NONE", action = act.CopyMode("MoveToStartOfLineContent") },
-    { key = "$",     mods = "NONE", action = act.CopyMode("MoveToEndOfLineContent") },
-    { key = "Enter", mods = "NONE", action = act.CopyMode("MoveToStartOfNextLine") },
+    { key = "0",     mods = "NONE",  action = act.CopyMode("MoveToStartOfLine") },
+    { key = "^",     mods = "SHIFT", action = act.CopyMode("MoveToStartOfLineContent") },
+    { key = "$",     mods = "SHIFT", action = act.CopyMode("MoveToEndOfLineContent") },
+    { key = "Enter", mods = "NONE",  action = act.CopyMode("MoveToStartOfNextLine") },
 
     -- Scrollback/viewport: g G H M L
-    { key = "g",     mods = "NONE", action = act.CopyMode("MoveToScrollbackTop") },
-    { key = "G",     mods = "NONE", action = act.CopyMode("MoveToScrollbackBottom") },
-    { key = "H",     mods = "NONE", action = act.CopyMode("MoveToViewportTop") },
-    { key = "M",     mods = "NONE", action = act.CopyMode("MoveToViewportMiddle") },
-    { key = "L",     mods = "NONE", action = act.CopyMode("MoveToViewportBottom") },
+    { key = "g",     mods = "NONE",  action = act.CopyMode("MoveToScrollbackTop") },
+    { key = "G",     mods = "NONE",  action = act.CopyMode("MoveToScrollbackBottom") },
+    { key = "H",     mods = "NONE",  action = act.CopyMode("MoveToViewportTop") },
+    { key = "M",     mods = "NONE",  action = act.CopyMode("MoveToViewportMiddle") },
+    { key = "L",     mods = "NONE",  action = act.CopyMode("MoveToViewportBottom") },
 
     -- Page/half-page scroll: Ctrl+U Ctrl+D Ctrl+B Ctrl+F
-    { key = "u",     mods = "CTRL", action = act.CopyMode({ MoveByPage = -0.5 }) },
-    { key = "d",     mods = "CTRL", action = act.CopyMode({ MoveByPage = 0.5 }) },
-    { key = "b",     mods = "CTRL", action = act.CopyMode("PageUp") },
-    { key = "f",     mods = "CTRL", action = act.CopyMode("PageDown") },
+    { key = "u",     mods = "CTRL",  action = act.CopyMode({ MoveByPage = -0.5 }) },
+    { key = "d",     mods = "CTRL",  action = act.CopyMode({ MoveByPage = 0.5 }) },
+    { key = "b",     mods = "CTRL",  action = act.CopyMode("PageUp") },
+    { key = "f",     mods = "CTRL",  action = act.CopyMode("PageDown") },
 
     -- Jump to character: f F t T ; ,
-    { key = "f",     mods = "NONE", action = act.CopyMode({ JumpForward = { prev_char = false } }) },
-    { key = "F",     mods = "NONE", action = act.CopyMode({ JumpBackward = { prev_char = false } }) },
-    { key = "t",     mods = "NONE", action = act.CopyMode({ JumpForward = { prev_char = true } }) },
-    { key = "T",     mods = "NONE", action = act.CopyMode({ JumpBackward = { prev_char = true } }) },
-    { key = ";",     mods = "NONE", action = act.CopyMode("JumpAgain") },
-    { key = ",",     mods = "NONE", action = act.CopyMode("JumpReverse") },
+    { key = "f",     mods = "NONE",  action = act.CopyMode({ JumpForward = { prev_char = false } }) },
+    { key = "F",     mods = "NONE",  action = act.CopyMode({ JumpBackward = { prev_char = false } }) },
+    { key = "t",     mods = "NONE",  action = act.CopyMode({ JumpForward = { prev_char = true } }) },
+    { key = "T",     mods = "NONE",  action = act.CopyMode({ JumpBackward = { prev_char = true } }) },
+    { key = ";",     mods = "NONE",  action = act.CopyMode("JumpAgain") },
+    { key = ",",     mods = "NONE",  action = act.CopyMode("JumpReverse") },
 
     -- Selection (visual mode): v V Ctrl+V o O
-    { key = "v",     mods = "NONE", action = act.CopyMode({ SetSelectionMode = "Cell" }) },
-    { key = "V",     mods = "NONE", action = act.CopyMode({ SetSelectionMode = "Line" }) },
-    { key = "v",     mods = "CTRL", action = act.CopyMode({ SetSelectionMode = "Block" }) },
-    { key = "o",     mods = "NONE", action = act.CopyMode("MoveToSelectionOtherEnd") },
-    { key = "O",     mods = "NONE", action = act.CopyMode("MoveToSelectionOtherEndHoriz") },
+    { key = "v",     mods = "NONE",  action = act.CopyMode({ SetSelectionMode = "Cell" }) },
+    { key = "V",     mods = "NONE",  action = act.CopyMode({ SetSelectionMode = "Line" }) },
+    { key = "v",     mods = "CTRL",  action = act.CopyMode({ SetSelectionMode = "Block" }) },
+    { key = "o",     mods = "NONE",  action = act.CopyMode("MoveToSelectionOtherEnd") },
+    { key = "O",     mods = "NONE",  action = act.CopyMode("MoveToSelectionOtherEndHoriz") },
 
     -- Yank (copy) and exit: y
     {
