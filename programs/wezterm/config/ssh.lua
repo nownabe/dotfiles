@@ -1,3 +1,10 @@
+-- TODO: This module is incomplete and needs a design rethink.
+-- Known issues with WezTerm 20240203 (latest stable):
+--   - multiplexing = "WezTerm": pane display is too small
+--   - DetachDomain crashes with perform_key_assignment error
+--   - SSH domains require full WezTerm restart (not just config reload)
+-- These may be fixed in nightly builds. Revisit when a new stable release is available.
+
 local wezterm = require("wezterm")
 local act = wezterm.action
 
