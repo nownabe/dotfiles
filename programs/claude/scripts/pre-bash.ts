@@ -73,7 +73,7 @@ interface HookOutput {
 
 // --- Feature: Forbidden Command Patterns ---
 
-type ForbiddenPatternEntry =
+export type ForbiddenPatternEntry =
   | { pattern: string; reason: string; suggestion: string; disabled?: false }
   | { pattern: string; disabled: true };
 
@@ -87,7 +87,7 @@ interface PreBashConfig {
  * Collect directories from `startDir` up to (and including) `stopDir`.
  * Returns paths from startDir (most specific) to stopDir (least specific).
  */
-function collectAncestorDirs(startDir: string, stopDir: string): string[] {
+export function collectAncestorDirs(startDir: string, stopDir: string): string[] {
   const { resolve, dirname } = require("path") as typeof import("path");
   const start = resolve(startDir);
   const stop = resolve(stopDir);
@@ -110,7 +110,7 @@ function collectAncestorDirs(startDir: string, stopDir: string): string[] {
  * occurrence (child) wins, allowing child-level files to override
  * parent patterns (e.g. disable them).
  */
-function loadForbiddenPatterns(cwd: string): ActivePattern[] {
+export function loadForbiddenPatterns(cwd: string): ActivePattern[] {
   const { join } = require("path") as typeof import("path");
   const { existsSync, readFileSync } =
     require("fs") as typeof import("fs");
@@ -144,9 +144,9 @@ function loadForbiddenPatterns(cwd: string): ActivePattern[] {
   );
 }
 
-type ActivePattern = Extract<ForbiddenPatternEntry, { reason: string }>;
+export type ActivePattern = Extract<ForbiddenPatternEntry, { reason: string }>;
 
-function checkForbiddenPatterns(
+export function checkForbiddenPatterns(
   command: string,
   patterns: ActivePattern[],
 ): DenyResult | null {
@@ -194,4 +194,6 @@ async function main() {
   process.exit(0);
 }
 
-main();
+if (import.meta.main) {
+  main();
+}
