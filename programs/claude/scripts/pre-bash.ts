@@ -73,14 +73,9 @@ interface HookOutput {
 
 // --- Feature: Forbidden Command Patterns ---
 
-interface ForbiddenPatternEntry {
-  pattern: string;
-  reason: string;
-  suggestion: string;
-  /** Set to true to disable this pattern. A child-level file can
-   *  re-declare a parent's pattern with disabled:true to override it. */
-  disabled?: boolean;
-}
+type ForbiddenPatternEntry =
+  | { pattern: string; reason: string; suggestion: string; disabled?: false }
+  | { pattern: string; disabled: true };
 
 const FORBIDDEN_PATTERNS_FILENAME = "forbidden-patterns.json";
 
@@ -139,12 +134,17 @@ function loadForbiddenPatterns(cwd: string): ForbiddenPatternEntry[] {
     }
   }
 
-  return patterns.filter((entry) => !entry.disabled);
+  return patterns.filter(
+    (entry): entry is Extract<ForbiddenPatternEntry, { reason: string }> =>
+      !entry.disabled,
+  );
 }
+
+type ActivePattern = Extract<ForbiddenPatternEntry, { reason: string }>;
 
 function checkForbiddenPatterns(
   command: string,
-  patterns: ForbiddenPatternEntry[],
+  patterns: ActivePattern[],
 ): DenyResult | null {
   for (const { pattern, reason, suggestion } of patterns) {
     if (new RegExp(pattern).test(command)) {
