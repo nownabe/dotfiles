@@ -4,7 +4,14 @@ local act = wezterm.action
 local M = {}
 
 function M.apply_to_config(config)
-  -- Ctrl+Shift+A: Connect to SSH host in a new tab
+  -- Generate SSH domains from .ssh/config
+  local ssh_domains = wezterm.default_ssh_domains()
+  for _, domain in ipairs(ssh_domains) do
+    domain.assume_shell = "Posix"
+  end
+  config.ssh_domains = ssh_domains
+
+  -- Ctrl+Shift+A: Attach to SSH host
   table.insert(config.keys, {
     key = "a",
     mods = "CTRL|SHIFT",
@@ -20,7 +27,12 @@ function M.apply_to_config(config)
       end)
 
       if #choices == 0 then
-        window:toast_notification("WezTerm", "No SSH hosts found. Create ~/.ssh/config to define hosts.", nil, 4000)
+        window:toast_notification(
+          "WezTerm",
+          "No SSH hosts found. Create ~/.ssh/config to define hosts.",
+          nil,
+          4000
+        )
         return
       end
 
@@ -32,7 +44,9 @@ function M.apply_to_config(config)
           action = wezterm.action_callback(function(inner_window, inner_pane, id, _)
             if id then
               inner_window:perform_action(
-                act.SpawnCommandInNewTab({ args = { "ssh", id } }),
+                act.Multiple({
+                  act.AttachDomain("SSH:" .. id),
+                }),
                 inner_pane
               )
             end
@@ -41,6 +55,13 @@ function M.apply_to_config(config)
         pane
       )
     end),
+  })
+
+  -- Ctrl+Shift+D: Detach current domain
+  table.insert(config.keys, {
+    key = "d",
+    mods = "CTRL|SHIFT",
+    action = act.DetachDomain("CurrentPaneDomain"),
   })
 end
 
