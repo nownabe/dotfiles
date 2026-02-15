@@ -4,6 +4,7 @@ return {
   opts = {
     options = {
       opt = {
+        clipboard = "unnamedplus",
         relativenumber = false,
         spell = true,
         wrap = true,
