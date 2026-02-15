@@ -37,6 +37,7 @@
       deadnix
 
       # CLI tools
+      xsel
       ripgrep
       fzf
       yq-go
