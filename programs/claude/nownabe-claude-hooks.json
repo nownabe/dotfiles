@@ -1,7 +1,7 @@
 {
   "notification": {
     "sounds": {
-      "permission_prompt": "C:\\Windows\\Media\\Windows Notify System Generic.wav",
+      "permission_prompt": "C:\\Windows\\Media\\Windows Notify.wav",
       "*": "C:\\Windows\\Media\\tada.wav"
     }
   },
