@@ -6,11 +6,7 @@
 
     ".claude/settings.json".source = ./settings.json;
 
-    ".claude/pre-bash.json".source = ./pre-bash.json;
-
-    ".claude/scripts/pre-bash.ts" = {
-      source = ./scripts/pre-bash.ts;
-    };
+    ".claude/nownabe-claude-hooks.json".source = ./nownabe-claude-hooks.json;
 
     ".claude/scripts/statusline-command.sh" = {
       source = ./scripts/statusline-command.sh;
