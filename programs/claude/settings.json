@@ -39,32 +39,6 @@
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "idle_prompt",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/scripts/notify-windows \"Claude Code\" \"Claude is awaiting your response\" > /dev/null 2>&1",
-            "async": true,
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "permission_prompt",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/scripts/notify-windows \"Claude Code\" \"Permission needed\" > /dev/null 2>&1",
-            "async": true,
-            "timeout": 10
-          }
-        ]
-      }
-    ]
-  },
   "extraKnownMarketplaces": {
     "nownabe-marketplace": {
       "source": {
