@@ -1,7 +1,7 @@
 {
   "preBash": {
     "forbiddenPatterns": {
-      "/\\bgit\\s+-C\\b/": {
+      "git -C *": {
         "reason": "`git -C` is forbidden.",
         "suggestion": "Run git commands from the target directory directly instead of using `git -C`."
       }
