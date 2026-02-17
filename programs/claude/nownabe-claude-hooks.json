@@ -1,4 +1,10 @@
 {
+  "notification": {
+    "sounds": {
+      "permission_prompt": "C:\\Windows\\Media\\Windows Notify System Generic.wav",
+      "*": "C:\\Windows\\Media\\tada.wav"
+    }
+  },
   "preBash": {
     "forbiddenPatterns": {
       "git -C *": {
