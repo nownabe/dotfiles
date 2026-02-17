@@ -1,9 +1,0 @@
-{
-  "forbiddenPatterns": [
-    {
-      "pattern": "\\bgit\\s+-C\\b",
-      "reason": "`git -C` is forbidden.",
-      "suggestion": "Run git commands from the target directory directly instead of using `git -C`."
-    }
-  ]
-}

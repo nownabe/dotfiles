@@ -40,18 +40,6 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun ~/.claude/scripts/pre-bash.ts",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
     "Notification": [
       {
         "matcher": "idle_prompt",
@@ -91,7 +79,8 @@
     "code-review@claude-plugins-official": true,
     "example-skills@anthropic-agent-skills": true,
     "playwright@claude-plugins-official": true,
-    "hello-world@nownabe-marketplace": true
+    "hello-world@nownabe-marketplace": true,
+    "base@nownabe-marketplace": true
   },
   "attribution": {
     "commit": "",
