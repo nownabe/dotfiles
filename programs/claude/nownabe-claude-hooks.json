@@ -4,6 +4,10 @@
       "git -C *": {
         "reason": "`git -C` is forbidden.",
         "suggestion": "Run git commands from the target directory directly instead of using `git -C`."
+      },
+      "npm *": {
+        "reason": "`npm` is forbidden.",
+        "suggestion": "Use `bun` instead of `npm`."
       }
     }
   }
