@@ -36,10 +36,13 @@
       win_user=$(/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -Command '[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $env:USERNAME' 2>/dev/null | tr -d '\r')
       if [ -n "$win_user" ]; then
         win_config="/mnt/c/Users/$win_user/.config/wezterm"
+        win_config_tmp="''${win_config}.tmp.$$"
+        rm -rf "$win_config_tmp"
+        mkdir -p "$win_config_tmp"
+        cp -rTL "${config.home.homeDirectory}/.config/wezterm" "$win_config_tmp"
+        chmod -R u+w "$win_config_tmp"
         rm -rf "$win_config"
-        mkdir -p "$win_config"
-        cp -rTL "${config.home.homeDirectory}/.config/wezterm" "$win_config"
-        chmod -R u+w "$win_config"
+        mv "$win_config_tmp" "$win_config"
         echo "Deployed WezTerm config to $win_config"
       else
         echo "Warning: Could not detect Windows username, skipping WezTerm Windows deployment" >&2
