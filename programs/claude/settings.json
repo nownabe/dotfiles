@@ -54,6 +54,12 @@
         "source": "github",
         "repo": "nownabe/claude"
       }
+    },
+    "knowledge-work-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/knowledge-work-plugins"
+      }
     }
   },
   "enabledPlugins": {
@@ -63,7 +69,18 @@
     "example-skills@anthropic-agent-skills": true,
     "playwright@claude-plugins-official": true,
     "hello-world@nownabe-marketplace": true,
-    "base@nownabe-marketplace": true
+    "base@nownabe-marketplace": true,
+    "productivity@knowledge-work-plugins": true,
+    "sales@knowledge-work-plugins": true,
+    "customer-support@knowledge-work-plugins": true,
+    "product-management@knowledge-work-plugins": true,
+    "marketing@knowledge-work-plugins": true,
+    "legal@knowledge-work-plugins": true,
+    "finance@knowledge-work-plugins": true,
+    "data@knowledge-work-plugins": true,
+    "enterprise-search@knowledge-work-plugins": true,
+    "bio-research@knowledge-work-plugins": true,
+    "cowork-plugin-management@knowledge-work-plugins": true
   },
   "attribution": {
     "commit": "",
