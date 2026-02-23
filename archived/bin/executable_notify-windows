@@ -1,8 +1,0 @@
-#!/bin/bash
-
-title="$1"
-message="$2"
-
-powershell.exe -c "(New-Object Media.SoundPlayer 'C:\\Windows\\Media\\tada.wav').PlaySync()"
-
-powershell.exe -Command "[reflection.assembly]::loadwithpartialname('System.Windows.Forms'); \$notify = new-object system.windows.forms.notifyicon; \$notify.icon = [System.Drawing.SystemIcons]::Information; \$notify.visible = \$true; \$notify.showballoontip(10,'${title}','${message}',[system.windows.forms.tooltipicon]::Info)"
