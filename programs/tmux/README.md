@@ -1,6 +1,6 @@
 # tmux
 
-WezTerm-like keybindings for tmux. Prefix: `Ctrl+X`.
+Prefix: `Ctrl+X`.
 
 ## Keybindings
 
