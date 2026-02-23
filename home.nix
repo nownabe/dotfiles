@@ -7,6 +7,7 @@
     ./programs/nvim
     ./programs/claude
     ./programs/wezterm
+    ./programs/tmux
   ];
 
   home = {
