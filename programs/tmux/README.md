@@ -23,6 +23,7 @@ Prefix: `Ctrl+X`.
 | `R` | Enter resize mode |
 | `n` | New window |
 | `s` | Session selector (tree view) |
+| `S` | New session (prompts for name) |
 | `r` | Rename session |
 | `Space` | Enter copy mode |
 | `v` | Paste buffer |

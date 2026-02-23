@@ -71,6 +71,7 @@
 
       # Session management
       bind s choose-tree -sZ
+      bind S command-prompt "new-session -s '%%'"
       bind r command-prompt -I "#S" "rename-session -- '%%'"
 
       # Copy mode
