@@ -33,6 +33,7 @@
       setw -g automatic-rename on
 
       # Status bar
+      set -g status-left-length 100
       set -g status-left "#{E:@catppuccin_status_session}"
       set -g status-right "#{E:@catppuccin_status_host}#{E:@catppuccin_status_date_time}"
 

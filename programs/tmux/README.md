@@ -27,6 +27,7 @@ Prefix: `Ctrl+X`.
 | `r` | Rename session |
 | `Space` | Enter copy mode |
 | `v` | Paste buffer |
+| `d` | Detach from session |
 | `x` | Send `Ctrl+X` to shell |
 
 ### Resize Mode (`Prefix+R`)
@@ -47,3 +48,12 @@ Prefix: `Ctrl+X`.
 | `q` / `Escape` | Cancel |
 
 Vi navigation keys (`h/j/k/l`, `w/b/e`, `0/^/$`, `g/G`, `Ctrl+u/d/b/f`, `f/F/t/T`, `/`, `n/N`) work in copy mode via `keyMode = "vi"`.
+
+## Common Commands
+
+| Command | Description |
+|---|---|
+| `tmux` | Start new session |
+| `tmux attach` | Attach to last session |
+| `tmux attach -t <name>` | Attach to named session |
+| `tmux source-file ~/.config/tmux/tmux.conf` | Reload config (also works from `prefix+:`) |
