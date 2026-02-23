@@ -37,6 +37,10 @@
       set -g status-left "#{E:@catppuccin_status_session}"
       set -g status-right "#{E:@catppuccin_status_host}#{E:@catppuccin_status_date_time}"
 
+      # Copy mode cursor style
+      set -g mode-style "reverse"
+      set -g cursor-style block
+
       # Inactive pane visual distinction
       set -g window-style "fg=colour247,bg=default"
       set -g window-active-style "fg=colour250,bg=default"
