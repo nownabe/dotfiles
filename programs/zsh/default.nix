@@ -76,7 +76,6 @@ in
       k = "kubectl";
       bat = "batcat";
       vi = "nvim";
-      c = "chezmoi";
       g = "git";
 
       # Ruby
