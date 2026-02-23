@@ -6,10 +6,25 @@
       "Bash(bunx @nownabe/claude-tools:*)",
       "Bash(find:*)",
       "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue status:*)",
       "Bash(gh label list:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh pr status:*)",
+      "Bash(gh release list:*)",
+      "Bash(gh release view:*)",
       "Bash(gh repo list:*)",
       "Bash(gh repo view:*)",
+      "Bash(gh run list *)",
+      "Bash(gh run view *)",
+      "Bash(gh run watch *)",
+      "Bash(git diff:*)",
       "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git status:*)",
       "Bash(grep:*)",
       "Bash(go test:*)",
       "Bash(npm info:*)",
@@ -19,6 +34,7 @@
       "WebSearch"
     ],
     "ask": [
+      "Bash(gh api:*)",
       "Bash(gh issue close:*)"
     ],
     "deny": [
