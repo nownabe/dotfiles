@@ -13,9 +13,13 @@
     let
       username = "nownabe";
       system = "x86_64-linux";
+      overlay = final: prev: {
+        aqua = final.callPackage ./packages/aqua.nix { };
+      };
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
+        overlays = [ overlay ];
       };
       dotfilesDir = "/home/${username}/src/github.com/nownabe/dotfiles";
     in

@@ -13,6 +13,7 @@ in
     "zsh/utils.zsh".source = ./config/utils.zsh;
     "zsh/wsl.zsh".source = ./config/wsl.zsh;
     "zsh/mise.zsh".source = ./config/mise.zsh;
+    "zsh/aqua.zsh".source = ./config/aqua.zsh;
     "zsh/path.zsh".source = ./config/path.zsh;
     "zsh/prompt.zsh".source = pkgs.replaceVars ./config/prompt.zsh {
       purePromptPath = pkgs.pure-prompt;
