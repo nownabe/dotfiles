@@ -50,7 +50,8 @@ return {
     "williamboman/mason-lspconfig.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "ts_ls", "oxfmt", "oxlint" })
+      opts.ensure_installed =
+        require("astrocore").list_insert_unique(opts.ensure_installed, { "ts_ls", "oxfmt", "oxlint" })
     end,
   },
   {
@@ -69,8 +70,6 @@ return {
     optional = true,
     opts = function(_, opts)
       if not opts.file then opts.file = {} end
-      opts.file[".nvmrc"] = { glyph = "", hl = "MiniIconsGreen" }
-      opts.file[".node-version"] = { glyph = "", hl = "MiniIconsGreen" }
       opts.file["package.json"] = { glyph = "", hl = "MiniIconsGreen" }
       opts.file["tsconfig.json"] = { glyph = "", hl = "MiniIconsAzure" }
       opts.file["tsconfig.build.json"] = { glyph = "", hl = "MiniIconsAzure" }
