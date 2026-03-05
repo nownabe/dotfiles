@@ -1,12 +1,13 @@
 -- TypeScript/JavaScript language support
--- Formatting is handled by oxfmt (LSP), not ts_ls
+-- Formatting: oxfmt (LSP)
+-- Linting: oxlint (LSP)
 
 return {
   {
     "AstroNvim/astrolsp",
     optional = true,
     opts = function(_, opts)
-      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "ts_ls", "oxfmt" })
+      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "ts_ls", "oxfmt", "oxlint" })
       opts.config = vim.tbl_deep_extend("force", opts.config or {}, {
         ts_ls = {
           settings = {
@@ -49,7 +50,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "ts_ls", "oxfmt" })
+      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "ts_ls", "oxfmt", "oxlint" })
     end,
   },
   {
@@ -59,6 +60,7 @@ return {
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
         "typescript-language-server",
         "oxfmt",
+        "oxlint",
       })
     end,
   },
