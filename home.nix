@@ -31,6 +31,7 @@
 
       # Package managers
       uv
+      aqua
 
       # Nix tools
       nil
