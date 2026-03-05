@@ -11,6 +11,7 @@ in
     ignores = [
       ".nownabe/"
       ".shogo/"
+      ".worktrees/"
       "**/.claude/settings.local.json"
     ];
 
