@@ -19,6 +19,7 @@ in
       purePromptPath = pkgs.pure-prompt;
     };
     "zsh/keybindings.zsh".source = ./config/keybindings.zsh;
+    "zsh/title.zsh".source = ./config/title.zsh;
   };
 
   programs.zsh = {
