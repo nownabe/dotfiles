@@ -26,6 +26,9 @@
     ];
 
     extraConfig = ''
+      # Switch to another session instead of detaching when session is destroyed
+      set -g detach-on-destroy off
+
       # Terminal features
       set -as terminal-features ",xterm-256color:RGB"
       set -g set-clipboard on
