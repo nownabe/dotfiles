@@ -15,6 +15,7 @@
       system = "x86_64-linux";
       overlay = final: prev: {
         aqua = final.callPackage ./packages/aqua.nix { };
+        chikuwa = final.callPackage ./packages/chikuwa.nix { };
       };
       pkgs = import nixpkgs {
         inherit system;
