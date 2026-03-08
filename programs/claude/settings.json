@@ -107,56 +107,12 @@
     "command": "~/.claude/scripts/statusline-command.sh"
   },
   "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "chikuwa hook"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "chikuwa hook"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "chikuwa hook"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "chikuwa hook"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "chikuwa hook"
-          }
-        ]
-      }
-    ]
+    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
+    "PreToolUse": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
+    "Stop": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
+    "PermissionRequest": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
+    "Notification": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
+    "SessionStart": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
+    "SessionEnd": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}]
   }
 }
