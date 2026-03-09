@@ -21,6 +21,8 @@
           set -g @catppuccin_flavor "mocha"
           set -g @catppuccin_window_status_style "rounded"
           set -g @catppuccin_session_color "#{?client_prefix,#{@thm_peach},#{@thm_lavender}}"
+          set -g @catppuccin_window_text " #W"
+          set -g @catppuccin_window_current_text " #W"
         '';
       }
     ];
