@@ -109,11 +109,18 @@
   "hooks": {
     "SessionStart": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
     "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "PreToolUse": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
+    "PreToolUse": [
+      {"hooks": [{"type": "command", "command": "chikuwa hook"}]},
+      {"matcher": "Bash", "hooks": [{"type": "command", "command": "bunx @nownabe/claude-hooks pre-bash"}]}
+    ],
     "PostToolUse": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
     "PostToolUseFailure": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
     "PermissionRequest": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "Notification": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
+    "Notification": [
+      {"hooks": [{"type": "command", "command": "chikuwa hook"}]},
+      {"matcher": "idle_prompt", "hooks": [{"type": "command", "command": "bunx @nownabe/claude-hooks notification", "async": true, "timeout": 30}]},
+      {"matcher": "permission_prompt", "hooks": [{"type": "command", "command": "bunx @nownabe/claude-hooks notification", "async": true, "timeout": 30}]}
+    ],
     "Stop": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
     "SubagentStart": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
     "SubagentStop": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
