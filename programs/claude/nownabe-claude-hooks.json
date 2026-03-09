@@ -11,11 +11,13 @@
         "reason": "`git -C` is forbidden.",
         "suggestion": "Run git commands from the target directory directly instead of using `git -C`."
       },
-      "git commit *$(cat*": {
+      "\\bgit\\s+commit\\b.*\\$\\(cat\\b": {
+        "type": "regex",
         "reason": "`$(cat` in `git commit` is forbidden.",
         "suggestion": "Pass the commit message directly with `-m \"message\"` instead of using `$(cat <<'EOF' ...)`."
       },
-      "gh pr *$(cat*": {
+      "\\bgh\\s+pr\\b.*\\$\\(cat\\b": {
+        "type": "regex",
         "reason": "`$(cat` in `gh pr` is forbidden.",
         "suggestion": "Pass arguments directly with `--title \"title\" --body \"body\"` instead of using `$(cat <<'EOF' ...)`."
       }
