@@ -7,6 +7,7 @@ return {
         relativenumber = false,
         spell = true,
         wrap = true,
+        titlestring = "%t",
       },
     },
   },
