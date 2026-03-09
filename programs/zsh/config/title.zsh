@@ -21,7 +21,7 @@ _short_path() {
 }
 
 _set_terminal_title() {
-  print -Pn "\e]2;$(_short_path)\a"
+  print -Pn "\e]2;\ue795 $(_short_path)\a"
 }
 
 autoload -Uz add-zsh-hook
