@@ -21,9 +21,10 @@ return {
     function _G.nvim_title()
       local filepath = vim.fn.expand("%:p")
       if filepath == "" then return "\u{e7c5} [No Name]" end
-      local git_dir = vim.fn.finddir(".git", vim.fn.expand("%:p:h") .. ";")
-      if git_dir ~= "" then
-        local root = vim.fn.fnamemodify(git_dir, ":p:h:h") .. "/"
+      local dir = vim.fn.expand("%:p:h")
+      local found = vim.fs.find(".git", { upward = true, path = dir })
+      if #found > 0 then
+        local root = vim.fn.fnamemodify(found[1], ":h") .. "/"
         if filepath:sub(1, #root) == root then return "\u{e7c5} " .. filepath:sub(#root + 1) end
       end
       return "\u{e7c5} " .. vim.fn.expand("%:t")
