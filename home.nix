@@ -38,6 +38,9 @@
       statix
       deadnix
 
+      # AI tools
+      chikuwa
+
       # CLI tools
       ripgrep
       fzf
