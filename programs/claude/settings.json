@@ -108,10 +108,17 @@
   },
   "hooks": {
     "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "PreToolUse": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
+    "PreToolUse": [
+      {"hooks": [{"type": "command", "command": "chikuwa hook"}]},
+      {"matcher": "Bash", "hooks": [{"type": "command", "command": "bunx @nownabe/claude-hooks pre-bash"}]}
+    ],
     "Stop": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
     "PermissionRequest": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "Notification": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
+    "Notification": [
+      {"hooks": [{"type": "command", "command": "chikuwa hook"}]},
+      {"matcher": "idle_prompt", "hooks": [{"type": "command", "command": "bunx @nownabe/claude-hooks notification", "async": true, "timeout": 30}]},
+      {"matcher": "permission_prompt", "hooks": [{"type": "command", "command": "bunx @nownabe/claude-hooks notification", "async": true, "timeout": 30}]}
+    ],
     "SessionStart": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
     "SessionEnd": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}]
   }
