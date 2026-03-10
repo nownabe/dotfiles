@@ -10,7 +10,7 @@ stdenvNoCC.mkDerivation rec {
 
   src = fetchurl {
     url = "https://github.com/nownabe/chikuwa/releases/download/v${version}/chikuwa-x86_64-unknown-linux-gnu.tar.gz";
-    hash = "sha256-evSPy8zzv/NY3msnrDJWcCfAE1DDxgmi4g8woy1Pcyk=";
+    hash = "sha256-JhYtKjYt3LfaqRzzTxCCWCf+FEnjfGFbuXjRiPq39kM=";
   };
 
   sourceRoot = ".";
