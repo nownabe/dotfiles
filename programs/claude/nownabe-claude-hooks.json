@@ -11,15 +11,15 @@
         "reason": "`git -C` is forbidden.",
         "suggestion": "Run git commands from the target directory directly instead of using `git -C`."
       },
-      "\\bgit\\s+commit\\b.*\\$\\(cat\\b": {
+      "\\bgit\\b.*\\$\\(cat\\b": {
         "type": "regex",
-        "reason": "`$(cat` in `git commit` is forbidden.",
-        "suggestion": "Pass the commit message directly with `-m \"message\"` instead of using `$(cat <<'EOF' ...)`."
+        "reason": "`$(cat` in `git` commands is forbidden.",
+        "suggestion": "Pass arguments directly (e.g., `-m \"message\"`) instead of using `$(cat <<'EOF' ...)`."
       },
-      "\\bgh\\s+pr\\b.*\\$\\(cat\\b": {
+      "\\bgh\\b.*\\$\\(cat\\b": {
         "type": "regex",
-        "reason": "`$(cat` in `gh pr` is forbidden.",
-        "suggestion": "Pass arguments directly with `--title \"title\" --body \"body\"` instead of using `$(cat <<'EOF' ...)`."
+        "reason": "`$(cat` in `gh` commands is forbidden.",
+        "suggestion": "Pass arguments directly (e.g., `--title \"title\" --body \"body\"`) instead of using `$(cat <<'EOF' ...)`."
       }
     }
   }
