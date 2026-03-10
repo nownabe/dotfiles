@@ -1,6 +1,11 @@
 {
   description = "nownabe's dotfiles";
 
+  nixConfig = {
+    extra-substituters = [ "https://chikuwa.cachix.org" ];
+    extra-trusted-public-keys = [ "chikuwa.cachix.org-1:6sUFppXmL0mKXW1twSyRxFvSXpZLWfKAWpNEUV803kA=" ];
+  };
+
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     home-manager = {
