@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "chikuwa": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1773134941,
+        "narHash": "sha256-2nqciGbOvX0ObZVSp9IZvLwvN3MrzxFYD1tr8NXCE0A=",
+        "owner": "nownabe",
+        "repo": "chikuwa",
+        "rev": "11a082374a0d25fc57a9d72933cbaaa4e063f42e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nownabe",
+        "repo": "chikuwa",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -38,6 +58,7 @@
     },
     "root": {
       "inputs": {
+        "chikuwa": "chikuwa",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs"
       }
