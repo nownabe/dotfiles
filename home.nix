@@ -22,6 +22,7 @@
 
       # Languages & runtimes
       go
+      jdk
       lua
       nodejs
       python3
