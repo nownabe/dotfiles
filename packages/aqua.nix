@@ -6,11 +6,11 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "aqua";
-  version = "2.56.7";
+  version = "2.57.0";
 
   src = fetchurl {
     url = "https://github.com/aquaproj/aqua/releases/download/v${version}/aqua_linux_amd64.tar.gz";
-    hash = "sha256-KMZjNSZUUawNNKNk5Xg25tc+9Vy7lpgmXOPuK5fxx8A=";
+    hash = "sha256-BCFG/sa3qubtYSP9UDMUR0Ssqpr6R23ZpH4qrVDV1cY=";
   };
 
   sourceRoot = ".";
