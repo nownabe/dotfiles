@@ -1,5 +1,5 @@
 -- Go language support
--- gopls is installed via Mason
+-- gopls and tools are installed via Mason
 
 return {
   {
@@ -11,11 +11,26 @@ return {
         gopls = {
           settings = {
             gopls = {
-              gofumpt = true,
-              staticcheck = true,
               analyses = {
-                unusedparams = true,
+                ST1003 = true,
+                fieldalignment = false,
+                fillreturns = true,
+                nilness = true,
+                nonewvars = true,
                 shadow = true,
+                undeclaredname = true,
+                unreachable = true,
+                unusedparams = true,
+                unusedwrite = true,
+                useany = true,
+              },
+              codelenses = {
+                generate = true,
+                regenerate_cgo = true,
+                test = true,
+                tidy = true,
+                upgrade_dependency = true,
+                vendor = true,
               },
               hints = {
                 assignVariableTypes = true,
@@ -26,6 +41,12 @@ return {
                 parameterNames = true,
                 rangeVariableTypes = true,
               },
+              completeUnimported = true,
+              diagnosticsDelay = "500ms",
+              gofumpt = true,
+              semanticTokens = true,
+              staticcheck = true,
+              usePlaceholders = true,
             },
           },
         },
@@ -43,6 +64,16 @@ return {
     end,
   },
   {
+    "jay-babu/mason-null-ls.nvim",
+    optional = true,
+    opts = function(_, opts)
+      opts.ensure_installed = require("astrocore").list_insert_unique(
+        opts.ensure_installed,
+        { "gomodifytags", "iferr", "impl", "gotests", "goimports" }
+      )
+    end,
+  },
+  {
     "williamboman/mason-lspconfig.nvim",
     optional = true,
     opts = function(_, opts)
@@ -53,7 +84,53 @@ return {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "gopls" })
+      opts.ensure_installed = require("astrocore").list_insert_unique(
+        opts.ensure_installed,
+        { "delve", "gopls", "gomodifytags", "gotests", "iferr", "impl", "goimports" }
+      )
+    end,
+  },
+  {
+    "leoluz/nvim-dap-go",
+    ft = "go",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+      {
+        "jay-babu/mason-nvim-dap.nvim",
+        optional = true,
+        opts = function(_, opts)
+          opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "delve" })
+        end,
+      },
+    },
+    opts = {},
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        go = { "goimports", lsp_format = "last" },
+      },
+    },
+  },
+  {
+    "nvim-neotest/neotest",
+    optional = true,
+    dependencies = { "fredrikaverpil/neotest-golang" },
+    opts = function(_, opts)
+      if not opts.adapters then opts.adapters = {} end
+      table.insert(opts.adapters, require("neotest-golang")(require("astrocore").plugin_opts("neotest-golang")))
+    end,
+  },
+  {
+    "echasnovski/mini.icons",
+    optional = true,
+    opts = function(_, opts)
+      if not opts.file then opts.file = {} end
+      opts.file[".go-version"] = { glyph = "", hl = "MiniIconsBlue" }
+      if not opts.filetype then opts.filetype = {} end
+      opts.filetype["gotmpl"] = { glyph = "󰟓", hl = "MiniIconsGrey" }
     end,
   },
 }
