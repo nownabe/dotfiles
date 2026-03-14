@@ -1,5 +1,5 @@
 -- HTML/CSS language support
--- LSP: html, cssls
+-- LSP: html, cssls, Formatting: oxfmt
 
 return {
   {
@@ -35,5 +35,17 @@ return {
         "css-lsp",
       })
     end,
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        html = { "oxfmt" },
+        css = { "oxfmt" },
+        scss = { "oxfmt" },
+        less = { "oxfmt" },
+      },
+    },
   },
 }

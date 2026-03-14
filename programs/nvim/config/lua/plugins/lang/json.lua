@@ -1,5 +1,5 @@
 -- JSON language support
--- LSP: jsonls with schemastore
+-- LSP: jsonls with schemastore, Formatting: oxfmt
 
 return {
   {
@@ -46,5 +46,15 @@ return {
         "json-lsp",
       })
     end,
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        json = { "oxfmt" },
+        jsonc = { "oxfmt" },
+      },
+    },
   },
 }

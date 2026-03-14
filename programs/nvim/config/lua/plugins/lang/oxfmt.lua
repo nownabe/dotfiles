@@ -1,31 +1,18 @@
--- Oxfmt formatter (LSP-based)
--- Supports: JS, TS, JSON, YAML, HTML, CSS, SCSS, Markdown, MDX, TOML, GraphQL, Vue
-
-vim.lsp.config("oxfmt", {
-  cmd = { "oxfmt", "--lsp" },
-  filetypes = {
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "json",
-    "jsonc",
-    "yaml",
-    "html",
-    "css",
-    "scss",
-    "less",
-    "markdown",
-    "mdx",
-    "toml",
-    "graphql",
-    "vue",
-  },
-  root_markers = { ".oxfmtrc.json", "package.json", ".git" },
-})
-vim.lsp.enable("oxfmt")
+-- Oxfmt formatter (via conform.nvim)
+-- Mason install + filetypes without dedicated lang files
+-- Per-language oxfmt formatters_by_ft are configured in each language file
 
 return {
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        graphql = { "oxfmt" },
+        vue = { "oxfmt" },
+      },
+    },
+  },
   {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     optional = true,
