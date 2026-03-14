@@ -1,5 +1,5 @@
 -- MDX language support
--- LSP: mdx_analyzer
+-- LSP: mdx_analyzer, Formatting: oxfmt
 
 return {
   {
@@ -24,5 +24,14 @@ return {
         "mdx-analyzer",
       })
     end,
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        mdx = { "oxfmt" },
+      },
+    },
   },
 }
