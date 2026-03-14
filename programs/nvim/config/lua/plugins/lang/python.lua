@@ -1,25 +1,12 @@
 -- Python language support
--- LSP: basedpyright, Formatter/Linter: ruff
+-- LSP: ty (type checker), ruff (formatter/linter)
 
 return {
   {
     "AstroNvim/astrolsp",
     optional = true,
     opts = function(_, opts)
-      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "basedpyright", "ruff" })
-      opts.config = vim.tbl_deep_extend("force", opts.config or {}, {
-        basedpyright = {
-          settings = {
-            basedpyright = {
-              disableOrganizeImports = true, -- use ruff instead
-              analysis = {
-                autoImportCompletions = true,
-                diagnosticMode = "openFilesOnly",
-              },
-            },
-          },
-        },
-      })
+      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "ty", "ruff" })
     end,
   },
   {
@@ -35,8 +22,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed =
-        require("astrocore").list_insert_unique(opts.ensure_installed, { "basedpyright", "ruff" })
+      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "ty", "ruff" })
     end,
   },
   {
@@ -44,7 +30,7 @@ return {
     optional = true,
     opts = function(_, opts)
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
-        "basedpyright",
+        "ty",
         "ruff",
       })
     end,
