@@ -1,5 +1,5 @@
 -- Markdown language support
--- LSP: marksman
+-- LSP: marksman, Formatting: oxfmt
 
 return {
   {
@@ -34,5 +34,14 @@ return {
         "marksman",
       })
     end,
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        markdown = { "oxfmt" },
+      },
+    },
   },
 }
