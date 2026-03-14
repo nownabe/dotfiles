@@ -1,5 +1,5 @@
 -- JSON language support
--- LSP: jsonls with schemastore
+-- LSP: jsonls with schemastore, Formatter: oxfmt
 
 return {
   {
@@ -10,7 +10,7 @@ return {
     "AstroNvim/astrolsp",
     optional = true,
     opts = function(_, opts)
-      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "jsonls" })
+      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "jsonls", "oxfmt" })
       opts.config = vim.tbl_deep_extend("force", opts.config or {}, {
         jsonls = {
           on_new_config = function(config)
@@ -35,7 +35,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "jsonls" })
+      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "jsonls", "oxfmt" })
     end,
   },
   {
@@ -44,6 +44,7 @@ return {
     opts = function(_, opts)
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
         "json-lsp",
+        "oxfmt",
       })
     end,
   },
