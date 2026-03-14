@@ -9,47 +9,58 @@ description: >
 
 # Update Claude Tools
 
-Update `programs/claude/CLAUDE.md` in the dotfiles repo to reflect the latest commands and hooks
-from the `nownabe/claude` source repository.
-
-## Source
-
-Read `README.md` from `/home/nownabe/src/github.com/nownabe/claude`.
-
-It contains two tables:
-- **Tools** table — `Command | Description` for `@nownabe/claude-tools`
-- **Hooks** table — `Hook | Description` for `@nownabe/claude-hooks`
-
-For detailed usage (arguments, options) of each command, read
-`docs/claude-tools/gh/<command>.md` from the same repo.
-
-## Target
-
-`programs/claude/CLAUDE.md` in this repo (deployed as `~/.claude/CLAUDE.md` via Home Manager).
+Update `programs/claude/CLAUDE.md` in this repo to reflect the latest commands and hooks from the
+`nownabe/claude` source repository. This file is deployed as `~/.claude/CLAUDE.md` via Home Manager.
 
 ## Workflow
 
-1. **Read source**: Read `/home/nownabe/src/github.com/nownabe/claude/README.md` to get the
-   current command and hook lists.
+### 1. Read source
 
-2. **Read command docs**: For each command, read `docs/claude-tools/gh/<command>.md` from the
-   source repo to extract the usage pattern (arguments and options).
+Read `/home/nownabe/src/github.com/nownabe/claude/README.md`. It has:
 
-3. **Update CLAUDE.md**: Update the `## @nownabe/claude-tools` section in `programs/claude/CLAUDE.md`.
-   Preserve the existing format:
+- **Tools** table — command names and descriptions for `@nownabe/claude-tools`
+- **Hooks** table — hook names and descriptions for `@nownabe/claude-hooks`
 
-   ```markdown
-   ## @nownabe/claude-tools
+### 2. Read command docs
 
-   `@nownabe/claude-tools` provides GitHub-related CLI utilities. Run via `bunx @nownabe/claude-tools <command>`.
+For each command in the Tools table, read its doc file at
+`/home/nownabe/src/github.com/nownabe/claude/docs/claude-tools/gh/<command>.md`.
 
-   Available commands:
+Extract the usage line from the `## Usage` code block. For example:
 
-   - `gh <command> <args> [options]` — <description>
-   ...
+```
+claude-tools gh get-release [--tag <tag>] [--jq <expr>] [--repo <owner/repo>]
+```
 
-   All commands accept `--repo <owner/repo>` to target a specific repository (defaults to current repo).
-   ```
+Transform it for CLAUDE.md:
 
-4. **Commit and create PR**: Follow the repository's PR rules (Conventional Commits, labels, etc.).
-   Use type `chore` and scope `claude`. Example: `chore(claude): update claude-tools documentation`.
+- Strip the `claude-tools` prefix (keep `gh <command> ...`)
+- Remove `[--repo <owner/repo>]` (documented separately as a shared option)
+- Combine with the description from the README table
+
+Result: `` `gh get-release [--tag <tag>] [--jq <expr>]` — get release info (latest by default) ``
+
+### 3. Update CLAUDE.md
+
+Update the `## @nownabe/claude-tools` section in `programs/claude/CLAUDE.md`, preserving this format:
+
+```markdown
+## @nownabe/claude-tools
+
+`@nownabe/claude-tools` provides GitHub-related CLI utilities. Run via `bunx @nownabe/claude-tools <command>`.
+
+Available commands:
+
+- `gh <command> <args> [options]` — <description>
+...
+
+All commands accept `--repo <owner/repo>` to target a specific repository (defaults to current repo).
+```
+
+Add, remove, or update commands as needed to match the source. Keep descriptions concise
+(lowercase, no trailing period).
+
+### 4. Commit and create PR
+
+Follow the repository's PR rules. Use type `chore` and scope `claude`.
+Example: `chore(claude): update claude-tools documentation`.
