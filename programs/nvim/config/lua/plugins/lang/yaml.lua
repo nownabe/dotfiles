@@ -1,5 +1,5 @@
 -- YAML language support
--- LSP: yamlls with schemastore
+-- LSP: yamlls with schemastore, Formatting: oxfmt
 
 return {
   {
@@ -55,5 +55,14 @@ return {
         "yaml-language-server",
       })
     end,
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        yaml = { "oxfmt" },
+      },
+    },
   },
 }

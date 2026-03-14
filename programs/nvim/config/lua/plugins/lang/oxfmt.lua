@@ -1,5 +1,6 @@
 -- Oxfmt formatter (via conform.nvim)
--- Supports: JS, TS, JSON, YAML, HTML, CSS, SCSS, Markdown, MDX, TOML, GraphQL, Vue
+-- Mason install + filetypes without dedicated lang files
+-- Per-language oxfmt formatters_by_ft are configured in each language file
 
 return {
   {
@@ -7,20 +8,6 @@ return {
     optional = true,
     opts = {
       formatters_by_ft = {
-        javascript = { "oxfmt" },
-        javascriptreact = { "oxfmt" },
-        typescript = { "oxfmt" },
-        typescriptreact = { "oxfmt" },
-        json = { "oxfmt" },
-        jsonc = { "oxfmt" },
-        yaml = { "oxfmt" },
-        html = { "oxfmt" },
-        css = { "oxfmt" },
-        scss = { "oxfmt" },
-        less = { "oxfmt" },
-        markdown = { "oxfmt" },
-        mdx = { "oxfmt" },
-        toml = { "oxfmt" },
         graphql = { "oxfmt" },
         vue = { "oxfmt" },
       },

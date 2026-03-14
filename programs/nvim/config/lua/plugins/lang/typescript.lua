@@ -1,5 +1,5 @@
 -- TypeScript/JavaScript language support
--- Linting: oxlint (LSP)
+-- Formatting: oxfmt, Linting: oxlint (LSP)
 
 return {
   {
@@ -62,6 +62,18 @@ return {
         "oxlint",
       })
     end,
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        javascript = { "oxfmt" },
+        javascriptreact = { "oxfmt" },
+        typescript = { "oxfmt" },
+        typescriptreact = { "oxfmt" },
+      },
+    },
   },
   {
     "echasnovski/mini.icons",
