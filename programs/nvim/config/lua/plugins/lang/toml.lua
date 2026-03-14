@@ -1,5 +1,5 @@
 -- TOML language support
--- LSP: taplo (includes formatting)
+-- LSP: taplo, Formatting: oxfmt
 
 return {
   {
@@ -33,5 +33,14 @@ return {
         "taplo",
       })
     end,
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        toml = { "oxfmt" },
+      },
+    },
   },
 }
