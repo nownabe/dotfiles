@@ -1,12 +1,12 @@
 -- Markdown language support
--- LSP: marksman, Formatter: oxfmt
+-- LSP: marksman
 
 return {
   {
     "AstroNvim/astrolsp",
     optional = true,
     opts = function(_, opts)
-      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "marksman", "oxfmt" })
+      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "marksman" })
     end,
   },
   {
@@ -23,7 +23,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "marksman", "oxfmt" })
+      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "marksman" })
     end,
   },
   {
@@ -32,7 +32,6 @@ return {
     opts = function(_, opts)
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
         "marksman",
-        "oxfmt",
       })
     end,
   },
