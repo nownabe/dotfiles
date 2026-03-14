@@ -42,6 +42,9 @@
       # AI tools
       chikuwa
 
+      # Build tools
+      gcc
+
       # CLI tools
       ripgrep
       fzf
