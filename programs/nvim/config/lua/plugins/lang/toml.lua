@@ -1,12 +1,12 @@
 -- TOML language support
--- LSP: taplo, Formatter: oxfmt
+-- LSP: taplo (includes formatting)
 
 return {
   {
     "AstroNvim/astrolsp",
     optional = true,
     opts = function(_, opts)
-      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "taplo", "oxfmt" })
+      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "taplo" })
     end,
   },
   {
@@ -22,7 +22,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "taplo", "oxfmt" })
+      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "taplo" })
     end,
   },
   {
@@ -31,7 +31,6 @@ return {
     opts = function(_, opts)
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
         "taplo",
-        "oxfmt",
       })
     end,
   },
