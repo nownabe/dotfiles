@@ -1,12 +1,12 @@
 -- HTML/CSS language support
--- LSP: html, cssls, Formatter: oxfmt
+-- LSP: html, cssls
 
 return {
   {
     "AstroNvim/astrolsp",
     optional = true,
     opts = function(_, opts)
-      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "html", "cssls", "oxfmt" })
+      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "html", "cssls" })
     end,
   },
   {
@@ -23,7 +23,7 @@ return {
     optional = true,
     opts = function(_, opts)
       opts.ensure_installed =
-        require("astrocore").list_insert_unique(opts.ensure_installed, { "html", "cssls", "oxfmt" })
+        require("astrocore").list_insert_unique(opts.ensure_installed, { "html", "cssls" })
     end,
   },
   {
@@ -33,7 +33,6 @@ return {
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
         "html-lsp",
         "css-lsp",
-        "oxfmt",
       })
     end,
   },
