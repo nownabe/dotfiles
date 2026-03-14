@@ -70,8 +70,8 @@ in
       mv = "mv -i";
       mkdir = "mkdir -p";
 
-      # Linux clipboard
-      pbcopy = "xsel --clipboard --input";
+      # Clipboard / open
+      pbcopy = if isWSL then "clip.exe" else "xsel --clipboard --input";
       open = "xdg-open";
 
       # General commands
