@@ -1,12 +1,12 @@
 -- CUE language support
--- LSP: dagger (cuelsp)
+-- LSP: cue lsp (official), Formatting: cue fmt
 
 return {
   {
     "AstroNvim/astrolsp",
     optional = true,
     opts = function(_, opts)
-      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "dagger" })
+      opts.servers = require("astrocore").list_insert_unique(opts.servers or {}, { "cue" })
     end,
   },
   {
@@ -22,7 +22,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     optional = true,
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "dagger" })
+      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "cue" })
     end,
   },
   {
@@ -30,8 +30,17 @@ return {
     optional = true,
     opts = function(_, opts)
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
-        "cuelsp",
+        "cue",
       })
     end,
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        cue = { "cue_fmt" },
+      },
+    },
   },
 }
