@@ -29,7 +29,7 @@ For each command in the Tools table, read its doc file at
 Extract the usage line from the `## Usage` code block. For example:
 
 ```
-claude-tools gh get-release [--tag <tag>] [--jq <expr>] [--repo <owner/repo>]
+claude-tools gh get-job-logs <job_id> [--repo <owner/repo>] [--no-strip-timestamps]
 ```
 
 Transform it for CLAUDE.md:
@@ -38,7 +38,7 @@ Transform it for CLAUDE.md:
 - Remove `[--repo <owner/repo>]` (documented separately as a shared option)
 - Combine with the description from the README table
 
-Result: `` `gh get-release [--tag <tag>] [--jq <expr>]` — get release info (latest by default) ``
+Result: `` `gh get-job-logs <job_id> [--no-strip-timestamps]` — get logs for a specific job ``
 
 ### 3. Update CLAUDE.md
 
