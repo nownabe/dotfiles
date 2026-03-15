@@ -16,15 +16,17 @@ Update `programs/claude/CLAUDE.md` in this repo to reflect the latest commands a
 
 ### 1. Read source
 
-Read `/home/nownabe/src/github.com/nownabe/claude/README.md`. It has:
+Fetch `README.md` from GitHub using `bunx @nownabe/claude-tools gh get-repo-content README.md --repo nownabe/claude`.
+
+It has:
 
 - **Tools** table — command names and descriptions for `@nownabe/claude-tools`
 - **Hooks** table — hook names and descriptions for `@nownabe/claude-hooks`
 
 ### 2. Read command docs
 
-For each command in the Tools table, read its doc file at
-`/home/nownabe/src/github.com/nownabe/claude/docs/claude-tools/gh/<command>.md`.
+For each command in the Tools table, fetch its doc file from GitHub using
+`bunx @nownabe/claude-tools gh get-repo-content docs/claude-tools/gh/<command>.md --repo nownabe/claude`.
 
 Extract the usage line from the `## Usage` code block. For example:
 
