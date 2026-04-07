@@ -2,9 +2,6 @@ return {
   {
     "copilotlsp-nvim/copilot-lsp",
     config = function()
-      vim.lsp.config("copilot_ls", {
-        on_init = function() end,
-      })
       vim.lsp.enable("copilot_ls")
     end,
   },
