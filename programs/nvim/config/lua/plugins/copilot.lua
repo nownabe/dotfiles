@@ -8,6 +8,7 @@ return {
   -- TODO: Replace copilot.vim with copilot-lsp inline completion when Neovim v0.12 is released (vim.lsp.inline_completion)
   {
     "github/copilot.vim",
+    lazy = false,
   },
   {
     -- https://github.com/AstroNvim/AstroNvim/blob/main/lua/astronvim/plugins/mason-tool-installer.lua
