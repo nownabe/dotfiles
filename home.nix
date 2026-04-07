@@ -57,6 +57,9 @@
       gnumake
       claude-code
 
+      # Networking
+      ngrok
+
       # Cloud
       awscli2
       google-cloud-sdk
