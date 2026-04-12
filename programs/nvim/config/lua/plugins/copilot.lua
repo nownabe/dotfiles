@@ -4,24 +4,27 @@ return {
     config = function()
       vim.lsp.enable("copilot_ls")
 
-      -- sidekick.nvim overwrites the didChangeStatus handler, which breaks
-      -- copilot-lsp's automatic sign-in flow. Re-attach the sign-in handler
-      -- so that it fires alongside sidekick's status handler.
-      vim.api.nvim_create_autocmd("LspAttach", {
+      -- sidekick.nvim overwrites the copilot_ls didChangeStatus handler,
+      -- which breaks copilot-lsp's automatic sign-in flow. Patch
+      -- sidekick's attach to chain copilot-lsp's sign-in handler.
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "LazyLoad",
         group = vim.api.nvim_create_augroup("copilot-lsp-signin", { clear = true }),
         callback = function(ev)
-          local client = vim.lsp.get_client_by_id(ev.data.client_id)
-          if not client or client.name ~= "copilot_ls" then
+          if ev.data ~= "sidekick.nvim" then
             return
           end
-          local copilot_handlers = require("copilot-lsp.handlers")
-          local current = client.handlers.didChangeStatus
-          if current and current ~= copilot_handlers.didChangeStatus then
+          local sk_status = require("sidekick.status")
+          local original_attach = sk_status.attach
+          sk_status.attach = function(client)
+            original_attach(client)
+            local sidekick_handler = client.handlers.didChangeStatus
             client.handlers.didChangeStatus = function(err, res, ctx)
-              copilot_handlers.didChangeStatus(err, res, ctx)
-              current(err, res, ctx)
+              require("copilot-lsp.handlers").didChangeStatus(err, res, ctx)
+              sidekick_handler(err, res, ctx)
             end
           end
+          return true -- remove autocmd
         end,
       })
     end,
