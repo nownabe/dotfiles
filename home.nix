@@ -57,6 +57,10 @@
       gnumake
       claude-code
 
+      # Fonts
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
+
       # Networking
       ngrok
 
@@ -65,6 +69,8 @@
       google-cloud-sdk
     ];
   };
+
+  fonts.fontconfig.enable = true;
 
   manual.manpages.enable = false;
 
