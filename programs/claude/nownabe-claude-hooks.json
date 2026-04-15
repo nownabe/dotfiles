@@ -6,6 +6,16 @@
     }
   },
   "preBash": {
+    "allowedPatterns": {
+      "gh pr create *": {
+        "reason": "Allow gh pr create with multi-line body",
+        "multiline": true
+      },
+      "git commit *": {
+        "reason": "Allow git commit with multi-line messages",
+        "multiline": true
+      }
+    },
     "forbiddenPatterns": {
       "git -C *": {
         "reason": "`git -C` is forbidden.",
