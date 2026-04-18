@@ -14,6 +14,18 @@
       "git commit *": {
         "reason": "Allow git commit with multi-line messages",
         "multiline": true
+      },
+      "gh issue create *": {
+        "reason": "Allow gh issue create with multi-line body",
+        "multiline": true
+      },
+      "gh issue edit *": {
+        "reason": "Allow gh issue edit",
+        "multiline": true
+      },
+      "gh pr edit *": {
+        "reason": "Allow gh pr edit",
+        "multiline": true
       }
     },
     "forbiddenPatterns": {
