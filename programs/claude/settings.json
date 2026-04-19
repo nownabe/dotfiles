@@ -35,7 +35,8 @@
     ],
     "ask": [
       "Bash(gh api:*)",
-      "Bash(gh issue close:*)"
+      "Bash(gh issue close:*)",
+      "Bash(gh issue edit:*)"
     ],
     "deny": [
       "Bash(git -C :*)",
