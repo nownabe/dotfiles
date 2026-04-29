@@ -1,10 +1,11 @@
 {
   lib,
-  stdenvNoCC,
+  stdenv,
   fetchurl,
+  autoPatchelfHook,
 }:
 
-stdenvNoCC.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "chikuwa";
   version = "0.1.8";
 
@@ -14,6 +15,9 @@ stdenvNoCC.mkDerivation rec {
   };
 
   sourceRoot = ".";
+
+  nativeBuildInputs = [ autoPatchelfHook ];
+  buildInputs = [ stdenv.cc.cc.lib ];
 
   installPhase = ''
     runHook preInstall
