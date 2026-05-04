@@ -25,7 +25,7 @@
       jdk
       lua
       nodejs
-      python3
+      (python3.withPackages (ps: [ ps.pip ]))
       ruby
       deno
       bun
