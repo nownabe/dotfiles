@@ -44,6 +44,7 @@
 
       # Build tools
       gcc
+      tree-sitter
 
       # CLI tools
       ripgrep
