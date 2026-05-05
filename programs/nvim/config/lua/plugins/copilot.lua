@@ -20,7 +20,10 @@ return {
             original_attach(client)
             local sidekick_handler = client.handlers.didChangeStatus
             client.handlers.didChangeStatus = function(err, res, ctx)
-              require("copilot-lsp.handlers").didChangeStatus(err, res, ctx)
+              local ok, e = pcall(require("copilot-lsp.handlers").didChangeStatus, err, res, ctx)
+              if not ok then
+                vim.notify("copilot-lsp didChangeStatus: " .. tostring(e), vim.log.levels.DEBUG)
+              end
               sidekick_handler(err, res, ctx)
             end
           end
