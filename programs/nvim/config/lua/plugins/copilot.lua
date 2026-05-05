@@ -2,6 +2,14 @@ return {
   {
     "copilotlsp-nvim/copilot-lsp",
     config = function()
+      -- Register signIn handler on copilot_ls client for Neovim 0.12 compat.
+      -- copilot-lsp's sign_in() calls client:request("signIn", ..., nil, bufnr),
+      -- which requires client.handlers["signIn"] to be set in Neovim 0.12+.
+      vim.lsp.config("copilot_ls", {
+        handlers = {
+          ["signIn"] = require("copilot-lsp.handlers").signIn,
+        },
+      })
       vim.lsp.enable("copilot_ls")
 
       -- sidekick.nvim overwrites the copilot_ls didChangeStatus handler,
@@ -20,10 +28,7 @@ return {
             original_attach(client)
             local sidekick_handler = client.handlers.didChangeStatus
             client.handlers.didChangeStatus = function(err, res, ctx)
-              local ok, e = pcall(require("copilot-lsp.handlers").didChangeStatus, err, res, ctx)
-              if not ok then
-                vim.notify("copilot-lsp didChangeStatus: " .. tostring(e), vim.log.levels.DEBUG)
-              end
+              require("copilot-lsp.handlers").didChangeStatus(err, res, ctx)
               sidekick_handler(err, res, ctx)
             end
           end
