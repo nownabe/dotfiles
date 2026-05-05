@@ -2,7 +2,16 @@ return {
   "folke/sidekick.nvim",
   dependencies = { "copilotlsp-nvim/copilot-lsp" },
   event = "LspAttach",
-  opts = {},
+  opts = {
+    copilot = {
+      status = {
+        -- Suppress "not signed in" notification during startup.
+        -- copilot_ls temporarily reports unauthenticated on init
+        -- before copilot.vim's credentials are picked up.
+        level = vim.log.levels.OFF,
+      },
+    },
+  },
   -- stylua: ignore
   keys = {
     {
