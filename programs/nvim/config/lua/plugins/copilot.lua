@@ -2,20 +2,22 @@ return {
   {
     "copilotlsp-nvim/copilot-lsp",
     config = function()
-      vim.lsp.enable("copilot_ls")
-
-      -- Register signIn handler on copilot_ls client for Neovim 0.12 compat.
-      -- copilot-lsp's sign_in() calls client:request("signIn", ..., nil, bufnr),
-      -- which requires client.handlers["signIn"] to be set in Neovim 0.12+.
-      vim.api.nvim_create_autocmd("LspAttach", {
-        group = vim.api.nvim_create_augroup("copilot-lsp-handlers", { clear = true }),
-        callback = function(ev)
-          local client = vim.lsp.get_client_by_id(ev.data.client_id)
-          if client and client.name == "copilot_ls" then
-            client.handlers["signIn"] = require("copilot-lsp.handlers").signIn
+      -- Neovim 0.12 compat: patch copilot-lsp's didChangeStatus to pass
+      -- the signIn handler explicitly to client:request(), since Neovim 0.12
+      -- requires client.handlers[method] to be set when handler arg is nil.
+      local copilot_handlers = require("copilot-lsp.handlers")
+      local original_didChangeStatus = copilot_handlers.didChangeStatus
+      copilot_handlers.didChangeStatus = function(err, res, ctx)
+        if not err and res.kind == "Error" and res.message:find("not signed into") then
+          local client = vim.lsp.get_client_by_id(ctx.client_id)
+          if client then
+            client.handlers["signIn"] = copilot_handlers.signIn
           end
-        end,
-      })
+        end
+        original_didChangeStatus(err, res, ctx)
+      end
+
+      vim.lsp.enable("copilot_ls")
 
       -- sidekick.nvim overwrites the copilot_ls didChangeStatus handler,
       -- which breaks copilot-lsp's automatic sign-in flow. Patch
@@ -32,9 +34,9 @@ return {
           sk_status.attach = function(client)
             original_attach(client)
             local sidekick_handler = client.handlers.didChangeStatus
-            client.handlers.didChangeStatus = function(err, res, ctx)
-              require("copilot-lsp.handlers").didChangeStatus(err, res, ctx)
-              sidekick_handler(err, res, ctx)
+            client.handlers.didChangeStatus = function(err2, res2, ctx2)
+              copilot_handlers.didChangeStatus(err2, res2, ctx2)
+              sidekick_handler(err2, res2, ctx2)
             end
           end
           return true -- remove autocmd
