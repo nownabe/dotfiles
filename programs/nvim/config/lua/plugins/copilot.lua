@@ -2,15 +2,20 @@ return {
   {
     "copilotlsp-nvim/copilot-lsp",
     config = function()
+      vim.lsp.enable("copilot_ls")
+
       -- Register signIn handler on copilot_ls client for Neovim 0.12 compat.
       -- copilot-lsp's sign_in() calls client:request("signIn", ..., nil, bufnr),
       -- which requires client.handlers["signIn"] to be set in Neovim 0.12+.
-      vim.lsp.config("copilot_ls", {
-        handlers = {
-          ["signIn"] = require("copilot-lsp.handlers").signIn,
-        },
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = vim.api.nvim_create_augroup("copilot-lsp-handlers", { clear = true }),
+        callback = function(ev)
+          local client = vim.lsp.get_client_by_id(ev.data.client_id)
+          if client and client.name == "copilot_ls" then
+            client.handlers["signIn"] = require("copilot-lsp.handlers").signIn
+          end
+        end,
       })
-      vim.lsp.enable("copilot_ls")
 
       -- sidekick.nvim overwrites the copilot_ls didChangeStatus handler,
       -- which breaks copilot-lsp's automatic sign-in flow. Patch
