@@ -57,6 +57,7 @@
       gnupg
       gnumake
       claude-code
+      mo
 
       # Fonts
       noto-fonts-cjk-sans

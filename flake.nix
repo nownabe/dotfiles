@@ -16,6 +16,7 @@
       overlay = final: prev: {
         aqua = final.callPackage ./packages/aqua.nix { };
         chikuwa = final.callPackage ./packages/chikuwa.nix { };
+        mo = final.callPackage ./packages/mo.nix { };
       };
       pkgs = import nixpkgs {
         inherit system;
