@@ -69,6 +69,9 @@
       # Cloud
       awscli2
       google-cloud-sdk
+
+      # Applications
+      chromium
     ];
   };
 
