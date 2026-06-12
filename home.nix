@@ -33,6 +33,7 @@
       # Package managers
       uv
       aqua
+      devbox
 
       # Nix tools
       nil
