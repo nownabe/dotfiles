@@ -9,6 +9,11 @@ return {
       local copilot_handlers = require("copilot-lsp.handlers")
       copilot_handlers.didChangeStatus = function() end
 
+      vim.lsp.config("copilot_ls", {
+        settings = {
+          nextEditSuggestions = { enabled = false },
+        },
+      })
       vim.lsp.enable("copilot_ls")
     end,
   },
