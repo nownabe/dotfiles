@@ -58,6 +58,8 @@
       gnumake
       claude-code
       mo
+      bubblewrap
+      socat
 
       # Fonts
       noto-fonts-cjk-sans
