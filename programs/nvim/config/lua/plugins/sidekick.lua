@@ -15,16 +15,6 @@ return {
   -- stylua: ignore
   keys = {
     {
-      "<tab>",
-      function()
-        if not require("sidekick").nes_jump_or_apply() then
-          return "<tab>"
-        end
-      end,
-      expr = true,
-      desc = "Goto/Apply Next Edit Suggestion",
-    },
-    {
       "<leader>ss",
       function() require("sidekick.cli").toggle() end,
       mode = { "n", "v" },
