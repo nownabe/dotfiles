@@ -22,3 +22,7 @@ Available commands:
 - `gh resolve-tag-sha <owner/repo> <tag>` — resolve a tag to its commit SHA (useful for pinning GitHub Actions)
 
 All commands accept `--repo <owner/repo>` to target a specific repository (defaults to current repo).
+
+## Bash Tool Usage
+
+- Do not insert `echo "====="` or similar separator/marker commands between commands to visually confirm output boundaries. Each Bash tool call already returns its output clearly — use separate tool calls or `&&` chaining instead.
