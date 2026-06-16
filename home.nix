@@ -1,4 +1,4 @@
-{ pkgs, username, ... }:
+{ pkgs, lib, username, isWSL, ... }:
 
 {
   imports = [
@@ -75,6 +75,11 @@
 
       # Applications
       chromium
+    ] ++ lib.optionals (!isWSL) [
+      # Input method (native Linux only)
+      fcitx5
+      fcitx5-mozc
+      mozc # provides mozc_tool config GUI (apt: mozc-utils-gui)
     ];
   };
 
