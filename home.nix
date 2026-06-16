@@ -8,6 +8,7 @@
     ./programs/claude
     ./programs/wezterm
     ./programs/tmux
+    ./programs/gnome-terminal
   ];
 
   home = {
