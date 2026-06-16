@@ -26,3 +26,6 @@ All commands accept `--repo <owner/repo>` to target a specific repository (defau
 ## Bash Tool Usage
 
 - Do not insert `echo "====="` or similar separator/marker commands between commands to visually confirm output boundaries. Each Bash tool call already returns its output clearly — use separate tool calls or `&&` chaining instead.
+- **NEVER use the Bash tool to write files** (no `cat >`, `echo >`, `tee`, heredocs, `sed -i`, etc.). Use the **Write** or **Edit** tool instead.
+- **NEVER use the Bash tool to read files** (no `cat`, `head`, `tail`, `less`, etc.). Use the **Read** tool instead.
+- **NEVER use the Bash tool to search** (no `grep`, `rg`, `find`, `ls`-as-search, etc.). Use the **Grep** or **Glob** tool instead.
