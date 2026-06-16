@@ -51,8 +51,9 @@ lib.mkIf (!isWSL) {
       highlight-background-color = "#F5E0DC";
       highlight-foreground-color = "#1E1E2E";
 
-      # Make the palette fully visible (Mocha is a dark theme).
-      use-transparent-background = false;
+      # Slightly transparent background (matches WezTerm's opacity feel).
+      use-transparent-background = true;
+      background-transparency-percent = 12;
     };
   };
 }
