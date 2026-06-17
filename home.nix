@@ -76,6 +76,7 @@
 
       # Applications
       chromium
+      gedit
     ] ++ lib.optionals (!isWSL) [
       # Input method (native Linux only)
       fcitx5
