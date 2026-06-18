@@ -1,5 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(bun test:*)",
@@ -33,10 +40,6 @@
       "WebFetch",
       "WebSearch"
     ],
-    "ask": [
-      "Bash(gh api:*)",
-      "Bash(gh issue close:*)"
-    ],
     "deny": [
       "Bash(git -C :*)",
       "Bash(gh pr merge:*)",
@@ -58,25 +61,159 @@
       "Read(~/.ssh/**)",
       "Read(~/.aws/**)",
       "Read(~/.gcloud/**)"
+    ],
+    "ask": [
+      "Bash(gh api:*)",
+      "Bash(gh issue close:*)"
     ]
   },
   "model": "opus",
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bunx @nownabe/claude-hooks pre-bash"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      },
+      {
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bunx @nownabe/claude-hooks notification",
+            "timeout": 30,
+            "async": true
+          }
+        ]
+      },
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bunx @nownabe/claude-hooks notification",
+            "timeout": 30,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chikuwa hook"
+          }
+        ]
+      }
+    ]
   },
-  "extraKnownMarketplaces": {
-    "nownabe-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "nownabe/claude"
-      }
-    },
-    "knowledge-work-plugins": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/knowledge-work-plugins"
-      }
-    }
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/scripts/statusline-command.sh"
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
@@ -96,34 +233,34 @@
     "data@knowledge-work-plugins": true,
     "enterprise-search@knowledge-work-plugins": true,
     "bio-research@knowledge-work-plugins": true,
-    "cowork-plugin-management@knowledge-work-plugins": true
+    "cowork-plugin-management@knowledge-work-plugins": true,
+    "superpowers@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "plugin-dev@claude-plugins-official": true,
+    "remember@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "mcp-server-dev@claude-plugins-official": true
   },
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/scripts/statusline-command.sh"
-  },
-  "hooks": {
-    "SessionStart": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "PreToolUse": [
-      {"hooks": [{"type": "command", "command": "chikuwa hook"}]},
-      {"matcher": "Bash", "hooks": [{"type": "command", "command": "bunx @nownabe/claude-hooks pre-bash"}]}
-    ],
-    "PostToolUse": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "PostToolUseFailure": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "PermissionRequest": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "Notification": [
-      {"hooks": [{"type": "command", "command": "chikuwa hook"}]},
-      {"matcher": "idle_prompt", "hooks": [{"type": "command", "command": "bunx @nownabe/claude-hooks notification", "async": true, "timeout": 30}]},
-      {"matcher": "permission_prompt", "hooks": [{"type": "command", "command": "bunx @nownabe/claude-hooks notification", "async": true, "timeout": 30}]}
-    ],
-    "Stop": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "SubagentStart": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "SubagentStop": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}],
-    "SessionEnd": [{"hooks": [{"type": "command", "command": "chikuwa hook"}]}]
+  "extraKnownMarketplaces": {
+    "nownabe-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "nownabe/claude"
+      }
+    },
+    "knowledge-work-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/knowledge-work-plugins"
+      }
+    }
   }
 }
