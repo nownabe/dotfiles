@@ -31,6 +31,7 @@ in
       };
 
       core.editor = "nvim";
+      core.hooksPath = "${config.home.homeDirectory}/.config/git/hooks";
       init.defaultBranch = "main";
       push.default = "simple";
       push.autoSetupRemote = true;
@@ -60,6 +61,11 @@ in
 
     ".local/bin/git-wt-helper" = {
       source = ./scripts/git-wt-helper;
+      executable = true;
+    };
+
+    ".config/git/hooks/post-checkout" = {
+      source = ./hooks/post-checkout;
       executable = true;
     };
   };
