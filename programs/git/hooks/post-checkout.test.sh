@@ -174,6 +174,27 @@ test_bare_repo_is_skipped() {
   rm -rf "$base" "$out"
 }
 
+test_chains_local_hook() {
+  local repo; repo=$(mktemp -d)
+  make_repo "$repo"
+  mkdir -p "$repo/.git/hooks"
+  {
+    printf '#!/usr/bin/env bash\n'
+    printf 'touch "%s/.local-hook-ran"\n' "$repo"
+  } > "$repo/.git/hooks/post-checkout"
+  chmod +x "$repo/.git/hooks/post-checkout"
+
+  add_worktree "$repo"
+  # add_worktree itself fired the local hook; clear the marker first.
+  rm -f "$repo/.local-hook-ran"
+
+  run_hook_create "$repo/.worktrees/wt-001"
+
+  if [[ -f "$repo/.local-hook-ran" ]]; then ok; else fail "local hook was not chained"; fi
+
+  rm -rf "$repo"
+}
+
 # --- runner ---
 for t in $(declare -F | awk '{print $3}' | grep '^test_'); do
   printf '# %s\n' "$t"

@@ -53,8 +53,22 @@ create_symlinks() {
   done < <(git config --get-all nownabe.worktreeSymlink 2>/dev/null)
 }
 
+chain_local_hook() {
+  local common_dir local_hook
+  common_dir=$(git rev-parse --git-common-dir 2>/dev/null) || return 0
+  local_hook="$common_dir/hooks/post-checkout"
+
+  [[ -x "$local_hook" ]] || return 0
+  # Don't recurse into ourselves if hooksPath ever points at .git/hooks.
+  [[ "$(realpath "$local_hook")" == "$(realpath "${BASH_SOURCE[0]}")" ]] && return 0
+
+  "$local_hook" "$@"
+}
+
 main() {
   local prev_head="${1-}"
+
+  chain_local_hook "$@"
 
   # Only react to worktree creation (previous HEAD is the null OID).
   [[ "$prev_head" == "$NULL_OID" ]] || return 0
