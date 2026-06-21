@@ -60,6 +60,61 @@ test_creates_relative_symlink() {
   rm -rf "$repo" "$out"
 }
 
+test_existing_symlink_is_silent() {
+  local repo; repo=$(mktemp -d)
+  make_repo "$repo"
+  git -C "$repo" config --add nownabe.worktreeSymlink .env
+  printf 'SECRET=1\n' > "$repo/.env"
+  add_worktree "$repo"
+  local wt="$repo/.worktrees/wt-001"
+
+  # First run creates the symlink.
+  run_hook_create "$wt"
+  # Second run must be silent and leave the symlink intact.
+  local out; out=$(mktemp)
+  run_hook_create "$wt" "$out"
+
+  if [[ -L "$wt/.env" ]]; then ok; else fail "symlink disappeared on second run"; fi
+  if [[ -s "$out" ]]; then fail "second run produced output: $(cat "$out")"; else ok; fi
+
+  rm -rf "$repo" "$out"
+}
+
+test_non_symlink_is_not_clobbered() {
+  local repo; repo=$(mktemp -d)
+  make_repo "$repo"
+  git -C "$repo" config --add nownabe.worktreeSymlink .env
+  printf 'SECRET=1\n' > "$repo/.env"
+  add_worktree "$repo"
+  local wt="$repo/.worktrees/wt-001"
+  printf 'LOCAL=1\n' > "$wt/.env"   # pre-existing real file
+
+  local out; out=$(mktemp)
+  run_hook_create "$wt" "$out"
+
+  if [[ -L "$wt/.env" ]]; then fail "real file was replaced by symlink"; else ok; fi
+  if [[ "$(cat "$wt/.env")" == "LOCAL=1" ]]; then ok; else fail "real file content changed"; fi
+  if grep -q 'warning' "$out"; then ok; else fail "no warning emitted: $(cat "$out")"; fi
+
+  rm -rf "$repo" "$out"
+}
+
+test_missing_source_warns() {
+  local repo; repo=$(mktemp -d)
+  make_repo "$repo"
+  git -C "$repo" config --add nownabe.worktreeSymlink .env   # no .env created
+  add_worktree "$repo"
+  local wt="$repo/.worktrees/wt-001"
+
+  local out; out=$(mktemp)
+  run_hook_create "$wt" "$out"
+
+  if [[ -e "$wt/.env" || -L "$wt/.env" ]]; then fail "symlink/file created for missing source"; else ok; fi
+  if grep -q 'source not found: .env' "$out"; then ok; else fail "no source-not-found warning: $(cat "$out")"; fi
+
+  rm -rf "$repo" "$out"
+}
+
 # --- runner ---
 for t in $(declare -F | awk '{print $3}' | grep '^test_'); do
   printf '# %s\n' "$t"
