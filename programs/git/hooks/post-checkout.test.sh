@@ -38,6 +38,17 @@ run_hook_create() {
   ( cd "$1" && "$HOOK" "$NULL_OID" "$SOME_OID" 1 ) 2>"${2:-/dev/null}"
 }
 
+# Create a bare repo at <base>/repo.git with a worktree at <base>/repo.git/wt-001.
+# Echoes the worktree path.
+make_bare_with_worktree() {
+  local base=$1
+  git init -q "$base/seed"
+  git -C "$base/seed" commit -q --allow-empty -m init
+  git clone -q --bare "$base/seed" "$base/repo.git" >/dev/null 2>&1
+  git -C "$base/repo.git" worktree add -q -b feat "$base/repo.git/wt-001" >/dev/null 2>&1
+  printf '%s\n' "$base/repo.git/wt-001"
+}
+
 test_creates_relative_symlink() {
   local repo; repo=$(mktemp -d)
   make_repo "$repo"
@@ -113,6 +124,54 @@ test_missing_source_warns() {
   if grep -q 'source not found: .env' "$out"; then ok; else fail "no source-not-found warning: $(cat "$out")"; fi
 
   rm -rf "$repo" "$out"
+}
+
+test_non_creation_checkout_is_skipped() {
+  local repo; repo=$(mktemp -d)
+  make_repo "$repo"
+  git -C "$repo" config --add nownabe.worktreeSymlink .env
+  printf 'SECRET=1\n' > "$repo/.env"
+  add_worktree "$repo"
+  local wt="$repo/.worktrees/wt-001"
+
+  # Non-null previous HEAD == ordinary branch switch, not worktree creation.
+  local out; out=$(mktemp)
+  ( cd "$wt" && "$HOOK" "$SOME_OID" "$SOME_OID" 1 ) 2>"$out"
+
+  if [[ -L "$wt/.env" ]]; then fail "symlink created on non-creation checkout"; else ok; fi
+  if [[ -s "$out" ]]; then fail "unexpected output: $(cat "$out")"; else ok; fi
+
+  rm -rf "$repo" "$out"
+}
+
+test_main_worktree_is_skipped() {
+  local repo; repo=$(mktemp -d)
+  make_repo "$repo"
+  git -C "$repo" config --add nownabe.worktreeSymlink .env
+  printf 'SECRET=1\n' > "$repo/.env"
+
+  # Run inside the MAIN worktree with a creation-style prev HEAD.
+  local out; out=$(mktemp)
+  run_hook_create "$repo" "$out"
+
+  if [[ -L "$repo/.env" ]]; then fail ".env in main worktree was replaced"; else ok; fi
+  if [[ -s "$out" ]]; then fail "main worktree produced output: $(cat "$out")"; else ok; fi
+
+  rm -rf "$repo" "$out"
+}
+
+test_bare_repo_is_skipped() {
+  local base; base=$(mktemp -d)
+  local wt; wt=$(make_bare_with_worktree "$base")
+  git -C "$base/repo.git" config --add nownabe.worktreeSymlink .env
+
+  local out; out=$(mktemp)
+  run_hook_create "$wt" "$out"
+
+  if [[ -e "$wt/.env" || -L "$wt/.env" ]]; then fail "created link in bare worktree"; else ok; fi
+  if [[ -s "$out" ]]; then fail "bare repo produced output: $(cat "$out")"; else ok; fi
+
+  rm -rf "$base" "$out"
 }
 
 # --- runner ---
