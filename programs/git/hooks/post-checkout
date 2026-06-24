@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+#
+# Global post-checkout hook.
+#
+# On worktree creation, symlinks files listed in the per-repo multi-valued
+# config `nownabe.worktreeSymlink` from the main worktree into the new
+# worktree (relative links). Only fires for non-bare repos, in a linked
+# worktree, when the previous HEAD is the null OID.
+
+set -o nounset
+set -o pipefail
+
+NULL_OID="0000000000000000000000000000000000000000"
+PREFIX="worktree-symlink"
+
+create_symlinks() {
+  local main_worktree=$1 current_worktree=$2
+  local rel source target target_dir link_target
+
+  while IFS= read -r rel; do
+    [[ -z "$rel" ]] && continue
+    source="$main_worktree/$rel"
+    target="$current_worktree/$rel"
+
+    # Already a symlink: do nothing, silently.
+    [[ -L "$target" ]] && continue
+
+    # A real file/dir already exists: don't clobber.
+    if [[ -e "$target" ]]; then
+      printf '%s: warning: %s already exists and is not a symlink, skipping\n' \
+        "$PREFIX" "$rel" >&2
+      continue
+    fi
+
+    # Configured source is missing.
+    if [[ ! -e "$source" ]]; then
+      printf '%s: warning: source not found: %s\n' "$PREFIX" "$rel" >&2
+      continue
+    fi
+
+    target_dir=$(dirname "$target")
+    if ! mkdir -p "$target_dir"; then
+      printf '%s: error: failed to create directory for %s\n' "$PREFIX" "$rel" >&2
+      continue
+    fi
+
+    link_target=$(realpath -m --relative-to="$target_dir" "$source")
+    if ln -s "$link_target" "$target"; then
+      printf '%s: created %s -> %s\n' "$PREFIX" "$rel" "$link_target" >&2
+    else
+      printf '%s: error: failed to create symlink for %s\n' "$PREFIX" "$rel" >&2
+    fi
+  done < <(git config --get-all nownabe.worktreeSymlink 2>/dev/null)
+}
+
+chain_local_hook() {
+  local common_dir local_hook
+  common_dir=$(git rev-parse --git-common-dir 2>/dev/null) || return 0
+  local_hook="$common_dir/hooks/post-checkout"
+
+  [[ -x "$local_hook" ]] || return 0
+  # Don't recurse into ourselves if hooksPath ever points at .git/hooks.
+  [[ "$(realpath "$local_hook")" == "$(realpath "${BASH_SOURCE[0]}")" ]] && return 0
+
+  "$local_hook" "$@"
+}
+
+main() {
+  local prev_head="${1-}"
+
+  chain_local_hook "$@"
+
+  # Only react to worktree creation (previous HEAD is the null OID).
+  [[ "$prev_head" == "$NULL_OID" ]] || return 0
+
+  local common_dir
+  common_dir=$(git rev-parse --git-common-dir 2>/dev/null) || return 0
+  common_dir=$(cd "$common_dir" 2>/dev/null && pwd) || return 0
+
+  # Skip bare repositories (common dir is not named ".git").
+  [[ "$(basename "$common_dir")" == ".git" ]] || return 0
+
+  local main_worktree current_worktree
+  main_worktree=$(dirname "$common_dir")
+  current_worktree=$(git rev-parse --show-toplevel 2>/dev/null) || return 0
+
+  # Skip the main worktree itself (source == target).
+  [[ "$current_worktree" == "$main_worktree" ]] && return 0
+
+  create_symlinks "$main_worktree" "$current_worktree"
+}
+
+main "$@"
