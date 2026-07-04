@@ -42,6 +42,11 @@
         "type": "regex",
         "reason": "`$(cat` in `gh` commands is forbidden.",
         "suggestion": "Pass arguments directly (e.g., `--title \"title\" --body \"body\"`) instead of using `$(cat <<'EOF' ...)`."
+      },
+      "^echo\\b": {
+        "type": "regex",
+        "reason": "`echo` is forbidden.",
+        "suggestion": "Do not use `echo` for separators/markers or to write files. Use separate Bash calls, `&&` chaining, or the Write/Edit tools instead."
       }
     }
   }
