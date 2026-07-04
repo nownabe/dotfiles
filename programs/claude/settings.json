@@ -67,7 +67,6 @@
       "Bash(gh issue close:*)"
     ]
   },
-  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -234,7 +233,7 @@
     "enterprise-search@knowledge-work-plugins": true,
     "bio-research@knowledge-work-plugins": true,
     "cowork-plugin-management@knowledge-work-plugins": true,
-    "superpowers@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": false,
     "skill-creator@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
@@ -262,5 +261,6 @@
         "repo": "anthropics/knowledge-work-plugins"
       }
     }
-  }
+  },
+  "tui": "fullscreen"
 }
