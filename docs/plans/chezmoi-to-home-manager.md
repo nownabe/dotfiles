@@ -18,24 +18,24 @@ Move tool installations currently managed by mise, aqua, and apt to `home.packag
 
 **From mise (`dot_config/mise/config.toml`):**
 
-| Tool    | Current Version | Nix Package       | Notes                           |
-| ------- | --------------- | ----------------- | ------------------------------- |
-| aws     | latest          | `awscli2`         |                                 |
-| deno    | latest          | `deno`            |                                 |
-| fzf     | latest          | `fzf`             |                                 |
-| gh      | latest          | `gh`              |                                 |
-| ghq     | latest          | `ghq`             |                                 |
-| go      | latest          | `go`              |                                 |
-| lua     | latest          | `lua`             |                                 |
-| node    | lts             | `nodejs_22`       | Use LTS version package         |
-| pnpm    | latest          | `pnpm`            |                                 |
-| python  | latest          | `python3`         |                                 |
-| ripgrep | latest          | `ripgrep`         | Already in home.packages        |
-| ruby    | latest          | `ruby`            |                                 |
-| uv      | latest          | `uv`              |                                 |
-| zoxide  | latest          | `zoxide`          | Use `programs.zoxide` in Phase 2 |
-| chezmoi | latest          | —                 | Skip; will be removed           |
-| aqua    | latest          | —                 | Skip; will be removed           |
+| Tool    | Current Version | Nix Package | Notes                            |
+| ------- | --------------- | ----------- | -------------------------------- |
+| aws     | latest          | `awscli2`   |                                  |
+| deno    | latest          | `deno`      |                                  |
+| fzf     | latest          | `fzf`       |                                  |
+| gh      | latest          | `gh`        |                                  |
+| ghq     | latest          | `ghq`       |                                  |
+| go      | latest          | `go`        |                                  |
+| lua     | latest          | `lua`       |                                  |
+| node    | lts             | `nodejs_22` | Use LTS version package          |
+| pnpm    | latest          | `pnpm`      |                                  |
+| python  | latest          | `python3`   |                                  |
+| ripgrep | latest          | `ripgrep`   | Already in home.packages         |
+| ruby    | latest          | `ruby`      |                                  |
+| uv      | latest          | `uv`        |                                  |
+| zoxide  | latest          | `zoxide`    | Use `programs.zoxide` in Phase 2 |
+| chezmoi | latest          | —           | Skip; will be removed            |
+| aqua    | latest          | —           | Skip; will be removed            |
 
 **From aqua (`dot_config/aquaproj-aqua/aqua.yaml`):**
 
@@ -47,27 +47,27 @@ Move tool installations currently managed by mise, aqua, and apt to `home.packag
 
 **From apt (`.chezmoidata/packages.yaml`):**
 
-| Package    | Nix Package    | Notes                            |
-| ---------- | -------------- | -------------------------------- |
-| apt-file   | —              | Debian-specific, skip            |
-| byobu      | `byobu`        |                                  |
-| curl       | `curl`         |                                  |
-| fzf        | `fzf`          | Duplicate with mise              |
-| git        | `git`          | Already in home.packages         |
-| gnupg      | `gnupg`        |                                  |
-| libyaml-dev| —              | Build dep, add only if needed    |
-| wslu       | —              | WSL-specific, not in nixpkgs     |
-| zip        | `zip`          |                                  |
-| zsh        | `zsh`          | Use `programs.zsh` in Phase 2    |
+| Package     | Nix Package | Notes                         |
+| ----------- | ----------- | ----------------------------- |
+| apt-file    | —           | Debian-specific, skip         |
+| byobu       | `byobu`     |                               |
+| curl        | `curl`      |                               |
+| fzf         | `fzf`       | Duplicate with mise           |
+| git         | `git`       | Already in home.packages      |
+| gnupg       | `gnupg`     |                               |
+| libyaml-dev | —           | Build dep, add only if needed |
+| wslu        | —           | WSL-specific, not in nixpkgs  |
+| zip         | `zip`       |                               |
+| zsh         | `zsh`       | Use `programs.zsh` in Phase 2 |
 
 **Additional tools (from `dot_default-npm-packages`):**
 
-| Package                      | Notes                                |
-| ---------------------------- | ------------------------------------ |
-| textlint                     | Install via `home.packages` or npm   |
-| @anthropic-ai/claude-code    | Install via npm globally             |
-| @google/gemini-cli           | Install via npm globally             |
-| @openai/codex                | Install via npm globally             |
+| Package                   | Notes                              |
+| ------------------------- | ---------------------------------- |
+| textlint                  | Install via `home.packages` or npm |
+| @anthropic-ai/claude-code | Install via npm globally           |
+| @google/gemini-cli        | Install via npm globally           |
+| @openai/codex             | Install via npm globally           |
 
 ### How to Implement
 
@@ -124,6 +124,7 @@ Migrate zsh configuration to `programs.zsh`.
 ### What to Migrate
 
 **From `dot_zshrc`:**
+
 - zplug plugin manager + plugins
 - History settings (1M entries, extended history)
 - Shell options (autocd, autopushd, etc.)
@@ -133,24 +134,24 @@ Migrate zsh configuration to `programs.zsh`.
 
 **From `dot_zsh.d/`:**
 
-| File              | Content                              | Migration Target                  |
-| ----------------- | ------------------------------------ | --------------------------------- |
-| `00_aliases.zsh`  | Shell aliases (k, bat, vi, g, etc.)  | `programs.zsh.shellAliases`       |
-| `00_mise.zsh`     | Mise activation                      | Remove (mise replaced by Nix)     |
-| `00_util.zsh`     | Color echo functions                 | `programs.zsh.initExtra`          |
-| `01_aqua.zsh`     | Aqua PATH setup                     | Remove (aqua replaced by Nix)     |
-| `01_fzf.zsh`      | FZF config + custom functions        | `programs.fzf` + `initExtra`      |
-| `bun.zsh`         | Bun PATH/completions                | Remove (bun managed by Nix)       |
-| `git.zsh`         | Git worktree helpers                 | `programs.zsh.initExtra`          |
-| `wsl.zsh`         | WSL2 clipboard + DISPLAY            | `programs.zsh.initExtra`          |
+| File             | Content                             | Migration Target              |
+| ---------------- | ----------------------------------- | ----------------------------- |
+| `00_aliases.zsh` | Shell aliases (k, bat, vi, g, etc.) | `programs.zsh.shellAliases`   |
+| `00_mise.zsh`    | Mise activation                     | Remove (mise replaced by Nix) |
+| `00_util.zsh`    | Color echo functions                | `programs.zsh.initExtra`      |
+| `01_aqua.zsh`    | Aqua PATH setup                     | Remove (aqua replaced by Nix) |
+| `01_fzf.zsh`     | FZF config + custom functions       | `programs.fzf` + `initExtra`  |
+| `bun.zsh`        | Bun PATH/completions                | Remove (bun managed by Nix)   |
+| `git.zsh`        | Git worktree helpers                | `programs.zsh.initExtra`      |
+| `wsl.zsh`        | WSL2 clipboard + DISPLAY            | `programs.zsh.initExtra`      |
 
 **Zsh plugins (currently via zplug):**
 
-| Plugin                              | Home Manager Equivalent                     |
-| ----------------------------------- | ------------------------------------------- |
+| Plugin                              | Home Manager Equivalent                             |
+| ----------------------------------- | --------------------------------------------------- |
 | `sindresorhus/pure`                 | `programs.zsh.plugins` (from nixpkgs `pure-prompt`) |
-| `zsh-users/zsh-syntax-highlighting` | `programs.zsh.syntaxHighlighting.enable`    |
-| `mafredri/zsh-async`               | Dependency of pure, bundled automatically   |
+| `zsh-users/zsh-syntax-highlighting` | `programs.zsh.syntaxHighlighting.enable`            |
+| `mafredri/zsh-async`                | Dependency of pure, bundled automatically           |
 
 ### How to Implement
 
@@ -238,6 +239,7 @@ Migrate git configuration to `programs.git`.
 ### What to Migrate
 
 **From `dot_gitconfig.tmpl`:**
+
 - User name/email
 - Aliases (l, co, pp, sw, s, cp)
 - Core editor (nvim)
@@ -249,10 +251,10 @@ Migrate git configuration to `programs.git`.
 
 **From `dot_config/git/`:**
 
-| File          | Content                        | Migration Target              |
-| ------------- | ------------------------------ | ----------------------------- |
-| `ignore`      | Global gitignore patterns      | `programs.git.ignores`        |
-| `github.tmpl` | GitHub GPG signing config      | `programs.git.signing` + `includes` |
+| File          | Content                   | Migration Target                    |
+| ------------- | ------------------------- | ----------------------------------- |
+| `ignore`      | Global gitignore patterns | `programs.git.ignores`              |
+| `github.tmpl` | GitHub GPG signing config | `programs.git.signing` + `includes` |
 
 ### How to Implement
 
@@ -327,6 +329,7 @@ Migrate Neovim configuration using `xdg.configFile`.
 ### What to Migrate
 
 **From `dot_config/nvim/`:**
+
 - `init.lua` (entry point)
 - `lua/config/` (options, keymaps, autocmds, lazy.nvim bootstrap)
 - `lua/plugins/` (all plugin specs)
@@ -372,11 +375,11 @@ Migrate remaining configuration files.
 
 ### What to Migrate
 
-| Source                    | Content                  | Migration Target                      |
-| ------------------------- | ------------------------ | ------------------------------------- |
-| `dot_config/claude/`      | Claude CLI settings      | `xdg.configFile."claude/settings.json"` |
-| `dot_claude/`             | Claude Code settings     | `home.file.".claude/settings.json"` + `home.file.".claude/statusline-command.sh"` |
-| `bin/`                    | Custom scripts           | `home.file."bin/*"` with executable bit |
+| Source               | Content              | Migration Target                                                                  |
+| -------------------- | -------------------- | --------------------------------------------------------------------------------- |
+| `dot_config/claude/` | Claude CLI settings  | `xdg.configFile."claude/settings.json"`                                           |
+| `dot_claude/`        | Claude Code settings | `home.file.".claude/settings.json"` + `home.file.".claude/statusline-command.sh"` |
+| `bin/`               | Custom scripts       | `home.file."bin/*"` with executable bit                                           |
 
 ### How to Implement
 
@@ -453,13 +456,13 @@ Migrate or remove Chezmoi run scripts.
 
 ### What to Migrate
 
-| Script                                          | Purpose                    | Migration Strategy               |
-| ----------------------------------------------- | -------------------------- | -------------------------------- |
-| `run_once_02_mise.sh`                           | Install mise               | Remove (replaced by Nix)         |
-| `run_once_10_zplug.sh`                          | Clone zplug                | Remove (replaced by Nix plugins) |
-| `run_once_before_generate-gpg-key.sh.tmpl`      | Generate GPG key           | Home Manager activation script   |
-| `run_once_after_add-gpg-key.sh.tmpl`            | Add GPG key to GitHub      | Home Manager activation script   |
-| `run_onchange_before_01_ubuntu-install-packages.sh.tmpl` | Install apt packages | Remove (replaced by Nix)         |
+| Script                                                   | Purpose               | Migration Strategy               |
+| -------------------------------------------------------- | --------------------- | -------------------------------- |
+| `run_once_02_mise.sh`                                    | Install mise          | Remove (replaced by Nix)         |
+| `run_once_10_zplug.sh`                                   | Clone zplug           | Remove (replaced by Nix plugins) |
+| `run_once_before_generate-gpg-key.sh.tmpl`               | Generate GPG key      | Home Manager activation script   |
+| `run_once_after_add-gpg-key.sh.tmpl`                     | Add GPG key to GitHub | Home Manager activation script   |
+| `run_onchange_before_01_ubuntu-install-packages.sh.tmpl` | Install apt packages  | Remove (replaced by Nix)         |
 
 ### How to Implement
 
@@ -534,6 +537,7 @@ nix run home-manager -- switch --flake .
 ```
 
 **`CLAUDE.md`** — Update to reflect pure Home Manager setup:
+
 - Remove Chezmoi references
 - Update directory structure
 - Update management tools section

@@ -16,7 +16,7 @@
 - Trigger: worktree creation only — `$1` (previous HEAD) equals the null OID `0000000000000000000000000000000000000000`.
 - bare repositories: symlink processing is skipped (chaining still runs).
 - Output goes to **stderr**, prefixed `worktree-symlink:`.
-- Never write/read/search files with the Bash tool in this session — use Write/Edit/Read. (Hook and test *scripts* may of course contain shell commands.)
+- Never write/read/search files with the Bash tool in this session — use Write/Edit/Read. (Hook and test _scripts_ may of course contain shell commands.)
 - `hms` must be run from the user's interactive shell, not via the Bash tool.
 - Commit messages: Conventional Commits, scope `git`. No `Co-Authored-By`, no "Generated with" lines.
 
@@ -33,10 +33,12 @@
 ### Task 1: Test harness + happy-path symlink creation
 
 **Files:**
+
 - Create: `programs/git/hooks/post-checkout`
 - Create: `programs/git/hooks/post-checkout.test.sh`
 
 **Interfaces:**
+
 - Produces: hook script invoked as `post-checkout <prev_head> <new_head> <flag>`, run with CWD inside a worktree. On worktree creation it reads `git config --get-all nownabe.worktreeSymlink` and creates relative symlinks in the current worktree pointing to the same relative path in the main worktree.
 - Test harness exposes shell helpers `make_repo`, `add_worktree`, `run_hook_create`, `ok`, `fail`, and auto-runs every `test_*` function.
 
@@ -224,10 +226,12 @@ git commit -m "feat(git): add worktree symlink post-checkout hook"
 ### Task 2: State branches — idempotent, non-symlink clobber, missing source
 
 **Files:**
+
 - Modify: `programs/git/hooks/post-checkout.test.sh` (add three `test_*` functions)
 - (No hook change expected — these branches were implemented in Task 1; tests lock the behavior in.)
 
 **Interfaces:**
+
 - Consumes: `make_repo`, `add_worktree`, `run_hook_create`, `ok`, `fail` from Task 1.
 
 - [ ] **Step 1: Write the failing tests**
@@ -308,9 +312,11 @@ git commit -m "test(git): cover symlink idempotency, clobber, missing source"
 ### Task 3: Guards — non-creation checkout, main worktree, bare repo
 
 **Files:**
+
 - Modify: `programs/git/hooks/post-checkout.test.sh` (add three `test_*` functions and a `make_bare_with_worktree` helper)
 
 **Interfaces:**
+
 - Consumes: `make_repo`, `add_worktree`, `run_hook_create`, `HOOK`, `NULL_OID`, `SOME_OID`, `ok`, `fail`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -399,10 +405,12 @@ git commit -m "test(git): cover skip guards for checkout, main worktree, bare"
 ### Task 4: Chain to repository-local post-checkout hook
 
 **Files:**
+
 - Modify: `programs/git/hooks/post-checkout` (add `chain_local_hook`, call it first in `main`)
 - Modify: `programs/git/hooks/post-checkout.test.sh` (add one `test_*` function)
 
 **Interfaces:**
+
 - Produces: `chain_local_hook "$@"` runs `<git-common-dir>/hooks/post-checkout` with the same arguments when that file is executable and is not this script itself.
 
 - [ ] **Step 1: Write the failing test**
@@ -492,9 +500,11 @@ git commit -m "feat(git): chain worktree symlink hook to local post-checkout"
 ### Task 5: Wire up Nix (core.hooksPath + deploy hook) and verify end-to-end
 
 **Files:**
+
 - Modify: `programs/git/default.nix`
 
 **Interfaces:**
+
 - Consumes: the function arg `config` (already in `{ config, lib, pkgs, ... }:`) for `config.home.homeDirectory`.
 
 - [ ] **Step 1: Add `core.hooksPath` setting**
@@ -536,12 +546,15 @@ Expected: switch completes without error.
 - [ ] **Step 5: Verify deployment**
 
 Run:
+
 ```bash
 git config --global core.hooksPath
 readlink -f ~/.config/git/hooks/post-checkout
 test -x ~/.config/git/hooks/post-checkout && echo "executable" || echo "NOT executable"
 ```
+
 Expected:
+
 - `core.hooksPath` prints `/home/<user>/.config/git/hooks`
 - the hook path resolves into the Nix store
 - prints `executable`
@@ -549,6 +562,7 @@ Expected:
 - [ ] **Step 6: End-to-end smoke test in a scratch repo**
 
 Run:
+
 ```bash
 tmp=$(mktemp -d)
 git init -q "$tmp"
@@ -559,6 +573,7 @@ git -C "$tmp" worktree add -b feat "$tmp/.worktrees/wt-001" 2>&1
 ls -l "$tmp/.worktrees/wt-001/.env"
 rm -rf "$tmp"
 ```
+
 Expected: `worktree-symlink: created .env -> ../../.env` on stderr, and `.env` in the new worktree is a symlink to `../../.env`.
 
 - [ ] **Step 7: Commit**

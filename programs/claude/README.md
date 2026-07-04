@@ -28,12 +28,12 @@ Default config is deployed to `~/.claude/pre-bash.json` via Home Manager. Projec
 
 A list of regex patterns to deny. Each entry has:
 
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `pattern` | `string` | Yes | Regex pattern to match against the command |
-| `reason` | `string` | Yes (unless disabled) | Why the command is forbidden |
-| `suggestion` | `string` | Yes (unless disabled) | Alternative approach for Claude |
-| `disabled` | `boolean` | No | Set to `true` to disable this pattern |
+| Field        | Type      | Required              | Description                                |
+| ------------ | --------- | --------------------- | ------------------------------------------ |
+| `pattern`    | `string`  | Yes                   | Regex pattern to match against the command |
+| `reason`     | `string`  | Yes (unless disabled) | Why the command is forbidden               |
+| `suggestion` | `string`  | Yes (unless disabled) | Alternative approach for Claude            |
+| `disabled`   | `boolean` | No                    | Set to `true` to disable this pattern      |
 
 ### Overriding parent patterns
 
@@ -41,9 +41,7 @@ To disable a pattern defined in a parent-level config, re-declare it with `disab
 
 ```json
 {
-  "forbiddenPatterns": [
-    { "pattern": "\\bgit\\s+-C\\b", "disabled": true }
-  ]
+  "forbiddenPatterns": [{ "pattern": "\\bgit\\s+-C\\b", "disabled": true }]
 }
 ```
 

@@ -54,7 +54,7 @@ Update the `## @nownabe/claude-tools` section in `programs/claude/CLAUDE.md`, pr
 Available commands:
 
 - `gh <command> <args> [options]` — <description>
-...
+  ...
 
 All commands accept `--repo <owner/repo>` to target a specific repository (defaults to current repo).
 ```
