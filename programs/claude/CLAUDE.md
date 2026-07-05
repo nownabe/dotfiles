@@ -10,16 +10,16 @@
 
 Available commands:
 
-- `gh add-sub-issues <parent_issue_number> <sub_issue_number>...` — add sub-issues to a parent issue
-- `gh get-actions-run <run_id>` — get GitHub Actions workflow run info
-- `gh get-job-logs <job_id> [--no-strip-timestamps]` — get logs for a specific job
+- `gh add-sub-issues <parent_issue_number> <sub_issue_number>...` — add sub-issues to a parent GitHub issue
+- `gh get-actions-run <run_id>` — get GitHub Actions workflow run information
+- `gh get-job-logs <job_id> [--no-strip-timestamps]` — get logs from a GitHub Actions job
 - `gh get-pr-comments <pr_number>` — get review comments on a pull request
 - `gh get-pr-reviews <pull_number>` — get reviews on a pull request
-- `gh get-release [--tag <tag>]` — get release info (latest by default)
+- `gh get-release [--tag <tag>]` — get release information from a GitHub repository (latest by default)
 - `gh get-repo-content <path> [--ref <ref>] [--raw]` — get file content from a GitHub repository
-- `gh list-run-jobs <run_id>` — list jobs for a workflow run
-- `gh list-sub-issues <issue_number>` — list sub-issues of an issue
-- `gh resolve-tag-sha <owner/repo> <tag>` — resolve a tag to its commit SHA (useful for pinning GitHub Actions)
+- `gh list-run-jobs <run_id>` — list jobs from a GitHub Actions workflow run
+- `gh list-sub-issues <issue_number>` — list sub-issues of a GitHub issue
+- `gh resolve-tag-sha <owner/repo> <tag>` — resolve a GitHub tag to its commit SHA
 
 All commands accept `--repo <owner/repo>` to target a specific repository (defaults to current repo).
 
