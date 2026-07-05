@@ -47,6 +47,11 @@
         "type": "regex",
         "reason": "`echo` is forbidden.",
         "suggestion": "Do not use `echo` for separators/markers or to write files. Use separate Bash calls, `&&` chaining, or the Write/Edit tools instead."
+      },
+      "^sed\\b": {
+        "type": "regex",
+        "reason": "`sed` is forbidden.",
+        "suggestion": "Use the Edit or Read tool instead of `sed`."
       }
     }
   }
