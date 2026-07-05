@@ -34,10 +34,6 @@ dotfiles/
 └── archived/                   # Old Chezmoi files (kept for reference)
 ```
 
-## Temporary Files
-
-Use `.local/tmp/` for temporary files within the working directory. This directory is created automatically at session start and is git-ignored.
-
 ## Pull Request Rules
 
 ### Branch

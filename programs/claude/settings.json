@@ -69,7 +69,6 @@
       "Bash(gh issue close:*)"
     ]
   },
-  "model": "sonnet",
   "hooks": {
     "SessionStart": [
       {
