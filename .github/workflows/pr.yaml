@@ -11,8 +11,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    # TODO: repin to the next release tag once nownabe/workflows#24 is released
-    uses: nownabe/workflows/.github/workflows/pr.yaml@259f29852b37df48a6a88aa911740928206828a5 # nownabe/workflows#24
+    uses: nownabe/workflows/.github/workflows/pr.yaml@c799f0caf031a94399cff9691194dd22a5fac27e # v1.0.1
 
   result:
     name: Pull Request Checks
