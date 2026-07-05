@@ -64,10 +64,7 @@
       "Read(~/.aws/**)",
       "Read(~/.gcloud/**)"
     ],
-    "ask": [
-      "Bash(gh api:*)",
-      "Bash(gh issue close:*)"
-    ]
+    "ask": ["Bash(gh api:*)", "Bash(gh issue close:*)"]
   },
   "hooks": {
     "SessionStart": [

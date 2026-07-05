@@ -1,0 +1,29 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  common-checks:
+    name: Common Checks
+    permissions:
+      contents: read
+      pull-requests: read
+    uses: nownabe/workflows/.github/workflows/pr.yaml@c799f0caf031a94399cff9691194dd22a5fac27e # v1.0.1
+
+  result:
+    name: Pull Request Checks
+    if: always()
+    needs:
+      - common-checks
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Check job results
+        env:
+          HAS_FAILURE: ${{ contains(needs.*.result, 'failure') }}
+          HAS_CANCELLED: ${{ contains(needs.*.result, 'cancelled') }}
+        run: '[[ "$HAS_FAILURE" == "false" && "$HAS_CANCELLED" == "false" ]]'

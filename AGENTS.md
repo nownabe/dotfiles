@@ -7,6 +7,7 @@ nownabe's dotfiles repository. Manages user configurations for Ubuntu (x86_64-li
 Managed by **Nix Home Manager** (Flake-based standalone) via `flake.nix` + `home.nix`.
 
 Two entrypoints are available in `flake.nix`:
+
 - `wsl` — for WSL2 environments (includes WSL-specific scripts)
 - `linux` — for native Linux environments
 
@@ -53,6 +54,7 @@ Use Conventional Commits format:
 - `description`: English, lowercase start, no trailing period
 
 Examples:
+
 - `feat(nix): add Nix Home Manager configuration`
 - `fix(nvim): resolve LSP startup error`
 - `refactor(zsh): modularize shell configuration`
@@ -63,9 +65,11 @@ Write all PR body content in **English**.
 
 ```markdown
 ## Summary
+
 <bullet points summarizing changes>
 
 ## Test plan
+
 <checklist of testing steps>
 ```
 

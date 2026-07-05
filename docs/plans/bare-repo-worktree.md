@@ -32,14 +32,14 @@ Migrate `git-wt-helper` to use bare clones (`ghq get --bare`) with all branches 
 
 ## Design Decisions
 
-| Topic | Decision |
-|---|---|
-| Worktree location | Directly under bare repo root as `wt-xxx` |
-| Default branch | No special treatment; just another `wt-xxx` |
-| `git wt -b` | Goes to bare repo root |
-| Non-bare repo support | Keep backward compatibility |
-| fzf display | `wt-xxx  branch-name` (already implemented in PR #60) |
-| Code structure | Top-level bare/non-bare branch at entry point. Completely separate code paths after that. Only shared utilities are common. Code duplication is acceptable. |
+| Topic                 | Decision                                                                                                                                                    |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Worktree location     | Directly under bare repo root as `wt-xxx`                                                                                                                   |
+| Default branch        | No special treatment; just another `wt-xxx`                                                                                                                 |
+| `git wt -b`           | Goes to bare repo root                                                                                                                                      |
+| Non-bare repo support | Keep backward compatibility                                                                                                                                 |
+| fzf display           | `wt-xxx  branch-name` (already implemented in PR #60)                                                                                                       |
+| Code structure        | Top-level bare/non-bare branch at entry point. Completely separate code paths after that. Only shared utilities are common. Code duplication is acceptable. |
 
 ---
 

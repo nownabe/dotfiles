@@ -11,15 +11,11 @@ import {
 
 describe("collectAncestorDirs", () => {
   test("returns single directory when start equals stop", () => {
-    expect(collectAncestorDirs("/home/user", "/home/user")).toEqual([
-      "/home/user",
-    ]);
+    expect(collectAncestorDirs("/home/user", "/home/user")).toEqual(["/home/user"]);
   });
 
   test("returns path from start to stop", () => {
-    expect(
-      collectAncestorDirs("/home/user/projects/app", "/home/user"),
-    ).toEqual([
+    expect(collectAncestorDirs("/home/user/projects/app", "/home/user")).toEqual([
       "/home/user/projects/app",
       "/home/user/projects",
       "/home/user",
@@ -98,9 +94,7 @@ describe("loadForbiddenPatterns", () => {
 
   test("loads patterns from HOME", () => {
     writeConfig(tmpDir, {
-      forbiddenPatterns: [
-        { pattern: "\\bfoo\\b", reason: "no foo", suggestion: "use bar" },
-      ],
+      forbiddenPatterns: [{ pattern: "\\bfoo\\b", reason: "no foo", suggestion: "use bar" }],
     });
     expect(loadForbiddenPatterns(tmpDir)).toEqual([
       { pattern: "\\bfoo\\b", reason: "no foo", suggestion: "use bar" },
@@ -112,14 +106,10 @@ describe("loadForbiddenPatterns", () => {
     mkdirSync(projectDir, { recursive: true });
 
     writeConfig(tmpDir, {
-      forbiddenPatterns: [
-        { pattern: "\\bfoo\\b", reason: "no foo", suggestion: "use bar" },
-      ],
+      forbiddenPatterns: [{ pattern: "\\bfoo\\b", reason: "no foo", suggestion: "use bar" }],
     });
     writeConfig(projectDir, {
-      forbiddenPatterns: [
-        { pattern: "\\bbaz\\b", reason: "no baz", suggestion: "use qux" },
-      ],
+      forbiddenPatterns: [{ pattern: "\\bbaz\\b", reason: "no baz", suggestion: "use qux" }],
     });
 
     const result = loadForbiddenPatterns(projectDir);
@@ -152,14 +142,10 @@ describe("loadForbiddenPatterns", () => {
     mkdirSync(projectDir, { recursive: true });
 
     writeConfig(tmpDir, {
-      forbiddenPatterns: [
-        { pattern: "\\bfoo\\b", reason: "original", suggestion: "original" },
-      ],
+      forbiddenPatterns: [{ pattern: "\\bfoo\\b", reason: "original", suggestion: "original" }],
     });
     writeConfig(projectDir, {
-      forbiddenPatterns: [
-        { pattern: "\\bfoo\\b", reason: "overridden", suggestion: "overridden" },
-      ],
+      forbiddenPatterns: [{ pattern: "\\bfoo\\b", reason: "overridden", suggestion: "overridden" }],
     });
 
     const result = loadForbiddenPatterns(projectDir);
