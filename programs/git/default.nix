@@ -9,6 +9,7 @@ in
     enable = true;
 
     ignores = [
+      ".local/"
       ".nownabe/"
       ".shogo/"
       ".worktrees/"
