@@ -7,11 +7,11 @@
 
 stdenv.mkDerivation rec {
   pname = "chikuwa";
-  version = "0.1.8";
+  version = "0.1.9";
 
   src = fetchurl {
     url = "https://github.com/nownabe/chikuwa/releases/download/v${version}/chikuwa-x86_64-unknown-linux-gnu.tar.gz";
-    hash = "sha256-MtrZa6FXPw6+AjlY7RLSmhoZWotQ6f8giGc3hoXJn6s=";
+    hash = "sha256-ZKkW4glVgfz7BxKnqdoSv74mk/jirrXrToIHemYIM6k=";
   };
 
   sourceRoot = ".";
