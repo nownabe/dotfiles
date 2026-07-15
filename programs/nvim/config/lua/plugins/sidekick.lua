@@ -3,6 +3,8 @@ return {
   dependencies = { "copilotlsp-nvim/copilot-lsp" },
   event = "LspAttach",
   opts = {
+    -- Disable Next Edit Suggestions (NES); use only the AI CLI integration.
+    nes = { enabled = false },
     copilot = {
       status = {
         -- Suppress "not signed in" notification during startup.
