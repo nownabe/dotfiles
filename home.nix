@@ -92,6 +92,8 @@
   programs = {
     home-manager.enable = true;
 
+    bat.enable = true;
+
     direnv = {
       enable = true;
       enableZshIntegration = true;
