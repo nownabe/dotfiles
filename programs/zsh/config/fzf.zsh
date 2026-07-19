@@ -9,9 +9,9 @@ export FZF_DEFAULT_OPTS="
   --history=${XDG_CACHE_HOME:-$HOME/.cache}/fzf/history
   --history-size=10000
   --bind=ctrl-j:down,ctrl-k:up
-  --preview 'batcat --color=always --style=numbers --line-range :500 {}'"
+  --preview 'bat --color=always --style=numbers --line-range :500 {}'"
 
-export FZF_CTRL_T_OPTS="--preview 'batcat --color=always --style=numbers --line-range :500 {}'"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range :500 {}'"
 
 export FZF_CTRL_R_OPTS="
   --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
@@ -23,7 +23,7 @@ export FZF_CTRL_R_OPTS="
 
 function fzf-ghq() {
   local target_dir
-  target_dir=$(ghq list | fzf --no-multi --preview "batcat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.md")
+  target_dir=$(ghq list | fzf --no-multi --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.md")
   if [[ -n "$target_dir" ]]; then
     cd $(ghq root)/$target_dir
     zle accept-line

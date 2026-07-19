@@ -76,7 +76,6 @@ in
 
       # General commands
       k = "kubectl";
-      bat = "batcat";
       vi = "nvim";
       g = "git";
       tf = "terraform";
