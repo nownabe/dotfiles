@@ -13,6 +13,7 @@ in
       ".nownabe/"
       ".shogo/"
       ".worktrees/"
+      ".claude/worktrees/"
       "**/.claude/settings.local.json"
     ];
 
