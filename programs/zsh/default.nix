@@ -79,6 +79,7 @@ in
       bat = "batcat";
       vi = "nvim";
       g = "git";
+      tf = "terraform";
 
       # Ruby
       bi = "bundle install";
