@@ -5,7 +5,6 @@ input=$(cat)
 
 # Colors (ANSI)
 RESET="\033[0m"
-BOLD="\033[1m"
 DIM="\033[2m"
 GREEN="\033[32m"
 CYAN="\033[36m"
@@ -13,7 +12,6 @@ MAGENTA="\033[35m"
 YELLOW="\033[33m"
 BLUE="\033[34m"
 GRAY="\033[90m"
-WHITE="\033[97m"
 
 # Extract from Claude Code JSON input
 MODEL=$(echo "$input" | jq -r '.model.display_name // empty')
