@@ -59,6 +59,8 @@ test_passes_arguments_through() {
   make_repo "$repo"
   {
     printf '#!/usr/bin/env bash\n'
+    # $1 is the generated hook's own positional arg, not this script's.
+    # shellcheck disable=SC2016
     printf 'printf "%%s" "$1" > "%s/.args"\n' "$repo"
   } > "$repo/.git/hooks/commit-msg"
   chmod +x "$repo/.git/hooks/commit-msg"
