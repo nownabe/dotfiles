@@ -3,6 +3,35 @@
 let
   githubName = "nownabe";
   githubEmail = "1286807+nownabe@users.noreply.github.com";
+
+  # Standard client-side Git hooks that should chain through to each
+  # repository's own .git/hooks/<name>. Because core.hooksPath is set,
+  # Git ignores repo-local hooks unless a global hook of the same name
+  # forwards to them. post-checkout is intentionally excluded here: it has
+  # its own script that runs global worktree-symlink logic and chains too.
+  chainedHooks = [
+    "applypatch-msg"
+    "pre-applypatch"
+    "post-applypatch"
+    "pre-commit"
+    "pre-merge-commit"
+    "prepare-commit-msg"
+    "commit-msg"
+    "post-commit"
+    "pre-rebase"
+    "post-merge"
+    "pre-push"
+    "post-rewrite"
+    "pre-auto-gc"
+  ];
+
+  chainedHookFiles = lib.listToAttrs (map (name: {
+    name = ".config/git/hooks/${name}";
+    value = {
+      source = ./hooks/chain-local;
+      executable = true;
+    };
+  }) chainedHooks);
 in
 {
   programs.git = {
@@ -55,7 +84,7 @@ in
     };
   };
 
-  home.file = {
+  home.file = chainedHookFiles // {
     ".local/bin/git-clean-squashed" = {
       source = ./scripts/git-clean-squashed;
       executable = true;

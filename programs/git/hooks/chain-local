@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# Global hook dispatcher.
+#
+# Because core.hooksPath is set globally, Git ignores every repository's
+# own .git/hooks/ directory. This script is installed under the global
+# hooks path for each standard hook name and simply chains to the matching
+# repo-local hook, restoring per-repo hooks (e.g. those written by
+# `mise generate git-pre-commit --write` or pre-commit frameworks).
+#
+# The hook to run is derived from the name this script is invoked as
+# (argv[0]); install it as a symlink named after each hook.
+
+set -o nounset
+
+hook_name=$(basename "$0")
+
+# git-common-dir points at the real .git of the repo/worktree; unlike
+# hooksPath it always resolves to the per-repo hooks directory.
+common_dir=$(git rev-parse --git-common-dir 2>/dev/null) || exit 0
+local_hook="$common_dir/hooks/$hook_name"
+
+[[ -x "$local_hook" ]] || exit 0
+
+# Guard against infinite recursion if the global hooks path ever points at
+# the repo-local .git/hooks (i.e. we'd invoke ourselves).
+if [[ "$(realpath "$local_hook")" == "$(realpath "$0")" ]]; then
+  exit 0
+fi
+
+exec "$local_hook" "$@"
