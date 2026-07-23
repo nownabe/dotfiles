@@ -50,6 +50,7 @@
 
       # CLI tools
       ripgrep
+      tree
       fzf
       yq-go
       jq
