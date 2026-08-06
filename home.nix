@@ -78,6 +78,9 @@
       # Applications
       chromium
       google-chrome
+    ] ++ lib.optionals isWSL [
+      # Open URLs/files with the Windows-side default app (WSL only)
+      wsl-open
     ] ++ lib.optionals (!isWSL) [
       # Input method (native Linux only)
       fcitx5
