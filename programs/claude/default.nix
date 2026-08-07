@@ -13,5 +13,8 @@
 
     ".claude/scripts/statusline-command.sh".source =
       config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/claude/scripts/statusline-command.sh";
+
+    ".claude/skills".source =
+      config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/claude/skills";
   };
 }
