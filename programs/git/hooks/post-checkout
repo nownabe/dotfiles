@@ -2,23 +2,41 @@
 #
 # Global post-checkout hook.
 #
-# On worktree creation, symlinks files listed in the per-repo multi-valued
-# config `nownabe.worktreeSymlink` from the main worktree into the new
-# worktree (relative links). Only fires for non-bare repos, in a linked
-# worktree, when the previous HEAD is the null OID.
+# On worktree creation, symlinks files listed in `.worktree-symlinks` at the
+# main worktree root (one repo-root-relative path per line; blank lines and
+# `#` comments allowed) from the main worktree into the new worktree
+# (relative links). Only fires for non-bare repos, in a linked worktree,
+# when the previous HEAD is the null OID.
 
 set -o nounset
 set -o pipefail
 
 NULL_OID="0000000000000000000000000000000000000000"
 PREFIX="worktree-symlink"
+CONFIG_FILE=".worktree-symlinks"
 
 create_symlinks() {
   local main_worktree=$1 current_worktree=$2
+  local config="$main_worktree/$CONFIG_FILE"
   local rel source target target_dir link_target
 
-  while IFS= read -r rel; do
-    [[ -z "$rel" ]] && continue
+  [[ -f "$config" ]] || return 0
+
+  while IFS= read -r rel || [[ -n "$rel" ]]; do
+    # Trim surrounding whitespace (also handles CRLF line endings).
+    rel="${rel#"${rel%%[![:space:]]*}"}"
+    rel="${rel%"${rel##*[![:space:]]}"}"
+
+    # Skip blank lines and comments.
+    [[ -z "$rel" || "$rel" == \#* ]] && continue
+
+    # The config file may be committed and shared; never follow paths that
+    # could escape the worktree.
+    if [[ "$rel" == /* || "$rel" == .. || "$rel" == ../* || "$rel" == */../* || "$rel" == */.. ]]; then
+      printf '%s: warning: unsafe path, skipping: %s\n' "$PREFIX" "$rel" >&2
+      continue
+    fi
+
     source="$main_worktree/$rel"
     target="$current_worktree/$rel"
 
@@ -50,7 +68,7 @@ create_symlinks() {
     else
       printf '%s: error: failed to create symlink for %s\n' "$PREFIX" "$rel" >&2
     fi
-  done < <(git config --get-all nownabe.worktreeSymlink 2>/dev/null)
+  done < "$config"
 }
 
 chain_local_hook() {
