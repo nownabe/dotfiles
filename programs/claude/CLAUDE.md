@@ -27,6 +27,10 @@ All commands accept `--repo <owner/repo>` to target a specific repository (defau
 
 - Use `.local/tmp/` for temporary files. It is created automatically at session start and is git-ignored globally.
 
+## Referencing Other Repositories
+
+- When you need to reference another repository, clone it into `.local/src/github.com/<owner>/<repo>` and read it locally.
+
 ## Bash Tool Usage
 
 - **NEVER insert `echo "====="` or similar separator/marker commands** between commands to visually confirm output boundaries. Each Bash tool call already returns its output clearly — use separate tool calls or `&&` chaining instead.
