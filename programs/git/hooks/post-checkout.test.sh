@@ -52,7 +52,7 @@ make_bare_with_worktree() {
 test_creates_relative_symlink() {
   local repo; repo=$(mktemp -d)
   make_repo "$repo"
-  git -C "$repo" config --add nownabe.worktreeSymlink .env
+  printf '.env\n' > "$repo/.worktree-symlinks"
   printf 'SECRET=1\n' > "$repo/.env"
   add_worktree "$repo"
 
@@ -74,7 +74,7 @@ test_creates_relative_symlink() {
 test_existing_symlink_is_silent() {
   local repo; repo=$(mktemp -d)
   make_repo "$repo"
-  git -C "$repo" config --add nownabe.worktreeSymlink .env
+  printf '.env\n' > "$repo/.worktree-symlinks"
   printf 'SECRET=1\n' > "$repo/.env"
   add_worktree "$repo"
   local wt="$repo/.worktrees/wt-001"
@@ -94,7 +94,7 @@ test_existing_symlink_is_silent() {
 test_non_symlink_is_not_clobbered() {
   local repo; repo=$(mktemp -d)
   make_repo "$repo"
-  git -C "$repo" config --add nownabe.worktreeSymlink .env
+  printf '.env\n' > "$repo/.worktree-symlinks"
   printf 'SECRET=1\n' > "$repo/.env"
   add_worktree "$repo"
   local wt="$repo/.worktrees/wt-001"
@@ -113,7 +113,7 @@ test_non_symlink_is_not_clobbered() {
 test_missing_source_warns() {
   local repo; repo=$(mktemp -d)
   make_repo "$repo"
-  git -C "$repo" config --add nownabe.worktreeSymlink .env   # no .env created
+  printf '.env\n' > "$repo/.worktree-symlinks"   # no .env created
   add_worktree "$repo"
   local wt="$repo/.worktrees/wt-001"
 
@@ -129,7 +129,7 @@ test_missing_source_warns() {
 test_non_creation_checkout_is_skipped() {
   local repo; repo=$(mktemp -d)
   make_repo "$repo"
-  git -C "$repo" config --add nownabe.worktreeSymlink .env
+  printf '.env\n' > "$repo/.worktree-symlinks"
   printf 'SECRET=1\n' > "$repo/.env"
   add_worktree "$repo"
   local wt="$repo/.worktrees/wt-001"
@@ -147,7 +147,7 @@ test_non_creation_checkout_is_skipped() {
 test_main_worktree_is_skipped() {
   local repo; repo=$(mktemp -d)
   make_repo "$repo"
-  git -C "$repo" config --add nownabe.worktreeSymlink .env
+  printf '.env\n' > "$repo/.worktree-symlinks"
   printf 'SECRET=1\n' > "$repo/.env"
 
   # Run inside the MAIN worktree with a creation-style prev HEAD.
@@ -163,7 +163,7 @@ test_main_worktree_is_skipped() {
 test_bare_repo_is_skipped() {
   local base; base=$(mktemp -d)
   local wt; wt=$(make_bare_with_worktree "$base")
-  git -C "$base/repo.git" config --add nownabe.worktreeSymlink .env
+  printf '.env\n' > "$wt/.worktree-symlinks"
 
   local out; out=$(mktemp)
   run_hook_create "$wt" "$out"
@@ -193,6 +193,57 @@ test_chains_local_hook() {
   if [[ -f "$repo/.local-hook-ran" ]]; then ok; else fail "local hook was not chained"; fi
 
   rm -rf "$repo"
+}
+
+test_no_config_file_is_silent() {
+  local repo; repo=$(mktemp -d)
+  make_repo "$repo"
+  add_worktree "$repo"
+  local wt="$repo/.worktrees/wt-001"
+
+  local out; out=$(mktemp)
+  run_hook_create "$wt" "$out"
+
+  if [[ -s "$out" ]]; then fail "missing config file produced output: $(cat "$out")"; else ok; fi
+
+  rm -rf "$repo" "$out"
+}
+
+test_comments_and_blank_lines_are_skipped() {
+  local repo; repo=$(mktemp -d)
+  make_repo "$repo"
+  printf '# local files\n\n  .env  \n' > "$repo/.worktree-symlinks"
+  printf 'SECRET=1\n' > "$repo/.env"
+  add_worktree "$repo"
+  local wt="$repo/.worktrees/wt-001"
+
+  local out; out=$(mktemp)
+  run_hook_create "$wt" "$out"
+
+  if [[ -L "$wt/.env" ]]; then ok; else fail "symlink not created from commented config"; fi
+  if grep -q 'warning' "$out"; then fail "comment/blank lines emitted warnings: $(cat "$out")"; else ok; fi
+
+  rm -rf "$repo" "$out"
+}
+
+test_unsafe_paths_are_rejected() {
+  local repo; repo=$(mktemp -d)
+  make_repo "$repo"
+  printf '/etc/passwd\n../outside\nsub/../outside\n' > "$repo/.worktree-symlinks"
+  add_worktree "$repo"
+  local wt="$repo/.worktrees/wt-001"
+
+  local out; out=$(mktemp)
+  run_hook_create "$wt" "$out"
+
+  if [[ -e "$repo/outside" || -L "$repo/outside" ]]; then fail "symlink escaped the worktree"; else ok; fi
+  if [[ "$(grep -c 'unsafe path' "$out")" -eq 3 ]]; then
+    ok
+  else
+    fail "expected 3 unsafe-path warnings: $(cat "$out")"
+  fi
+
+  rm -rf "$repo" "$out"
 }
 
 # --- runner ---
