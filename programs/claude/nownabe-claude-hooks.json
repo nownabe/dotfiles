@@ -52,6 +52,11 @@
         "type": "regex",
         "reason": "`sed` is forbidden.",
         "suggestion": "Use the Edit or Read tool instead of `sed`."
+      },
+      "^gh\\s+api\\b.*\\brepos/\\S+/contents\\b": {
+        "type": "regex",
+        "reason": "Fetching file content via `gh api repos/.../contents/...` is forbidden.",
+        "suggestion": "Clone the repository into `.local/src/github.com/<owner>/<repo>` and read the files locally with the Read tool instead."
       }
     }
   }
