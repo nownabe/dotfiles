@@ -6,14 +6,14 @@ Global skills, symlinked to `~/.claude/skills` by Home Manager.
 
 ### Vendored skills
 
-The following skills are copied verbatim from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT, Copyright (c) 2026 Matt Pocock) at commit `84fdeffd12f2ee307994d1eb6feb48173b6e0502`. Only the `SKILL.md` (and its reference docs) are vendored; the upstream `agents/openai.yaml` files are Codex-specific and omitted.
+The following skills are copied from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT, Copyright (c) 2026 Matt Pocock) at commit `84fdeffd12f2ee307994d1eb6feb48173b6e0502`. Only the `SKILL.md` (and its reference docs) are vendored; the upstream `agents/openai.yaml` files are Codex-specific and omitted. Content is unchanged apart from `oxfmt` reformatting (emphasis markers, table padding).
 
-| Skill              | Invocation    | Upstream path                          |
-| ------------------ | ------------- | -------------------------------------- |
-| `grilling`         | Model or user | `skills/productivity/grilling`         |
-| `grill-me`         | User only     | `skills/productivity/grill-me`         |
-| `grill-with-docs`  | User only     | `skills/engineering/grill-with-docs`   |
-| `domain-modeling`  | Model or user | `skills/engineering/domain-modeling`   |
+| Skill             | Invocation    | Upstream path                        |
+| ----------------- | ------------- | ------------------------------------ |
+| `grilling`        | Model or user | `skills/productivity/grilling`       |
+| `grill-me`        | User only     | `skills/productivity/grill-me`       |
+| `grill-with-docs` | User only     | `skills/engineering/grill-with-docs` |
+| `domain-modeling` | Model or user | `skills/engineering/domain-modeling` |
 
 `grill-me` and `grill-with-docs` are thin entrypoints that delegate to `grilling`; `grill-with-docs` additionally uses `domain-modeling`. To refresh, re-copy from upstream and update the commit above.
 
