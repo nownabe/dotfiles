@@ -66,6 +66,7 @@
     ],
     "ask": ["Bash(gh api:*)", "Bash(gh issue close:*)"]
   },
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "SessionStart": [
       {
