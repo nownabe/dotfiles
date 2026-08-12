@@ -8,13 +8,9 @@
   home.packages = [ pkgs.podman ];
 
   # Non-NixOS has no /etc/containers, so provide user-level config.
-  xdg.configFile = {
-    "containers/policy.json".text = builtins.toJSON {
-      default = [ { type = "insecureAcceptAnything"; } ];
-    };
-
-    "containers/registries.conf".text = ''
-      unqualified-search-registries = ["docker.io"]
-    '';
+  # No registries.conf: always use fully qualified image names
+  # (e.g. docker.io/library/ubuntu).
+  xdg.configFile."containers/policy.json".text = builtins.toJSON {
+    default = [ { type = "insecureAcceptAnything"; } ];
   };
 }
