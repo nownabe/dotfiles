@@ -9,6 +9,7 @@
     ./programs/wezterm
     ./programs/tmux
     ./programs/gnome-terminal
+    ./programs/podman
   ];
 
   home = {
