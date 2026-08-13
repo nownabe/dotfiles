@@ -8,6 +8,7 @@
     "pr": ""
   },
   "permissions": {
+    "defaultMode": "auto",
     "allow": [
       "Bash(bun test:*)",
       "Bash(bunx @nownabe/claude-tools:*)",
@@ -64,7 +65,10 @@
       "Read(~/.aws/**)",
       "Read(~/.gcloud/**)"
     ],
-    "ask": ["Bash(gh api:*)", "Bash(gh issue close:*)"]
+    "ask": [
+      "Bash(gh api:*)",
+      "Bash(gh issue close:*)"
+    ]
   },
   "hooks": {
     "SessionStart": [
@@ -269,5 +273,6 @@
       }
     }
   },
-  "tui": "fullscreen"
+  "tui": "fullscreen",
+  "model": "claude-fable-5[1m]"
 }
