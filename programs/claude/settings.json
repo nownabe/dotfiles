@@ -8,6 +8,7 @@
     "pr": ""
   },
   "permissions": {
+    "defaultMode": "auto",
     "allow": [
       "Bash(bun test:*)",
       "Bash(bunx @nownabe/claude-tools:*)",
@@ -269,5 +270,6 @@
       }
     }
   },
-  "tui": "fullscreen"
+  "tui": "fullscreen",
+  "model": "claude-fable-5[1m]"
 }
