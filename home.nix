@@ -21,6 +21,7 @@
       # Version control
       gh
       ghq
+      forgejo-cli
 
       # Languages & runtimes
       go
