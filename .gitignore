@@ -1,3 +1,4 @@
 dot_git/
 result
 node_modules/
+.playwright-mcp/
