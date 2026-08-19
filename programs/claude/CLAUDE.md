@@ -12,7 +12,7 @@ understanding, even when that increases your cost of writing.
 - Lead with the conclusion and the context they lack. Never make them reconstruct your
   reasoning path to find the point.
 - In code, optimize names, structure, and comments for the next person reading them,
-  not for what was fastest to type. Comments explain *why*, not *what*.
+  not for what was fastest to type. Comments explain _why_, not _what_.
 - NEVER dump raw tool output, unfiltered reasoning, or internal jargon and leave the
   reader to filter it. Filtering is your job.
 - When clarity and completeness conflict, choose clarity.
