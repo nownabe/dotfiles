@@ -93,6 +93,14 @@ in
       for file in "''${XDG_CONFIG_HOME:-$HOME/.config}/zsh"/*.zsh; do
         [[ -f "$file" ]] && source "$file"
       done
+
+      # Load machine-local config files from ~/.config/zsh/local.d/
+      # Not managed by Nix and never committed: put host-specific values
+      # (private hostnames, IPs, ports, tokens) here. Loaded last so they
+      # can override anything above.
+      for file in "''${XDG_CONFIG_HOME:-$HOME/.config}/zsh/local.d"/*.zsh; do
+        [[ -f "$file" ]] && source "$file"
+      done
     '';
   };
 }
