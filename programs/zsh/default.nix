@@ -90,7 +90,7 @@ in
 
     initContent = ''
       # Load config files from ~/.config/zsh/
-      for file in "''${XDG_CONFIG_HOME:-$HOME/.config}/zsh"/*.zsh; do
+      for file in "''${XDG_CONFIG_HOME:-$HOME/.config}/zsh"/*.zsh(N); do
         [[ -f "$file" ]] && source "$file"
       done
 
@@ -98,7 +98,7 @@ in
       # Not managed by Nix and never committed: put host-specific values
       # (private hostnames, IPs, ports, tokens) here. Loaded last so they
       # can override anything above.
-      for file in "''${XDG_CONFIG_HOME:-$HOME/.config}/zsh/local.d"/*.zsh; do
+      for file in "''${XDG_CONFIG_HOME:-$HOME/.config}/zsh/local.d"/*.zsh(N); do
         [[ -f "$file" ]] && source "$file"
       done
     '';
