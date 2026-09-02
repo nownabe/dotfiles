@@ -72,6 +72,7 @@
 
       # Networking
       ngrok
+      dnsutils # dig, nslookup
 
       # Cloud
       awscli2
