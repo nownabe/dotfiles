@@ -113,6 +113,15 @@
             "command": "claude-hooks pre-bash"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "claude-hooks pre-write"
+          }
+        ]
       }
     ],
     "PostToolUse": [

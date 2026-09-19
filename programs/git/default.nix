@@ -7,8 +7,9 @@ let
   # Standard client-side Git hooks that should chain through to each
   # repository's own .git/hooks/<name>. Because core.hooksPath is set,
   # Git ignores repo-local hooks unless a global hook of the same name
-  # forwards to them. post-checkout is intentionally excluded here: it has
-  # its own script that runs global worktree-symlink logic and chains too.
+  # forwards to them. post-checkout and commit-msg are intentionally
+  # excluded here: each has its own script that runs global logic and
+  # chains too.
   chainedHooks = [
     "applypatch-msg"
     "pre-applypatch"
@@ -16,7 +17,6 @@ let
     "pre-commit"
     "pre-merge-commit"
     "prepare-commit-msg"
-    "commit-msg"
     "post-commit"
     "pre-rebase"
     "post-merge"
@@ -97,6 +97,11 @@ in
 
     ".config/git/hooks/post-checkout" = {
       source = ./hooks/post-checkout;
+      executable = true;
+    };
+
+    ".config/git/hooks/commit-msg" = {
+      source = ./hooks/commit-msg;
       executable = true;
     };
   };

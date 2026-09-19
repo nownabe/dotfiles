@@ -57,6 +57,20 @@
         "type": "regex",
         "reason": "Fetching file content via `gh api repos/.../contents/...` is forbidden.",
         "suggestion": "Clone the repository into `.local/src/github.com/<owner>/<repo>` and read the files locally with the Read tool instead."
+      },
+      "claude\\.ai/(?:code/)?session_[A-Za-z0-9]|Claude-Session:|Co-Authored-By:\\s*Claude|Generated with \\[?Claude Code": {
+        "type": "regex",
+        "reason": "Claude Code attribution (session URL, `Claude-Session:`, `Co-Authored-By: Claude`, \"Generated with Claude Code\") is forbidden.",
+        "suggestion": "Write commit messages, PR bodies and issue bodies with no attribution footer. Never put a claude.ai session URL in a repository — they are public."
+      }
+    }
+  },
+  "preWrite": {
+    "forbiddenPatterns": {
+      "claude\\.ai/(?:code/)?session_[A-Za-z0-9]|Claude-Session:|Co-Authored-By:\\s*Claude|Generated with \\[?Claude Code": {
+        "type": "regex",
+        "reason": "Claude Code attribution (session URL, `Claude-Session:`, `Co-Authored-By: Claude`, \"Generated with Claude Code\") is forbidden in file content.",
+        "suggestion": "Remove the attribution line. A file written here can end up in a commit or a PR body via `--body-file`, so it must never carry a claude.ai session URL."
       }
     }
   }
