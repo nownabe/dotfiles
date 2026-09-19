@@ -1,6 +1,7 @@
 {
   "ignorePatterns": [
     "programs/claude/hooks/**",
+    "programs/claude/lib/**",
     "programs/claude/tools/**",
     ".claude/skills/**/*.ts"
   ]

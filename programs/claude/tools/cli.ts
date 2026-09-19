@@ -12,8 +12,8 @@ const group = cleanedArgs[0];
 const name = cleanedArgs[1];
 
 if (group === "docs") {
-  const { main } = await import("./docs.ts");
-  await main();
+  const { docsMain } = await import("../lib/docs.ts");
+  await docsMain("claude-tools", cleanedArgs.slice(1));
   Deno.exit(0);
 }
 

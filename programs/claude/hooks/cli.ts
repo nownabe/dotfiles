@@ -6,6 +6,8 @@ const commands: Record<string, () => Promise<void>> = {
   "pre-bash": preBash,
   "pre-write": preWrite,
   notification: notification,
+  // Imported lazily: the hooks run on every tool call and never need it.
+  docs: () => import("../lib/docs.ts").then((m) => m.docsMain("claude-hooks", Deno.args.slice(1))),
 };
 
 const name = Deno.args[0];
