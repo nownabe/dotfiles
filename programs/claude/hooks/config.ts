@@ -13,6 +13,9 @@ export interface Config {
     allowedPatterns?: Record<string, AllowedPatternConfig>;
     forbiddenPatterns?: Record<string, ForbiddenPatternConfig>;
   };
+  preWrite?: {
+    forbiddenPatterns?: Record<string, ForbiddenPatternConfig>;
+  };
   notification?: {
     sounds?: Record<string, string>;
   };
