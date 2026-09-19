@@ -61,17 +61,24 @@ tell the user and stop.
 
 ### 2. Group
 
-Group by what stopped the call, then by command name. `kind` and `reason` tell you which:
+```bash
+… denials.ts list --summary   # add --all to match step 1
+```
 
-| `kind`                                    | `reason` starts with                                  | Stopped by                                                          |
-| ----------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------- |
-| `permission-rule`                         | `PreToolUse:… hook error:` or `` `x` is forbidden. `` | a `forbiddenPatterns` rule in `nownabe-claude-hooks.json`, or a repo-local hook |
-| `permission-rule`                         | `Permission to use Bash with command … has been denied.` | a `permissions.deny` rule, or the prompt was declined            |
-| `automode-blocked`, `automode-unavailable` | `Permission for this action was denied by the … auto mode classifier` | the auto mode classifier                          |
-| `user-rejected`                           | `User rejected tool use`                              | the user, at the prompt                                             |
+One line per group, largest first: `count`, what stopped the call, the group, one example command.
+The stopper column is derived from `kind` and `reason`:
 
-Show the user one table: group, count, what stopped it, one representative command (verbatim is
-fine in chat), and your recommendation. Recommend:
+| Stopper       | Grouped by                               | Meaning                                                                         |
+| ------------- | ---------------------------------------- | ------------------------------------------------------------------------------- |
+| `hook`        | the rule's `reason`                      | a `forbiddenPatterns` rule in `nownabe-claude-hooks.json`, or a repo-local hook |
+| `rule/prompt` | command name (`cd …`, `VAR=`, `timeout` peeled off) | a `permissions.deny` rule, or the prompt was declined                 |
+| `automode`    | command name                             | the auto mode classifier                                                        |
+| `user`        | command name                             | the user, at the prompt                                                         |
+
+Merge groups that are one decision (all `hook` rows usually are) and split a row when its example
+shows two different tasks — the JSON from step 1 has the full commands. Show the user one table:
+group, count, what stopped it, one representative command (verbatim is fine in chat), and your
+recommendation. Recommend:
 
 - **Keep as is** for hook denials whose `suggestion` already steers Claude to the right tool — the
   rule is doing its job. Recommend a change only when the suggestion misleads or the match is a
@@ -89,6 +96,8 @@ Ask with `AskUserQuestion`, one question per group, the recommended option first
 decide is "Keep as is".
 
 ### 4. Apply
+
+The changes get their own PR: branch from `origin/main` before editing anything.
 
 #### Tool (with hook steering)
 

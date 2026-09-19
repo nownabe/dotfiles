@@ -4,9 +4,11 @@
 // `deno run` invocation.
 
 import { dirname, join } from "node:path";
+import { splitCommand } from "../../../programs/claude/hooks/pre-bash.ts";
 
 const USAGE = `Usage:
   denials.ts list [--all]     denied tool calls, one JSON line each, oldest first
+  denials.ts list --summary   counts by what stopped the call and command name
   denials.ts mark <timestamp> record that denials through <timestamp> are triaged`;
 
 export interface Denial {
@@ -121,6 +123,58 @@ export async function readAllDenials(dir: string): Promise<Denial[]> {
   return denials.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 }
 
+type Stopper = "hook" | "rule/prompt" | "automode" | "user";
+
+function stopper(d: Denial): Stopper {
+  if (d.kind.startsWith("automode")) return "automode";
+  if (d.kind === "user-rejected") return "user";
+  return /hook error|is forbidden/.test(d.reason) ? "hook" : "rule/prompt";
+}
+
+const ASSIGNMENT = /^\w+=(?:"[^"]*"|'[^']*'|\S*)\s*/;
+
+// The first real command name: `cd dir`, VAR=value and `timeout N` are
+// scaffolding, not what the call was for.
+function commandName(command: string): string {
+  for (const raw of splitCommand(command)) {
+    let sub = raw.replace(/^\(\s*/, "");
+    while (ASSIGNMENT.test(sub)) sub = sub.replace(ASSIGNMENT, "");
+    sub = sub.replace(/^timeout\s+\S+\s+/, "");
+    const name = sub.split(/\s+/)[0];
+    if (name && name !== "cd") return name;
+  }
+  return command.split(/\s+/)[0];
+}
+
+// Hook denials group by the rule that fired; everything else by command name.
+function groupKey(d: Denial): string {
+  if (stopper(d) === "hook") {
+    return d.reason
+      .replace(/^PreToolUse:\w+ hook error: /, "")
+      .split(/(?<=\.)\s/)[0]
+      .slice(0, 70);
+  }
+  return d.tool === "Bash" ? commandName(d.command) : d.tool;
+}
+
+/** `count\tstopper\tgroup\texample`, one line per group, largest first. */
+export function summarize(denials: Denial[]): string {
+  const groups = new Map<string, { count: number; example: string }>();
+  for (const d of denials) {
+    const key = `${stopper(d)}\t${groupKey(d)}`;
+    const group = groups.get(key) ?? {
+      count: 0,
+      example: d.command.replace(/\s+/g, " ").slice(0, 100),
+    };
+    group.count++;
+    groups.set(key, group);
+  }
+  return [...groups]
+    .sort(([a, ga], [b, gb]) => gb.count - ga.count || a.localeCompare(b))
+    .map(([key, g]) => `${g.count}\t${key}\t${g.example}`)
+    .join("\n");
+}
+
 function home(): string {
   const home = Deno.env.get("HOME");
   if (!home) fail("HOME is not set");
@@ -150,7 +204,7 @@ function fail(message: string): never {
 }
 
 async function list(args: string[]): Promise<void> {
-  if (args.some((arg) => arg !== "--all")) fail(USAGE);
+  if (args.some((arg) => arg !== "--all" && arg !== "--summary")) fail(USAGE);
   const collectedThrough = args.includes("--all")
     ? null
     : readCollectedThrough();
@@ -160,7 +214,11 @@ async function list(args: string[]): Promise<void> {
     (d) => collectedThrough === null || d.timestamp > collectedThrough,
   );
 
-  for (const denial of denials) console.log(JSON.stringify(denial));
+  if (args.includes("--summary")) {
+    if (denials.length > 0) console.log(summarize(denials));
+  } else {
+    for (const denial of denials) console.log(JSON.stringify(denial));
+  }
   console.error(
     collectedThrough
       ? `${denials.length} denial(s) after ${collectedThrough}`

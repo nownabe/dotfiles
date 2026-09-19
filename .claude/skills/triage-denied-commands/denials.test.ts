@@ -2,7 +2,7 @@
 
 import assert from "node:assert/strict";
 import { join } from "node:path";
-import { extractDenials, readAllDenials } from "./denials.ts";
+import { extractDenials, readAllDenials, summarize } from "./denials.ts";
 
 function toolUse(id: string, name: string, input: unknown): string {
   return JSON.stringify({
@@ -87,6 +87,59 @@ Deno.test("extractDenials ignores malformed lines and results without a denial",
   ];
 
   assert.deepEqual(extractDenials(lines), []);
+});
+
+Deno.test("summarize groups by what stopped the call and the command name", () => {
+  const base = { timestamp: "", sessionId: "", cwd: "", tool: "Bash" };
+  const lines = summarize([
+    {
+      ...base,
+      kind: "permission-rule",
+      command: "cd /work && curl -s https://example.com/a",
+      reason: "Permission to use Bash with command curl … has been denied.",
+    },
+    {
+      ...base,
+      kind: "permission-rule",
+      command: "timeout 20 curl -s https://example.com/b",
+      reason: "Permission to use Bash with command timeout … has been denied.",
+    },
+    {
+      ...base,
+      kind: "permission-rule",
+      command:
+        'entry="$(cat a | tr -d x)" && curl -X POST -d "$entry" http://localhost/',
+      reason: "Permission to use Bash with command entry=… has been denied.",
+    },
+    {
+      ...base,
+      kind: "permission-rule",
+      command: "SP=/tmp/x && (mise run server > $SP/log &)",
+      reason: "Permission to use Bash with command SP=… has been denied.",
+    },
+    {
+      ...base,
+      kind: "permission-rule",
+      command: "sed -n 1p x",
+      reason:
+        "PreToolUse:Bash hook error: `sed` is forbidden. Use Edit instead.",
+    },
+    {
+      ...base,
+      kind: "automode-blocked",
+      tool: "Write",
+      command: "/etc/hosts",
+      reason:
+        "Permission for this action was denied by the auto mode classifier.",
+    },
+  ]).split("\n");
+
+  assert.deepEqual(lines, [
+    "3\trule/prompt\tcurl\tcd /work && curl -s https://example.com/a",
+    "1\tautomode\tWrite\t/etc/hosts",
+    "1\thook\t`sed` is forbidden.\tsed -n 1p x",
+    "1\trule/prompt\tmise\tSP=/tmp/x && (mise run server > $SP/log &)",
+  ]);
 });
 
 Deno.test("readAllDenials collects every transcript under the dir, oldest first", async () => {
