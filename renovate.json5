@@ -1,4 +1,24 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["local>nownabe/renovate-config"],
+
+  // The nix manager is beta and off by default. Enabling it lets Renovate refresh
+  // flake.lock, which was otherwise a manual `nix flake update` + `hms` chore.
+  nix: {
+    enabled: true,
+  },
+
+  packageRules: [
+    // nixpkgs is pinned to the `nixpkgs-unstable` branch, so there is no version
+    // for Renovate to bump — lockFileMaintenance is what actually moves the inputs.
+    {
+      matchManagers: ["nix"],
+      lockFileMaintenance: {
+        enabled: true,
+        schedule: ["before 6am on monday"],
+      },
+      semanticCommitType: "chore",
+      semanticCommitScope: "nix",
+    },
+  ],
 }
