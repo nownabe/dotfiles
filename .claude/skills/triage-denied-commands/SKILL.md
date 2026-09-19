@@ -34,23 +34,30 @@ commit messages and GitHub are not.
   committing it, review `git diff programs/claude/settings.json` and stage only the permission
   hunks with `git add -p`. Report any other hunk to the user instead of committing it.
 - Nothing about the triage itself is committed: the cursor lives in
-  `$XDG_STATE_HOME/claude-tools/`, outside any repository.
+  `$XDG_STATE_HOME/triage-denied-commands/`, outside any repository.
 
 ## Workflow
+
+The collector is `denials.ts` next to this file. Run it from the repository root; it reads only the
+transcripts and its own state directory:
+
+```bash
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/triage-denied-commands"
+deno run --allow-env=HOME,XDG_STATE_HOME --allow-read="$HOME/.claude/projects,$STATE" --allow-write="$STATE" .claude/skills/triage-denied-commands/denials.ts <list|mark> ...
+```
+
+(`deno test --allow-read --allow-write .claude/skills/triage-denied-commands/` runs its check.)
 
 ### 1. Collect
 
 ```bash
-claude-tools session list-denials        # sessions not yet triaged
-claude-tools session list-denials --all  # everything on record (re-triage)
+… denials.ts list        # sessions not yet triaged
+… denials.ts list --all  # everything on record (re-triage)
 ```
 
 One JSON line per denial, oldest first: `timestamp`, `sessionId`, `cwd`, `kind`, `tool`,
 `command`, `reason`. Note the `timestamp` of the last line — step 5 needs it. If nothing is listed,
 tell the user and stop.
-
-A Deno permission error means `programs/claude/default.nix` changed since the last `hms`: ask the
-user to run `hms`, then retry.
 
 ### 2. Group
 
@@ -123,10 +130,11 @@ Nothing to edit.
 ### 5. Mark collected
 
 ```bash
-claude-tools session mark-denials-collected <timestamp of the last line from step 1>
+… denials.ts mark <timestamp of the last line from step 1>
 ```
 
-Do this even when every decision was "Keep as is", so the next run starts after these.
+Pass that timestamp, not "now", so denials recorded while triaging are not skipped. Do this even
+when every decision was "Keep as is", so the next run starts after these.
 
 ### 6. Verify, commit, PR
 

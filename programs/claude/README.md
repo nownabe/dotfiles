@@ -14,15 +14,14 @@ no `hms` needed. Only `default.nix` changes require a rebuild.
 
 | Command                          | Entrypoint     | Deno permissions                                                 |
 | -------------------------------- | -------------- | ---------------------------------------------------------------- |
-| `claude-tools <group> <command>` | `tools/cli.ts` | `--allow-run=gh`, `~/.claude/projects` + the XDG state dir       |
+| `claude-tools <group> <command>` | `tools/cli.ts` | `--allow-run=gh`                                                 |
 | `claude-hooks <hook>`            | `hooks/cli.ts` | `--allow-read`, `--allow-env=HOME`, `--allow-run` for PowerShell |
 
 Both run with `--no-remote`, so neither may import anything outside the standard library — they
 start offline and fast, which matters because `pre-bash` runs on every Bash tool call. JSR
 dependencies (`@std/testing`, `@std/expect`) are test-only.
 
-- `tools/` — GitHub utilities (`gh`) and session-transcript utilities (`session`). See
-  [`docs/claude-tools/`](docs/claude-tools/).
+- `tools/` — GitHub utilities. See [`docs/claude-tools/`](docs/claude-tools/).
 - `hooks/` — `pre-bash` and `notification` hooks. See [`docs/claude-hooks/`](docs/claude-hooks/).
 
 ### Development
