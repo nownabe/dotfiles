@@ -21,9 +21,14 @@ let
   # editing the TypeScript takes effect without re-running `hms`.
   # --no-remote enforces the zero-dependency rule: these must start offline
   # and fast, since the hooks run on every Bash tool call.
-  denoCli = { name, entrypoint, permissions }:
+  denoCli = { name, entrypoint, permissions, quiet ? false }:
+    let
+      flags = lib.optional quiet "-q"
+        ++ [ "--no-config" "--no-lock" "--no-remote" ]
+        ++ permissions;
+    in
     pkgs.writeShellScriptBin name ''
-      exec ${lib.getExe pkgs.deno} run --no-config --no-lock --no-remote ${lib.concatStringsSep " " permissions} \
+      exec ${lib.getExe pkgs.deno} run ${lib.concatStringsSep " " flags} \
         "${dotfilesDir}/programs/claude/${entrypoint}" "$@"
     '';
 in
@@ -37,6 +42,13 @@ in
     (denoCli {
       name = "claude-hooks";
       entrypoint = "hooks/cli.ts";
+      # Deno logs an Info line for every --allow-run entry it cannot resolve to a
+      # binary, and powershell.exe is absent from PATH unless WSL interop puts it
+      # there. Dropping that candidate would silence it too, but it is the
+      # fallback for hosts that do not mount C: at /mnt/c, so quieten the hook
+      # instead — it runs on every Bash tool call. -q hides only diagnostics;
+      # module and runtime errors still reach stderr.
+      quiet = true;
       # Config files are read from CWD up to HOME, so reads cannot be scoped.
       # The two powershell paths mirror POWERSHELL_CANDIDATES in notification.ts.
       permissions = [
