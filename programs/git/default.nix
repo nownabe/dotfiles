@@ -108,19 +108,26 @@ in
       source = ./hooks/commit-msg;
       executable = true;
     };
+
+    ".config/git/hooks/lib/private-patterns.bash".source = ./hooks/lib/private-patterns.bash;
   };
 
-  # Seed the private-pattern list the pre-commit hook reads. The patterns
-  # themselves (internal hostnames, IPs, ports) must never be committed to
-  # this public repository, so only the empty template is managed here and
-  # an existing file is left untouched.
+  # Seed the two machine-local files the pre-commit and commit-msg hooks (and
+  # the Claude Code hooks) read. Their contents — internal hostnames, ports,
+  # private repository names — must never be committed to this public
+  # repository, so only comment-only templates are managed here and an
+  # existing file is left untouched.
   home.activation.seedGitPrivatePatterns = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    patterns_file="${config.home.homeDirectory}/.config/git/private-patterns"
+    config_dir="${config.home.homeDirectory}/.config/git"
+    mkdir -p "$config_dir"
+
+    patterns_file="$config_dir/private-patterns"
     if [ ! -e "$patterns_file" ]; then
-      mkdir -p "$(dirname "$patterns_file")"
       cat > "$patterns_file" << 'EOF'
 # Extended regular expressions (one per line, case-insensitive) that must
-# never appear in staged content. Read by the global pre-commit hook.
+# never reach a public place: staged content, commit messages, files Claude
+# Code writes, and commands it runs that publish text (gh pr/issue, git
+# commit). Not enforced in repositories listed in private-remotes.
 #
 # Keep this file out of version control: it names the very things it
 # protects. Examples of the shape (use your own values, not these):
@@ -129,6 +136,20 @@ in
 #   :1234
 EOF
       echo "Created $patterns_file"
+    fi
+
+    remotes_file="$config_dir/private-remotes"
+    if [ ! -e "$remotes_file" ]; then
+      cat > "$remotes_file" << 'EOF'
+# Extended regular expressions (one per line, case-insensitive) matched
+# against `git remote get-url origin`. A repository whose origin matches is
+# private: the private-patterns checks are skipped there.
+#
+# Keep this file out of version control. Examples of the shape:
+#   github\.com[:/]owner/private-repo
+#   git\.example\.invalid[:/]
+EOF
+      echo "Created $remotes_file"
     fi
   '';
 

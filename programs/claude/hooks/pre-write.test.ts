@@ -1,7 +1,12 @@
 import { afterEach, beforeEach, describe, it as test } from "@std/testing/bdd";
 import { expect } from "@std/expect";
 import { join } from "node:path";
-import { checkForbiddenPatterns, extractContent, loadForbiddenPatterns } from "./pre-write.ts";
+import {
+  checkForbiddenPatterns,
+  extractContent,
+  isPrivateSafePath,
+  loadForbiddenPatterns,
+} from "./pre-write.ts";
 import type { ActivePattern } from "./pre-bash.ts";
 
 // Assembled at runtime: a real session URL must never sit in a file on disk,
@@ -14,6 +19,29 @@ const ATTRIBUTION: ActivePattern[] = [{
   reason: "forbidden",
   suggestion: "remove it",
 }];
+
+describe("isPrivateSafePath", () => {
+  const home = "/home/u";
+  const config = "/home/u/.config/git";
+
+  test("exempts Claude's own state", () => {
+    expect(isPrivateSafePath("/home/u/.claude/projects/x/memory/a.md", home, config)).toBe(true);
+  });
+
+  test("exempts the pattern files themselves", () => {
+    expect(isPrivateSafePath("/home/u/.config/git/private-patterns", home, config)).toBe(true);
+    expect(isPrivateSafePath("/home/u/.config/git/private-remotes", home, config)).toBe(true);
+  });
+
+  test("does not exempt a scratch file or a repo file", () => {
+    expect(isPrivateSafePath("/tmp/scratch/body.md", home, config)).toBe(false);
+    expect(isPrivateSafePath("/home/u/src/repo/README.md", home, config)).toBe(false);
+  });
+
+  test("does not exempt a look-alike prefix", () => {
+    expect(isPrivateSafePath("/home/u/.claude-other/a", home, config)).toBe(false);
+  });
+});
 
 describe("extractContent", () => {
   test("reads Write content", () => {

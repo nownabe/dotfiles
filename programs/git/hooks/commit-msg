@@ -2,9 +2,10 @@
 #
 # Global commit-msg hook.
 #
-# Rejects Claude Code attribution (session URLs, Claude-Session trailers,
-# Co-Authored-By: Claude, "Generated with Claude Code") in commit messages,
-# then chains to the repo-local commit-msg hook.
+# Rejects commit messages that carry Claude Code attribution (session URLs,
+# Claude-Session trailers, Co-Authored-By: Claude, "Generated with Claude
+# Code"), or that match the machine-local private patterns when the
+# repository is not private; then chains to the repo-local commit-msg hook.
 #
 # Not settings.json's `attribution`: that only suppresses what the harness
 # adds on its own, and an agent can still type the line by hand. Not the
@@ -18,9 +19,13 @@ set -o pipefail
 
 PREFIX="commit-msg"
 
+# shellcheck source-path=SCRIPTDIR
+# shellcheck source=lib/private-patterns.bash
+source "$(dirname "${BASH_SOURCE[0]}")/lib/private-patterns.bash"
+
 # Kept in sync with the `preBash`/`preWrite` forbidden pattern of the same
 # name in programs/claude/nownabe-claude-hooks.json.
-FORBIDDEN='claude\.ai/(code/)?session_|^Claude-Session:|Co-Authored-By:[[:space:]]*Claude|Generated with \[?Claude Code'
+ATTRIBUTION='claude\.ai/(code/)?session_|^Claude-Session:|Co-Authored-By:[[:space:]]*Claude|Generated with \[?Claude Code'
 
 chain_local_hook() {
   local common_dir local_hook
@@ -34,6 +39,14 @@ chain_local_hook() {
   "$local_hook" "$@"
 }
 
+reject() {
+  local error=$1 hits=$2 advice=$3
+  printf '%s: error: %s\n' "$PREFIX" "$error" >&2
+  printf '%s\n' "$hits" | sed "s/^/$PREFIX:   /" >&2
+  printf '%s: %s\n' "$PREFIX" "$advice" >&2
+  return 1
+}
+
 main() {
   local msg_file="${1-}"
 
@@ -43,13 +56,20 @@ main() {
 
   [[ -f "$msg_file" ]] || return 0
 
-  grep -qiE "$FORBIDDEN" -- "$msg_file" || return 0
+  local hits
+  if hits=$(grep -inE "$ATTRIBUTION" -- "$msg_file"); then
+    reject "Claude Code attribution is not allowed in commit messages." "$hits" \
+      "Remove the line and commit again. Never put a claude.ai session URL in a repository."
+    return $?
+  fi
 
-  printf '%s: error: Claude Code attribution is not allowed in commit messages.\n' "$PREFIX" >&2
-  printf '%s: offending line(s):\n' "$PREFIX" >&2
-  grep -inE "$FORBIDDEN" -- "$msg_file" >&2
-  printf '%s: remove the line and commit again. Never put a claude.ai session URL in a repository.\n' "$PREFIX" >&2
-  return 1
+  local patterns
+  patterns=$(private_patterns) || return 0
+  if hits=$(grep -inE -f <(printf '%s\n' "$patterns") -- "$msg_file"); then
+    reject "the commit message matches a private pattern from $PRIVATE_PATTERNS_FILE" "$hits" \
+      "This repository is not listed in $PRIVATE_REMOTES_FILE. Remove the private name, host or port and commit again."
+    return $?
+  fi
 }
 
 main "$@"

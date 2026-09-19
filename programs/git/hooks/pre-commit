@@ -2,14 +2,9 @@
 #
 # Global pre-commit hook.
 #
-# Rejects staged content matching the machine-local private patterns in
-# $XDG_CONFIG_HOME/git/private-patterns, then chains to the repo-local
-# pre-commit hook.
-#
-# The patterns live outside any repository on purpose: the things worth
-# catching are internal hostnames, IPs and ports, and writing them into a
-# public dotfiles repo would leak exactly what the hook exists to protect.
-# This file ships the mechanism; the machine supplies the content.
+# Rejects staged content matching the machine-local private patterns when
+# the repository is not private, then chains to the repo-local pre-commit
+# hook. See lib/private-patterns.bash for the two files involved.
 #
 # Only added lines are scanned. Content already present in a file has
 # already been committed, so flagging it would fail every later commit
@@ -19,7 +14,10 @@ set -o nounset
 set -o pipefail
 
 PREFIX="pre-commit"
-PATTERNS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/git/private-patterns"
+
+# shellcheck source-path=SCRIPTDIR
+# shellcheck source=lib/private-patterns.bash
+source "$(dirname "${BASH_SOURCE[0]}")/lib/private-patterns.bash"
 
 chain_local_hook() {
   local common_dir local_hook
@@ -33,18 +31,11 @@ chain_local_hook() {
   "$local_hook" "$@"
 }
 
-# Strip comments and blank lines. Empty output means "nothing configured".
-active_patterns() {
-  [[ -r "$PATTERNS_FILE" ]] || return 1
-  grep -vE '^[[:space:]]*(#|$)' -- "$PATTERNS_FILE"
-}
-
 main() {
   chain_local_hook "$@" || return $?
 
   local patterns
-  patterns=$(active_patterns) || return 0
-  [[ -n "$patterns" ]] || return 0
+  patterns=$(private_patterns) || return 0
 
   local pattern_tmp
   pattern_tmp=$(mktemp) || return 0
@@ -62,7 +53,7 @@ main() {
 
     if [[ $found -eq 0 ]]; then
       printf '%s: error: staged content matches a private pattern from %s\n' \
-        "$PREFIX" "$PATTERNS_FILE" >&2
+        "$PREFIX" "$PRIVATE_PATTERNS_FILE" >&2
       found=1
     fi
     printf '%s: %s\n' "$PREFIX" "$file" >&2
@@ -71,8 +62,8 @@ main() {
 
   [[ $found -eq 0 ]] && return 0
 
-  printf '%s: unstage the offending lines before committing. This repository may be public.\n' \
-    "$PREFIX" >&2
+  printf '%s: this repository is not listed in %s. Unstage the offending lines before committing.\n' \
+    "$PREFIX" "$PRIVATE_REMOTES_FILE" >&2
   return 1
 }
 

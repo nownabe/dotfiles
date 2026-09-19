@@ -203,3 +203,11 @@ Both `allowedPatterns` and `forbiddenPatterns` are objects, so patterns from par
   }
 }
 ```
+
+## Private Patterns
+
+Beyond the config, `pre-bash` enforces the machine-local private patterns described in
+[`private-patterns.md`](private-patterns.md) — but only on sub-commands that publish text:
+`gh pr|issue|release|repo|gist|api` and `git commit|tag|merge|notes`. Cloning a private remote or
+grepping for its name publishes nothing and is left alone. The check is skipped when the session's
+working directory belongs to a private repository.
