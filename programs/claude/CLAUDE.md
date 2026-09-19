@@ -95,8 +95,9 @@ Available commands:
 
 All commands accept `--repo <owner/repo>` to target a specific repository (defaults to current repo).
 
-Source and per-command docs live in `~/src/github.com/nownabe/dotfiles/programs/claude/` under
-`tools/` and `docs/claude-tools/`.
+Before using a command for the first time, run `claude-tools docs <command>` (e.g.
+`claude-tools docs get-job-logs`) for its arguments, options and examples. `claude-tools docs`
+alone lists every doc, including the `claude-hooks` hook references.
 
 ## Temporary Files
 

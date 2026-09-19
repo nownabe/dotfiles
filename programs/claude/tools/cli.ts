@@ -11,10 +11,16 @@ const { remaining: cleanedArgs } = parseRepoFlag(Deno.args);
 const group = cleanedArgs[0];
 const name = cleanedArgs[1];
 
+if (group === "docs") {
+  const { main } = await import("./docs.ts");
+  await main();
+  Deno.exit(0);
+}
+
 if (!group || !(group in subcommands)) {
-  const available = Object.keys(subcommands).join(", ");
+  const available = [...Object.keys(subcommands), "docs"].join(", ");
   console.error(group ? `Unknown command group: ${group}` : "No command specified");
-  console.error(`Available command groups: ${available}`);
+  console.error(`Available commands: ${available}`);
   Deno.exit(1);
 }
 

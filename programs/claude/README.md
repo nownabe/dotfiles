@@ -14,14 +14,16 @@ no `hms` needed. Only `default.nix` changes require a rebuild.
 
 | Command                          | Entrypoint     | Deno permissions                                                                         |
 | -------------------------------- | -------------- | ---------------------------------------------------------------------------------------- |
-| `claude-tools <group> <command>` | `tools/cli.ts` | `--allow-run=gh`                                                                         |
+| `claude-tools <group> <command>` | `tools/cli.ts` | `--allow-run=gh`, `--allow-read` for `docs/`                                             |
 | `claude-hooks <hook>`            | `hooks/cli.ts` | `--allow-read`, `--allow-env=HOME,XDG_CONFIG_HOME`, `--allow-run` for git and PowerShell |
 
 Both run with `--no-remote`, so neither may import anything outside the standard library — they
 start offline and fast, which matters because `pre-bash` runs on every Bash tool call. JSR
 dependencies (`@std/testing`, `@std/expect`) are test-only.
 
-- `tools/` — GitHub utilities. See [`docs/claude-tools/`](docs/claude-tools/).
+- `tools/` — GitHub utilities, plus `claude-tools docs [name]`, which prints the Markdown under
+  [`docs/`](docs/) so agents can read a command's reference on demand instead of loading it all
+  into context. See [`docs/claude-tools/`](docs/claude-tools/).
 - `hooks/` — `pre-bash`, `pre-write` and `notification` hooks. See
   [`docs/claude-hooks/`](docs/claude-hooks/). `pre-bash` and `pre-write` also enforce the
   machine-local [private patterns](docs/claude-hooks/private-patterns.md) shared with the global
