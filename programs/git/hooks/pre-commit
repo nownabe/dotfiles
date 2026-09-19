@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+#
+# Global pre-commit hook.
+#
+# Rejects staged content matching the machine-local private patterns in
+# $XDG_CONFIG_HOME/git/private-patterns, then chains to the repo-local
+# pre-commit hook.
+#
+# The patterns live outside any repository on purpose: the things worth
+# catching are internal hostnames, IPs and ports, and writing them into a
+# public dotfiles repo would leak exactly what the hook exists to protect.
+# This file ships the mechanism; the machine supplies the content.
+#
+# Only added lines are scanned. Content already present in a file has
+# already been committed, so flagging it would fail every later commit
+# that touches the file without changing what is public.
+
+set -o nounset
+set -o pipefail
+
+PREFIX="pre-commit"
+PATTERNS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/git/private-patterns"
+
+chain_local_hook() {
+  local common_dir local_hook
+  common_dir=$(git rev-parse --git-common-dir 2>/dev/null) || return 0
+  local_hook="$common_dir/hooks/$PREFIX"
+
+  [[ -x "$local_hook" ]] || return 0
+  # Don't recurse into ourselves if hooksPath ever points at .git/hooks.
+  [[ "$(realpath "$local_hook")" == "$(realpath "${BASH_SOURCE[0]}")" ]] && return 0
+
+  "$local_hook" "$@"
+}
+
+# Strip comments and blank lines. Empty output means "nothing configured".
+active_patterns() {
+  [[ -r "$PATTERNS_FILE" ]] || return 1
+  grep -vE '^[[:space:]]*(#|$)' -- "$PATTERNS_FILE"
+}
+
+main() {
+  chain_local_hook "$@" || return $?
+
+  local patterns
+  patterns=$(active_patterns) || return 0
+  [[ -n "$patterns" ]] || return 0
+
+  local pattern_tmp
+  pattern_tmp=$(mktemp) || return 0
+  printf '%s\n' "$patterns" > "$pattern_tmp"
+  trap 'rm -f "$pattern_tmp"' RETURN
+
+  local found=0 file added
+  while IFS= read -r -d '' file; do
+    # -U0 keeps context lines out; `+++` is the file header, not content.
+    added=$(git diff --cached -U0 --no-color -- "$file" |
+      grep -E '^\+' | grep -vE '^\+\+\+') || continue
+
+    local hits
+    hits=$(printf '%s\n' "$added" | grep -inE -f "$pattern_tmp") || continue
+
+    if [[ $found -eq 0 ]]; then
+      printf '%s: error: staged content matches a private pattern from %s\n' \
+        "$PREFIX" "$PATTERNS_FILE" >&2
+      found=1
+    fi
+    printf '%s: %s\n' "$PREFIX" "$file" >&2
+    printf '%s\n' "$hits" | sed "s/^/$PREFIX:   /" >&2
+  done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+
+  [[ $found -eq 0 ]] && return 0
+
+  printf '%s: unstage the offending lines before committing. This repository may be public.\n' \
+    "$PREFIX" >&2
+  return 1
+}
+
+main "$@"
