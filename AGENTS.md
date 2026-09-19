@@ -46,6 +46,11 @@ packages in `programs/claude/default.nix`. They run from the working tree, so so
 without `hms`. Run `deno task check` in `programs/claude/` before committing changes to them; CI
 runs the same task. Runtime code must stay dependency-free (the wrappers pass `--no-remote`).
 
+`deno fmt` and `oxfmt` format the same file types differently, so they own disjoint sets:
+`.oxfmtrc.json` makes oxfmt skip `programs/claude/hooks/` and `programs/claude/tools/`, and
+`deno.json` limits `deno fmt` to those two directories. Everything else — including
+`programs/claude/docs/` and `deno.json` itself — belongs to oxfmt.
+
 ## Pull Request Rules
 
 ### Branch

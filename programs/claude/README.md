@@ -12,10 +12,10 @@ now run on Deno.
 directory **straight from the working tree**, so editing a `.ts` file takes effect immediately —
 no `hms` needed. Only `default.nix` changes require a rebuild.
 
-| Command                | Entrypoint     | Deno permissions                                 |
-| ---------------------- | -------------- | ------------------------------------------------ |
-| `claude-tools <group> <command>` | `tools/cli.ts` | `--allow-run=gh`                        |
-| `claude-hooks <hook>`  | `hooks/cli.ts` | `--allow-read`, `--allow-env=HOME`, `--allow-run` for PowerShell |
+| Command                          | Entrypoint     | Deno permissions                                                 |
+| -------------------------------- | -------------- | ---------------------------------------------------------------- |
+| `claude-tools <group> <command>` | `tools/cli.ts` | `--allow-run=gh`                                                 |
+| `claude-hooks <hook>`            | `hooks/cli.ts` | `--allow-read`, `--allow-env=HOME`, `--allow-run` for PowerShell |
 
 Both run with `--no-remote`, so neither may import anything outside the standard library — they
 start offline and fast, which matters because `pre-bash` runs on every Bash tool call. JSR
