@@ -68,12 +68,12 @@ tell the user and stop.
 One line per group, largest first: `count`, what stopped the call, the group, one example command.
 The stopper column is derived from `kind` and `reason`:
 
-| Stopper       | Grouped by                               | Meaning                                                                         |
-| ------------- | ---------------------------------------- | ------------------------------------------------------------------------------- |
-| `hook`        | the rule's `reason`                      | a `forbiddenPatterns` rule in `nownabe-claude-hooks.json`, or a repo-local hook |
-| `rule/prompt` | command name (`cd …`, `VAR=`, `timeout` peeled off) | a `permissions.deny` rule, or the prompt was declined                 |
-| `automode`    | command name                             | the auto mode classifier                                                        |
-| `user`        | command name                             | the user, at the prompt                                                         |
+| Stopper       | Grouped by                                          | Meaning                                                                         |
+| ------------- | --------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `hook`        | the rule's `reason`                                 | a `forbiddenPatterns` rule in `nownabe-claude-hooks.json`, or a repo-local hook |
+| `rule/prompt` | command name (`cd …`, `VAR=`, `timeout` peeled off) | a `permissions.deny` rule, or the prompt was declined                           |
+| `automode`    | command name                                        | the auto mode classifier                                                        |
+| `user`        | command name                                        | the user, at the prompt                                                         |
 
 Merge groups that are one decision (all `hook` rows usually are) and split a row when its example
 shows two different tasks — the JSON from step 1 has the full commands. Show the user one table:
