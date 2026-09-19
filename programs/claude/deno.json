@@ -12,6 +12,7 @@
   },
   "tasks": {
     "test": "deno test --allow-read --allow-write --allow-env hooks/ tools/",
-    "check": "deno fmt --check && deno lint && deno check hooks/ tools/ && deno task test"
+    "check:offline": "deno check --no-remote hooks/cli.ts tools/cli.ts",
+    "check": "deno fmt --check && deno lint && deno check hooks/ tools/ && deno task check:offline && deno task test"
   }
 }
