@@ -37,7 +37,14 @@ in
     (denoCli {
       name = "claude-tools";
       entrypoint = "tools/cli.ts";
-      permissions = [ "--allow-run=gh" ];
+      # `session` commands read the Claude Code transcripts and keep their
+      # cursor under the XDG state dir; nothing else on disk is reachable.
+      permissions = [
+        "--allow-run=gh"
+        "--allow-env=HOME,XDG_STATE_HOME"
+        "--allow-read=${config.home.homeDirectory}/.claude/projects,${config.xdg.stateHome}/claude-tools"
+        "--allow-write=${config.xdg.stateHome}/claude-tools"
+      ];
     })
     (denoCli {
       name = "claude-hooks";

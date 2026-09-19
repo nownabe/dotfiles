@@ -78,7 +78,7 @@ The only things worth writing down are the why and why-not that code and tests c
 
 ## claude-tools
 
-`claude-tools` provides GitHub-related CLI utilities.
+`claude-tools` provides CLI utilities for GitHub and for Claude Code's own session transcripts.
 
 Available commands:
 
@@ -92,8 +92,10 @@ Available commands:
 - `gh list-run-jobs <run_id>` — list jobs from a GitHub Actions workflow run
 - `gh list-sub-issues <issue_number>` — list sub-issues of a GitHub issue
 - `gh resolve-tag-sha <owner/repo> <tag>` — resolve a GitHub tag to its commit SHA
+- `session list-denials [--all]` — list tool calls that were denied (permission rule, hook, auto mode, or user) in sessions not yet triaged; `--all` lists every one on record
+- `session mark-denials-collected <timestamp>` — record that denials up to `<timestamp>` have been triaged
 
-All commands accept `--repo <owner/repo>` to target a specific repository (defaults to current repo).
+`gh` commands accept `--repo <owner/repo>` to target a specific repository (defaults to current repo).
 
 Source and per-command docs live in `~/src/github.com/nownabe/dotfiles/programs/claude/` under
 `tools/` and `docs/claude-tools/`.

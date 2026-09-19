@@ -1,8 +1,10 @@
 import { commands as gh } from "./gh/index.ts";
 import { parseRepoFlag } from "./gh/repo.ts";
+import { commands as session } from "./session/index.ts";
 
 const subcommands: Record<string, Record<string, () => Promise<void>>> = {
   gh,
+  session,
 };
 
 // Extract --repo flag from all args so it can appear anywhere (e.g. before the subcommand name)
