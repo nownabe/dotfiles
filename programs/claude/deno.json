@@ -1,0 +1,18 @@
+{
+  "fmt": {
+    "include": ["hooks/", "tools/"],
+    "lineWidth": 100
+  },
+  "lint": {
+    "include": ["hooks/", "tools/"]
+  },
+  "imports": {
+    "@std/expect": "jsr:@std/expect@^1.0.18",
+    "@std/testing": "jsr:@std/testing@^1.0.20"
+  },
+  "tasks": {
+    "test": "deno test --allow-read --allow-write --allow-env hooks/ tools/",
+    "check:offline": "deno check --no-remote $(find hooks tools -name '*.ts' -not -name '*.test.ts')",
+    "check": "deno fmt --check && deno lint && deno check hooks/ tools/ && deno task check:offline && deno task test"
+  }
+}

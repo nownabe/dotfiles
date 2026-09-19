@@ -57,6 +57,11 @@
         "type": "regex",
         "reason": "Fetching file content via `gh api repos/.../contents/...` is forbidden.",
         "suggestion": "Clone the repository into `.local/src/github.com/<owner>/<repo>` and read the files locally with the Read tool instead."
+      },
+      "^git\\b[^\"']*\\s--no-verify\\b|^git\\s+(?:commit|merge)\\b[^\"']*\\s-n\\b": {
+        "type": "regex",
+        "reason": "Skipping git hooks is forbidden.",
+        "suggestion": "The commit-msg and pre-commit hooks block attribution lines and private endpoints from reaching a repository. Fix what they report instead of bypassing them."
       }
     }
   }
