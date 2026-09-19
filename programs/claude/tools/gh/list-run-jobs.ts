@@ -16,7 +16,7 @@ export async function listRunJobs(
     "api",
     `repos/${owner}/${repo}/actions/runs/${runId}/jobs`,
     "--jq",
-    "[.jobs[] | {name, conclusion, id}]",
+    "[.jobs[] | {name, conclusion, id, url: .html_url, steps: [.steps[] | {name, conclusion}]}]",
   ]);
 
   if (result.exitCode !== 0) {

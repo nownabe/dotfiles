@@ -1,6 +1,6 @@
 # `gh list-run-jobs`
 
-List jobs from a GitHub Actions workflow run.
+List jobs from a GitHub Actions workflow run, with each job's steps and URL. One call answers "which job failed, at which step" without a follow-up `gh api` on the job.
 
 ## Usage
 
@@ -23,7 +23,9 @@ Returns a JSON array of objects with the following fields:
 | ------------ | ---------------------------------------------------- |
 | `name`       | Job name                                             |
 | `conclusion` | Job result (`success`, `failure`, `cancelled`, etc.) |
-| `id`         | Job ID                                               |
+| `id`         | Job ID (pass to `gh get-job-logs`)                   |
+| `url`        | Job page on github.com                               |
+| `steps`      | Array of `{name, conclusion}` in execution order     |
 
 ## Examples
 
@@ -34,6 +36,9 @@ claude-tools gh list-run-jobs 12345678
 # List jobs from a specific repository
 claude-tools gh list-run-jobs 12345678 --repo myorg/myrepo
 
-# Filter jobs by name using jq
-claude-tools gh list-run-jobs 12345678 | jq '.[] | select(.name | contains("Integration"))'
+# Inspect one job: its result, failed steps and URL
+claude-tools gh list-run-jobs 12345678 | jq '.[] | select(.name == "Deploy")'
+
+# Only the failed steps across all jobs
+claude-tools gh list-run-jobs 12345678 | jq '.[] | {name, failed: [.steps[] | select(.conclusion == "failure").name]}'
 ```
