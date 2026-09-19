@@ -89,7 +89,7 @@ Available commands:
 - `gh get-pr-reviews <pull_number>` — get reviews on a pull request
 - `gh get-release [--tag <tag>]` — get release information from a GitHub repository (latest by default)
 - `gh get-repo-content <path> [--ref <ref>] [--raw]` — get file content from a GitHub repository
-- `gh list-run-jobs <run_id>` — list jobs from a GitHub Actions workflow run
+- `gh list-run-jobs <run_id>` — list jobs (with steps and URLs) from a GitHub Actions workflow run; use this instead of `gh run view --json jobs` or `gh api .../actions/jobs/<id>`
 - `gh list-sub-issues <issue_number>` — list sub-issues of a GitHub issue
 - `gh resolve-tag-sha <owner/repo> <tag>` — resolve a GitHub tag to its commit SHA
 
