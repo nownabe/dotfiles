@@ -6,6 +6,7 @@ import {
   type ActivePattern,
   checkAllowedPatterns,
   checkForbiddenPatterns,
+  checkPrivatePatterns,
   expandSubCommands,
   extractShellCArg,
   globToRegExp,
@@ -14,6 +15,43 @@ import {
   parsePattern,
   splitCommand,
 } from "./pre-bash.ts";
+
+describe("checkPrivatePatterns", () => {
+  // Placeholder host (RFC 2606): this test file is committed.
+  const PATTERNS = ["git\\.example\\.invalid", ":1234"];
+
+  test("denies a PR body that names a private host", () => {
+    const hits = checkPrivatePatterns(
+      'gh pr create --title t --body "see ssh://git.example.invalid:1234/x"',
+      PATTERNS,
+    );
+    expect(hits?.length).toBe(2);
+  });
+
+  test("denies a commit message that names a private host", () => {
+    expect(checkPrivatePatterns('git commit -m "fix: talk to git.example.invalid"', PATTERNS))
+      .not.toBeNull();
+  });
+
+  test("denies the publishing half of a compound command", () => {
+    expect(checkPrivatePatterns("git add . && gh pr edit 1 --body git.example.invalid", PATTERNS))
+      .not.toBeNull();
+  });
+
+  test("ignores commands that publish nothing", () => {
+    expect(checkPrivatePatterns("git clone git@git.example.invalid:1234/o/r.git", PATTERNS))
+      .toBeNull();
+    expect(checkPrivatePatterns("grep -rn git.example.invalid .", PATTERNS)).toBeNull();
+  });
+
+  test("ignores publishing commands that name nothing private", () => {
+    expect(checkPrivatePatterns('gh pr create --title t --body "clean"', PATTERNS)).toBeNull();
+  });
+
+  test("is inert with no patterns", () => {
+    expect(checkPrivatePatterns('gh pr create --body "git.example.invalid"', [])).toBeNull();
+  });
+});
 
 describe("splitCommand", () => {
   test("returns single command as-is", () => {

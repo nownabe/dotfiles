@@ -50,11 +50,14 @@ in
       # module and runtime errors still reach stderr.
       quiet = true;
       # Config files are read from CWD up to HOME, so reads cannot be scoped.
-      # The two powershell paths mirror POWERSHELL_CANDIDATES in notification.ts.
+      # XDG_CONFIG_HOME locates the machine-local private-patterns files, and
+      # git answers whether the repository at hand is private (see
+      # hooks/private-patterns.ts). The two powershell paths mirror
+      # POWERSHELL_CANDIDATES in notification.ts.
       permissions = [
         "--allow-read"
-        "--allow-env=HOME"
-        "--allow-run=powershell.exe,/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
+        "--allow-env=HOME,XDG_CONFIG_HOME"
+        "--allow-run=git,powershell.exe,/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
       ];
     })
   ];

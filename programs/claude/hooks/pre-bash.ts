@@ -5,6 +5,7 @@
  */
 
 import { loadConfig } from "./config.ts";
+import { findPrivateMatches, loadPrivatePatterns } from "./private-patterns.ts";
 
 // --- Types ---
 
@@ -387,6 +388,26 @@ export function checkForbiddenPatterns(
   return results.length > 0 ? results : null;
 }
 
+// --- Feature: Private Patterns ---
+
+/**
+ * Sub-commands whose arguments become public text: pull request, issue,
+ * release and repository metadata, commit and tag messages. Only these are
+ * held to the machine-local private patterns — cloning a private remote or
+ * grepping for its name publishes nothing.
+ */
+export const PUBLISHING_COMMAND =
+  /^(?:gh\s+(?:pr|issue|release|repo|gist|api)\b|git\s+(?:commit|tag|merge|notes)\b)/;
+
+export function checkPrivatePatterns(command: string, patterns: string[]): DenyResult[] | null {
+  if (patterns.length === 0) return null;
+  const publishing = expandSubCommands(splitCommand(command)).filter((sub) =>
+    PUBLISHING_COMMAND.test(sub)
+  );
+  if (publishing.length === 0) return null;
+  return findPrivateMatches(publishing, patterns);
+}
+
 // --- Checker Pipeline ---
 
 type Checker = (command: string) => DenyResult[] | null;
@@ -402,7 +423,11 @@ export async function main() {
 
   // Check forbidden patterns first — deny always takes precedence over allow.
   const forbiddenPatterns = loadForbiddenPatterns(cwd);
-  const checkers: Checker[] = [(cmd) => checkForbiddenPatterns(cmd, forbiddenPatterns)];
+  const privatePatterns = loadPrivatePatterns(cwd);
+  const checkers: Checker[] = [
+    (cmd) => checkForbiddenPatterns(cmd, forbiddenPatterns),
+    (cmd) => checkPrivatePatterns(cmd, privatePatterns),
+  ];
 
   for (const checker of checkers) {
     const results = checker(command);

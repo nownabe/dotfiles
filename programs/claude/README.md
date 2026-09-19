@@ -12,17 +12,20 @@ now run on Deno.
 directory **straight from the working tree**, so editing a `.ts` file takes effect immediately —
 no `hms` needed. Only `default.nix` changes require a rebuild.
 
-| Command                          | Entrypoint     | Deno permissions                                                 |
-| -------------------------------- | -------------- | ---------------------------------------------------------------- |
-| `claude-tools <group> <command>` | `tools/cli.ts` | `--allow-run=gh`                                                 |
-| `claude-hooks <hook>`            | `hooks/cli.ts` | `--allow-read`, `--allow-env=HOME`, `--allow-run` for PowerShell |
+| Command                          | Entrypoint     | Deno permissions                                                                         |
+| -------------------------------- | -------------- | ---------------------------------------------------------------------------------------- |
+| `claude-tools <group> <command>` | `tools/cli.ts` | `--allow-run=gh`                                                                         |
+| `claude-hooks <hook>`            | `hooks/cli.ts` | `--allow-read`, `--allow-env=HOME,XDG_CONFIG_HOME`, `--allow-run` for git and PowerShell |
 
 Both run with `--no-remote`, so neither may import anything outside the standard library — they
 start offline and fast, which matters because `pre-bash` runs on every Bash tool call. JSR
 dependencies (`@std/testing`, `@std/expect`) are test-only.
 
 - `tools/` — GitHub utilities. See [`docs/claude-tools/`](docs/claude-tools/).
-- `hooks/` — `pre-bash` and `notification` hooks. See [`docs/claude-hooks/`](docs/claude-hooks/).
+- `hooks/` — `pre-bash`, `pre-write` and `notification` hooks. See
+  [`docs/claude-hooks/`](docs/claude-hooks/). `pre-bash` and `pre-write` also enforce the
+  machine-local [private patterns](docs/claude-hooks/private-patterns.md) shared with the global
+  git hooks in `programs/git/hooks/`.
 
 ### Development
 
@@ -38,7 +41,8 @@ Configuration for both hooks, deployed to `~/.claude/nownabe-claude-hooks.json`.
 every `.claude/nownabe-claude-hooks.json` (and `.local.json`) from CWD up to `$HOME` and deep merge
 them, with directories closer to CWD winning.
 
-See [`docs/claude-hooks/pre-bash.md`](docs/claude-hooks/pre-bash.md) for the pattern syntax and
+See [`docs/claude-hooks/pre-bash.md`](docs/claude-hooks/pre-bash.md) for the pattern syntax,
+[`docs/claude-hooks/pre-write.md`](docs/claude-hooks/pre-write.md) for the content check and
 [`docs/claude-hooks/notification.md`](docs/claude-hooks/notification.md) for sound configuration.
 The `edit-nownabe-claude-hooks` skill in `.claude/skills/` edits this file safely.
 
