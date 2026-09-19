@@ -95,8 +95,8 @@ Available commands:
 
 All commands accept `--repo <owner/repo>` to target a specific repository (defaults to current repo).
 
-Source and per-command docs live in the dotfiles repo under `programs/claude/tools/` and
-`programs/claude/docs/claude-tools/`.
+Source and per-command docs live in `~/src/github.com/nownabe/dotfiles/programs/claude/` under
+`tools/` and `docs/claude-tools/`.
 
 ## Temporary Files
 
