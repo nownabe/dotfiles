@@ -37,10 +37,10 @@ in
     (denoCli {
       name = "claude-tools";
       entrypoint = "tools/cli.ts";
-      # `docs` serves the Markdown under docs/ straight from the working tree.
+      # `docs` serves the Markdown under docs/claude-tools/ straight from the working tree.
       permissions = [
         "--allow-run=gh"
-        "--allow-read=${dotfilesDir}/programs/claude/docs"
+        "--allow-read=${dotfilesDir}/programs/claude/docs/claude-tools"
       ];
     })
     (denoCli {

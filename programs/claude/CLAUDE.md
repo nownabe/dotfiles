@@ -97,7 +97,8 @@ All commands accept `--repo <owner/repo>` to target a specific repository (defau
 
 Before using a command for the first time, run `claude-tools docs <command>` (e.g.
 `claude-tools docs get-job-logs`) for its arguments, options and examples. `claude-tools docs`
-alone lists every doc, including the `claude-hooks` hook references.
+alone lists every doc. `claude-hooks docs [name]` does the same for the `pre-bash`, `pre-write`
+and `notification` hooks and their `nownabe-claude-hooks.json` configuration.
 
 ## Temporary Files
 
