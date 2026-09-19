@@ -7,13 +7,13 @@ let
   # Standard client-side Git hooks that should chain through to each
   # repository's own .git/hooks/<name>. Because core.hooksPath is set,
   # Git ignores repo-local hooks unless a global hook of the same name
-  # forwards to them. post-checkout is intentionally excluded here: it has
-  # its own script that runs global worktree-symlink logic and chains too.
+  # forwards to them. post-checkout and pre-commit are intentionally
+  # excluded here: each has its own script that runs global logic and
+  # chains too.
   chainedHooks = [
     "applypatch-msg"
     "pre-applypatch"
     "post-applypatch"
-    "pre-commit"
     "pre-merge-commit"
     "prepare-commit-msg"
     "commit-msg"
@@ -99,7 +99,34 @@ in
       source = ./hooks/post-checkout;
       executable = true;
     };
+
+    ".config/git/hooks/pre-commit" = {
+      source = ./hooks/pre-commit;
+      executable = true;
+    };
   };
+
+  # Seed the private-pattern list the pre-commit hook reads. The patterns
+  # themselves (internal hostnames, IPs, ports) must never be committed to
+  # this public repository, so only the empty template is managed here and
+  # an existing file is left untouched.
+  home.activation.seedGitPrivatePatterns = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    patterns_file="${config.home.homeDirectory}/.config/git/private-patterns"
+    if [ ! -e "$patterns_file" ]; then
+      mkdir -p "$(dirname "$patterns_file")"
+      cat > "$patterns_file" << 'EOF'
+# Extended regular expressions (one per line, case-insensitive) that must
+# never appear in staged content. Read by the global pre-commit hook.
+#
+# Keep this file out of version control: it names the very things it
+# protects. Examples of the shape (use your own values, not these):
+#   git\.example\.invalid
+#   192\.0\.2\.[0-9]+
+#   :1234
+EOF
+      echo "Created $patterns_file"
+    fi
+  '';
 
   # Generate GPG key and signing.local config file
   home.activation.generateGitGpgConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

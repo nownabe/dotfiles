@@ -29,11 +29,22 @@ dotfiles/
 │   ├── zsh/                    # Zsh (programs.zsh + config files)
 │   ├── git/                    # Git (programs.git + scripts)
 │   ├── nvim/                   # Neovim (programs.neovim + config dir)
-│   └── claude/                 # Claude Code (settings.json + scripts)
+│   └── claude/                 # Claude Code (settings.json, skills, Deno CLIs)
+│       ├── tools/              # `claude-tools` CLI (Deno)
+│       ├── hooks/              # `claude-hooks` CLI (Deno)
+│       ├── skills/             # Global skills symlinked into ~/.claude/skills
+│       └── docs/               # Per-command / per-hook reference
 ├── setup.sh                    # Bootstrap script (install Nix + apply)
 ├── scripts/                    # Utility scripts
 └── archived/                   # Old Chezmoi files (kept for reference)
 ```
+
+### Deno CLIs under `programs/claude/`
+
+`claude-tools` and `claude-hooks` are TypeScript run by Deno, wrapped as `writeShellScriptBin`
+packages in `programs/claude/default.nix`. They run from the working tree, so source edits are live
+without `hms`. Run `deno task check` in `programs/claude/` before committing changes to them; CI
+runs the same task. Runtime code must stay dependency-free (the wrappers pass `--no-remote`).
 
 ## Pull Request Rules
 

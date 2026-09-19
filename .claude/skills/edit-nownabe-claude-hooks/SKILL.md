@@ -1,7 +1,7 @@
 ---
 name: edit-nownabe-claude-hooks
 description: >
-  Add or edit rules in nownabe-claude-hooks.json (the @nownabe/claude-hooks config) in the dotfiles
+  Add or edit rules in nownabe-claude-hooks.json (the claude-hooks config) in the dotfiles
   repository — forbiddenPatterns, allowedPatterns, and notification sounds. NOT for Claude Code's
   built-in hooks in settings.json. Encodes the hook's command-matching semantics so patterns are
   written correctly and validated. Use when the user asks to forbid/allow a command, add a pre-bash
@@ -11,8 +11,8 @@ description: >
 
 # Edit Claude Hooks
 
-Add or edit rules in `programs/claude/nownabe-claude-hooks.json`. This file configures
-`@nownabe/claude-hooks` and is deployed to `~/.claude/nownabe-claude-hooks.json` via Home Manager
+Add or edit rules in `programs/claude/nownabe-claude-hooks.json`. This file configures the
+`claude-hooks` CLI and is deployed to `~/.claude/nownabe-claude-hooks.json` via Home Manager
 (an out-of-store symlink, so **edits to the source file are live immediately** — no `hms` needed to
 test).
 
@@ -52,7 +52,7 @@ test).
 
 ## How matching works (critical)
 
-Before matching, the hook transforms the command (`src/pre-bash.ts` in `@nownabe/claude-hooks`):
+Before matching, the hook transforms the command (`programs/claude/hooks/pre-bash.ts`):
 
 1. **Split on shell operators** `&&`, `||`, `;`, `|` (operators inside single/double quotes are
    ignored). Each sub-command is **trimmed**.
@@ -126,7 +126,7 @@ Write the test input (use the Write tool, not `echo`), e.g. `/tmp/ch-input.json`
 Run it:
 
 ```bash
-bunx @nownabe/claude-hooks pre-bash < /tmp/ch-input.json | jq .
+claude-hooks pre-bash < /tmp/ch-input.json | jq .
 ```
 
 - A matching **forbidden** rule → `"permissionDecision": "deny"` with your reason/suggestion.
