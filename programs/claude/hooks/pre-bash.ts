@@ -1,0 +1,442 @@
+/**
+ * PreToolUse hook for Bash commands.
+ * Runs multiple checkers against the command and returns a deny decision
+ * if any checker rejects it.
+ */
+
+import { loadConfig } from "./config.ts";
+
+// --- Types ---
+
+/**
+ * Common input fields.
+ * @see https://code.claude.com/docs/en/hooks#common-input-fields
+ */
+interface HookCommonInput {
+  /** Current session identifier. */
+  session_id: string;
+  /** Path to conversation JSON. */
+  transcript_path: string;
+  /** Current working directory when the hook is invoked. */
+  cwd: string;
+  /** Current permission mode: "default", "plan", "acceptEdits", "dontAsk", or "bypassPermissions". */
+  permission_mode: string;
+  /** Name of the event that fired. */
+  hook_event_name: string;
+}
+
+/**
+ * Tool-specific input fields for PreToolUse.
+ * @see https://code.claude.com/docs/en/hooks#pretooluse-input
+ */
+interface HookInput extends HookCommonInput {
+  /** Name of the tool being called. */
+  tool_name: string;
+  /** The parameters sent to the tool. */
+  tool_input: {
+    /** The command to execute. */
+    command: string;
+    /** Clear, concise description of what this command does. */
+    description?: string;
+    /** Optional timeout in milliseconds (max 600000). */
+    timeout?: number;
+    /** Set to true to run this command in the background. */
+    run_in_background?: boolean;
+  };
+  /** Unique identifier for this tool call. */
+  tool_use_id: string;
+}
+
+interface DenyResult {
+  reason: string;
+  suggestion: string;
+}
+
+/**
+ * Hook output for PreToolUse.
+ * @see https://code.claude.com/docs/en/hooks#hook-output
+ */
+interface HookOutput {
+  hookSpecificOutput: {
+    /** Name of the event that fired. */
+    hookEventName: "PreToolUse";
+    /** "allow" bypasses the permission system, "deny" prevents the tool call, "ask" prompts the user to confirm. */
+    permissionDecision: "allow" | "deny" | "ask";
+    /** For "allow" and "ask", shown to the user but not Claude. For "deny", shown to Claude. */
+    permissionDecisionReason?: string;
+    /** Modifies the tool's input parameters before execution. Combine with "allow" to auto-approve, or "ask" to show the modified input to the user. */
+    updatedInput?: Record<string, unknown>;
+    /** String added to Claude's context before the tool executes. */
+    additionalContext?: string;
+  };
+}
+
+// --- Feature: Allowed Command Patterns ---
+
+export type AllowedPatternConfig =
+  | { reason?: string; type?: "glob" | "regex"; multiline?: boolean; disabled?: false }
+  | { disabled: true };
+
+export interface ActiveAllowedPattern {
+  pattern: string;
+  reason?: string;
+  type?: "glob" | "regex";
+  multiline?: boolean;
+}
+
+/**
+ * Load allowed patterns from the unified config.
+ * Reads `config.preBash.allowedPatterns` (keyed by pattern string) and
+ * filters out disabled entries.
+ */
+export function loadAllowedPatterns(cwd: string): ActiveAllowedPattern[] {
+  const config = loadConfig(cwd);
+  const patterns = config.preBash?.allowedPatterns ?? {};
+  return Object.entries(patterns)
+    .filter(([, entry]) => !entry.disabled)
+    .map(([pattern, entry]) => {
+      const active = entry as Exclude<AllowedPatternConfig, { disabled: true }>;
+      return { pattern, reason: active.reason, type: active.type, multiline: active.multiline };
+    });
+}
+
+// --- Feature: Forbidden Command Patterns ---
+
+export type ForbiddenPatternConfig =
+  | {
+    reason: string;
+    suggestion: string;
+    type?: "glob" | "regex";
+    multiline?: boolean;
+    disabled?: false;
+  }
+  | { disabled: true };
+
+/**
+ * Load forbidden patterns from the unified config.
+ * Reads `config.preBash.forbiddenPatterns` (keyed by pattern string) and
+ * filters out disabled entries.
+ */
+export function loadForbiddenPatterns(cwd: string): ActivePattern[] {
+  const config = loadConfig(cwd);
+  const patterns = config.preBash?.forbiddenPatterns ?? {};
+  return Object.entries(patterns)
+    .filter(([, entry]) => !entry.disabled)
+    .map(([pattern, entry]) => {
+      const active = entry as Exclude<ForbiddenPatternConfig, { disabled: true }>;
+      return {
+        pattern,
+        reason: active.reason,
+        suggestion: active.suggestion,
+        type: active.type,
+        multiline: active.multiline,
+      };
+    });
+}
+
+export interface ActivePattern {
+  pattern: string;
+  reason: string;
+  suggestion: string;
+  type?: "glob" | "regex";
+  multiline?: boolean;
+}
+
+/**
+ * Split a command string on shell operators (`&&`, `||`, `;`, `|`),
+ * trimming each sub-command. Operators inside single or double quotes
+ * are not treated as separators.
+ */
+export function splitCommand(command: string): string[] {
+  const results: string[] = [];
+  let current = "";
+  let quote: "'" | '"' | null = null;
+  let i = 0;
+
+  while (i < command.length) {
+    const ch = command[i];
+
+    // Handle backslash escapes inside double quotes
+    if (ch === "\\" && quote === '"' && i + 1 < command.length) {
+      current += ch + command[i + 1];
+      i += 2;
+      continue;
+    }
+
+    // Toggle quote state
+    if ((ch === '"' || ch === "'") && (quote === null || quote === ch)) {
+      quote = quote === null ? ch : null;
+      current += ch;
+      i++;
+      continue;
+    }
+
+    // Only check for operators outside quotes
+    if (quote === null) {
+      // Check two-character operators first: &&, ||
+      const two = command.slice(i, i + 2);
+      if (two === "&&" || two === "||") {
+        const trimmed = current.trim();
+        if (trimmed) results.push(trimmed);
+        current = "";
+        i += 2;
+        // Skip surrounding whitespace
+        while (i < command.length && command[i] === " ") i++;
+        continue;
+      }
+      // Single-character operators: ;, |
+      if (ch === ";" || ch === "|") {
+        const trimmed = current.trim();
+        if (trimmed) results.push(trimmed);
+        current = "";
+        i++;
+        while (i < command.length && command[i] === " ") i++;
+        continue;
+      }
+    }
+
+    current += ch;
+    i++;
+  }
+
+  const trimmed = current.trim();
+  if (trimmed) results.push(trimmed);
+  return results;
+}
+
+/**
+ * Extract the command string from a `sh -c "..."` or `bash -c '...'` invocation.
+ * Returns null if the command is not a shell -c invocation.
+ */
+export function extractShellCArg(command: string): string | null {
+  const match = command.match(/^(?:sh|bash)\s+-c\s+/);
+  if (!match) return null;
+
+  const rest = command.slice(match[0].length);
+  if (rest.length === 0) return null;
+
+  const quoteChar = rest[0];
+  if (quoteChar !== '"' && quoteChar !== "'") {
+    // Unquoted argument — take until next whitespace
+    const end = rest.indexOf(" ");
+    return end === -1 ? rest : rest.slice(0, end);
+  }
+
+  // Find matching closing quote
+  let i = 1;
+  while (i < rest.length) {
+    if (rest[i] === "\\" && quoteChar === '"' && i + 1 < rest.length) {
+      i += 2;
+      continue;
+    }
+    if (rest[i] === quoteChar) {
+      return rest.slice(1, i);
+    }
+    i++;
+  }
+
+  // Unclosed quote — return content anyway
+  return rest.slice(1);
+}
+
+/**
+ * Expand sub-commands by recursively extracting inner commands from
+ * `sh -c` / `bash -c` invocations. The outer command is always included
+ * alongside the inner sub-commands so that both levels can be checked.
+ */
+export function expandSubCommands(subCommands: string[]): string[] {
+  const expanded: string[] = [];
+  for (const sub of subCommands) {
+    expanded.push(sub);
+    const innerArg = extractShellCArg(sub);
+    if (innerArg) {
+      const innerSubs = splitCommand(innerArg);
+      expanded.push(...expandSubCommands(innerSubs));
+    }
+  }
+  return expanded;
+}
+
+/**
+ * Convert a Claude Code–style glob pattern to a RegExp.
+ *
+ * Rules (matching Claude Code's Bash permission syntax):
+ * - `*` is a wildcard
+ * - `cmd *` (space before `*`) enforces a word boundary:
+ *   matches `cmd` alone or `cmd <anything>`
+ * - `cmd*` (no space) matches any string starting with `cmd`
+ * - `:*` is treated as equivalent to ` *` (deprecated syntax)
+ */
+export function globToRegExp(pattern: string, multiline?: boolean): RegExp {
+  // Normalise deprecated `:*` suffix to ` *`
+  const normalised = pattern.replace(/:(\*)/, " $1");
+
+  // Split on `*` to process segments
+  const parts = normalised.split("*");
+  let regex = "^";
+
+  for (let i = 0; i < parts.length; i++) {
+    // Escape regex special characters in the literal segment
+    const escaped = parts[i].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    if (i < parts.length - 1) {
+      // Check whether the character before the `*` is a space
+      if (parts[i].endsWith(" ")) {
+        // Drop the trailing space from the escaped segment
+        const isLast = i === parts.length - 2 && parts[i + 1] === "";
+        if (isLast) {
+          // Trailing `cmd *` → match `cmd` alone or `cmd <space><anything>`
+          regex += escaped.slice(0, -1) + "(\\s.*)?";
+        } else {
+          // Middle `cmd * suffix` → require space + content
+          regex += escaped.slice(0, -1) + "\\s.*";
+        }
+      } else {
+        regex += escaped + ".*";
+      }
+    } else {
+      regex += escaped;
+    }
+  }
+
+  regex += "$";
+  return new RegExp(regex, multiline ? "s" : undefined);
+}
+
+/**
+ * Parse a pattern string into a RegExp.
+ *
+ * When `type` is specified, the pattern is interpreted accordingly:
+ * - `"regex"` → treated as a regex (no delimiters needed)
+ * - `"glob"` → treated as a glob pattern
+ *
+ * When `type` is omitted, auto-detection is used:
+ * - `/pattern/` or `/pattern/flags` → treated as a regex
+ * - Everything else → treated as a glob pattern
+ */
+export function parsePattern(
+  pattern: string,
+  type?: "glob" | "regex",
+  multiline?: boolean,
+): RegExp {
+  if (type === "regex") {
+    return new RegExp(pattern, multiline ? "s" : undefined);
+  }
+  if (type === "glob") {
+    return globToRegExp(pattern, multiline);
+  }
+  const regexMatch = pattern.match(/^\/(.+)\/([gimsuy]*)$/);
+  if (regexMatch) {
+    const flags = regexMatch[2];
+    const effectiveFlags = multiline && !flags.includes("s") ? flags + "s" : flags;
+    return new RegExp(regexMatch[1], effectiveFlags);
+  }
+  return globToRegExp(pattern, multiline);
+}
+
+/**
+ * Check whether ALL sub-commands in a compound command match at least one
+ * allowed pattern. Returns an allow result only when every sub-command is
+ * covered — a single unmatched sub-command means the whole command is not
+ * auto-approved, preventing attacks like `dangerous && git commit -m "msg"`.
+ */
+export function checkAllowedPatterns(
+  command: string,
+  patterns: ActiveAllowedPattern[],
+): { allowed: true; reason?: string } | null {
+  if (patterns.length === 0) return null;
+
+  const subCommands = expandSubCommands(splitCommand(command));
+  const compiled = patterns.map((p) => ({
+    re: parsePattern(p.pattern, p.type, p.multiline),
+    reason: p.reason,
+  }));
+
+  let firstReason: string | undefined;
+
+  for (const sub of subCommands) {
+    const match = compiled.find(({ re }) => {
+      re.lastIndex = 0;
+      return re.test(sub);
+    });
+    if (!match) return null;
+    if (firstReason === undefined) firstReason = match.reason;
+  }
+
+  return { allowed: true, reason: firstReason };
+}
+
+export function checkForbiddenPatterns(
+  command: string,
+  patterns: ActivePattern[],
+): DenyResult[] | null {
+  const subCommands = expandSubCommands(splitCommand(command));
+  const results: DenyResult[] = [];
+
+  for (const { pattern, reason, suggestion, type, multiline } of patterns) {
+    const re = parsePattern(pattern, type, multiline);
+
+    for (const sub of subCommands) {
+      re.lastIndex = 0;
+      if (re.test(sub)) {
+        results.push({ reason, suggestion });
+        break;
+      }
+    }
+  }
+  return results.length > 0 ? results : null;
+}
+
+// --- Checker Pipeline ---
+
+type Checker = (command: string) => DenyResult[] | null;
+
+// --- Main ---
+
+export async function main() {
+  const text = await new Response(Deno.stdin.readable).text();
+  const input: HookInput = JSON.parse(text);
+  const command = input.tool_input.command;
+
+  const cwd = input.cwd ?? Deno.cwd();
+
+  // Check forbidden patterns first — deny always takes precedence over allow.
+  const forbiddenPatterns = loadForbiddenPatterns(cwd);
+  const checkers: Checker[] = [(cmd) => checkForbiddenPatterns(cmd, forbiddenPatterns)];
+
+  for (const checker of checkers) {
+    const results = checker(command);
+    if (results) {
+      const reasons = results.map((r) => `${r.reason} ${r.suggestion}`).join("\n");
+      const suggestions = results.map((r) => r.suggestion).join("\n");
+      const output: HookOutput = {
+        hookSpecificOutput: {
+          hookEventName: "PreToolUse",
+          permissionDecision: "deny",
+          permissionDecisionReason: reasons,
+          additionalContext: suggestions,
+        },
+      };
+      console.log(JSON.stringify(output));
+      Deno.exit(0);
+    }
+  }
+
+  // Check allowed patterns — if matched, bypass permission system.
+  const allowedPatterns = loadAllowedPatterns(cwd);
+  const allowResult = checkAllowedPatterns(command, allowedPatterns);
+  if (allowResult) {
+    const output: HookOutput = {
+      hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        permissionDecision: "allow",
+        permissionDecisionReason: allowResult.reason,
+      },
+    };
+    console.log(JSON.stringify(output));
+    Deno.exit(0);
+  }
+
+  // All checks passed — no opinion, let normal permission flow continue.
+  Deno.exit(0);
+}

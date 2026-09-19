@@ -1,0 +1,17 @@
+{
+  "fmt": {
+    "include": ["hooks/", "tools/"],
+    "lineWidth": 100
+  },
+  "lint": {
+    "include": ["hooks/", "tools/"]
+  },
+  "imports": {
+    "@std/expect": "jsr:@std/expect@^1.0.18",
+    "@std/testing": "jsr:@std/testing@^1.0.20"
+  },
+  "tasks": {
+    "test": "deno test --allow-read --allow-write --allow-env hooks/ tools/",
+    "check": "deno fmt --check && deno lint && deno check hooks/ tools/ && deno task test"
+  }
+}

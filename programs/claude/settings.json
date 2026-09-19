@@ -10,8 +10,8 @@
   "permissions": {
     "defaultMode": "auto",
     "allow": [
-      "Bash(bun test:*)",
-      "Bash(bunx @nownabe/claude-tools:*)",
+      "Bash(claude-tools:*)",
+      "Bash(deno test:*)",
       "Bash(find:*)",
       "Bash(gh issue list:*)",
       "Bash(gh issue view:*)",
@@ -110,7 +110,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bunx @nownabe/claude-hooks pre-bash"
+            "command": "claude-hooks pre-bash"
           }
         ]
       }
@@ -159,7 +159,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bunx @nownabe/claude-hooks notification",
+            "command": "claude-hooks notification",
             "timeout": 30,
             "async": true
           }
@@ -170,7 +170,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bunx @nownabe/claude-hooks notification",
+            "command": "claude-hooks notification",
             "timeout": 30,
             "async": true
           }
@@ -228,8 +228,6 @@
     "code-review@claude-plugins-official": true,
     "example-skills@anthropic-agent-skills": true,
     "playwright@claude-plugins-official": true,
-    "hello-world@nownabe-marketplace": true,
-    "base@nownabe-marketplace": true,
     "productivity@knowledge-work-plugins": true,
     "sales@knowledge-work-plugins": true,
     "customer-support@knowledge-work-plugins": true,
@@ -257,12 +255,6 @@
     "mcp-server-dev@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
-    "nownabe-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "nownabe/claude"
-      }
-    },
     "knowledge-work-plugins": {
       "source": {
         "source": "github",
