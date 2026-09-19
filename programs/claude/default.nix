@@ -66,13 +66,41 @@ in
     ".claude/CLAUDE.md".source =
       config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/claude/CLAUDE.md";
 
-    ".claude/settings.json".source =
-      config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/claude/settings.json";
-
     ".claude/nownabe-claude-hooks.json".source =
       config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/claude/nownabe-claude-hooks.json";
 
     ".claude/scripts/statusline-command.sh".source =
       config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/claude/scripts/statusline-command.sh";
   };
+
+  # Claude Code writes machine-local state into ~/.claude/settings.json at
+  # runtime: the chosen model, the auto-mode environment profile, notification
+  # flags. Not a symlink into this repository, then — that turned every such
+  # write into an uncommitted change to a public file. The live file is a
+  # plain file, and each activation deep-merges the managed keys from
+  # settings.json into it: managed keys win, everything else stays as Claude
+  # Code wrote it. A key removed from settings.json is not removed from the
+  # live file; delete it by hand.
+  home.activation.mergeClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    managed="${dotfilesDir}/programs/claude/settings.json"
+    live="${config.home.homeDirectory}/.claude/settings.json"
+    jq="${pkgs.jq}/bin/jq"
+
+    mkdir -p "$(dirname "$live")"
+
+    # Earlier generations deployed the live file as a symlink to $managed.
+    # Whether the link is still there or Home Manager has already cleaned it
+    # up, its content is the working-tree copy of $managed, so start from
+    # that and let the merge below pick up whatever Claude Code had written.
+    if [ -L "$live" ]; then
+      rm "$live"
+    fi
+    if [ ! -f "$live" ]; then
+      cp "$managed" "$live"
+      chmod u+w "$live"
+    fi
+
+    merged=$("$jq" -s '.[0] * .[1]' "$live" "$managed") || exit 1
+    printf '%s\n' "$merged" > "$live"
+  '';
 }

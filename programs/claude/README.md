@@ -35,6 +35,22 @@ deno task check   # fmt --check + lint + type check + test
 deno task test
 ```
 
+## settings.json
+
+`programs/claude/settings.json` holds the settings distributed to every machine: hooks,
+permissions, plugins, status line. It is **not** linked into `~/.claude/settings.json` — Claude Code
+writes machine-local state there at runtime (the chosen model, the auto-mode environment profile,
+notification flags), and a link would turn every such write into an uncommitted change to a public
+file.
+
+Instead, `hms` deep-merges the managed keys into the live file: managed keys win, everything else
+stays as Claude Code wrote it. Consequences:
+
+- Runtime choices such as `model` survive `hms`; keep them out of the managed file.
+- Arrays (`permissions.allow`, hook lists) are replaced wholesale, so a rule added through the Claude
+  Code UI lasts until the next `hms` unless it is added here too.
+- Removing a key from the managed file does not remove it from the live file; delete it by hand.
+
 ## nownabe-claude-hooks.json
 
 Configuration for both hooks, deployed to `~/.claude/nownabe-claude-hooks.json`. The hooks load
