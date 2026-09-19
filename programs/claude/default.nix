@@ -1,4 +1,4 @@
-{ config, lib, dotfilesDir, ... }:
+{ config, lib, pkgs, dotfilesDir, ... }:
 
 let
   # Symlink each skill file individually (not the skills directory itself)
@@ -16,8 +16,37 @@ let
       }
     ) (lib.filesystem.listFilesRecursive ./skills)
   );
+
+  # Run a CLI straight from the working tree rather than the Nix store, so
+  # editing the TypeScript takes effect without re-running `hms`.
+  # --no-remote enforces the zero-dependency rule: these must start offline
+  # and fast, since the hooks run on every Bash tool call.
+  denoCli = { name, entrypoint, permissions }:
+    pkgs.writeShellScriptBin name ''
+      exec ${lib.getExe pkgs.deno} run --no-config --no-lock --no-remote ${lib.concatStringsSep " " permissions} \
+        "${dotfilesDir}/programs/claude/${entrypoint}" "$@"
+    '';
 in
 {
+  home.packages = [
+    (denoCli {
+      name = "claude-tools";
+      entrypoint = "tools/cli.ts";
+      permissions = [ "--allow-run=gh" ];
+    })
+    (denoCli {
+      name = "claude-hooks";
+      entrypoint = "hooks/cli.ts";
+      # Config files are read from CWD up to HOME, so reads cannot be scoped.
+      # The two powershell paths mirror POWERSHELL_CANDIDATES in notification.ts.
+      permissions = [
+        "--allow-read"
+        "--allow-env=HOME"
+        "--allow-run=powershell.exe,/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
+      ];
+    })
+  ];
+
   home.file = skillLinks // {
     ".claude/CLAUDE.md".source =
       config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/programs/claude/CLAUDE.md";

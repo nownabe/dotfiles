@@ -1,0 +1,3 @@
+{
+  "ignorePatterns": ["programs/claude/hooks/**", "programs/claude/tools/**"]
+}

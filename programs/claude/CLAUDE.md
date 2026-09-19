@@ -76,9 +76,9 @@ The only things worth writing down are the why and why-not that code and tests c
 
 - When creating a pull request, always assign `nownabe` as the assignee
 
-## @nownabe/claude-tools
+## claude-tools
 
-`@nownabe/claude-tools` provides GitHub-related CLI utilities. Run via `bunx @nownabe/claude-tools <command>`.
+`claude-tools` provides GitHub-related CLI utilities.
 
 Available commands:
 
@@ -94,6 +94,9 @@ Available commands:
 - `gh resolve-tag-sha <owner/repo> <tag>` — resolve a GitHub tag to its commit SHA
 
 All commands accept `--repo <owner/repo>` to target a specific repository (defaults to current repo).
+
+Source and per-command docs live in `~/src/github.com/nownabe/dotfiles/programs/claude/` under
+`tools/` and `docs/claude-tools/`.
 
 ## Temporary Files
 
