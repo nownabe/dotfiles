@@ -99,6 +99,8 @@
   programs = {
     home-manager.enable = true;
 
+    antigravity-cli.enable = true;
+
     bat.enable = true;
 
     direnv = {
