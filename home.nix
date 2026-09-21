@@ -44,6 +44,7 @@
       deadnix
 
       # AI tools
+      antigravity-cli
       chikuwa
 
       # Build tools
@@ -98,8 +99,6 @@
 
   programs = {
     home-manager.enable = true;
-
-    antigravity-cli.enable = true;
 
     bat.enable = true;
 
