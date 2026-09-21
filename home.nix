@@ -44,6 +44,7 @@
       deadnix
 
       # AI tools
+      antigravity-cli
       chikuwa
 
       # Build tools
