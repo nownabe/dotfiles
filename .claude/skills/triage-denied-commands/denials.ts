@@ -15,7 +15,7 @@ export interface Denial {
   timestamp: string;
   sessionId: string;
   cwd: string;
-  /** Claude Code's `toolDenialKind`: permission-rule, automode-blocked, user-rejected, ... */
+  /** Claude Code's `toolDenialKind` (permission-rule, automode-blocked, user-rejected, ...), or `asked`. */
   kind: string;
   tool: string;
   /** The Bash command line, or the file path / URL for other tools. */
@@ -58,12 +58,26 @@ function describeResult(result: unknown): string {
   return text.replace(/^Error: /, "").trim();
 }
 
+const ASKED = "asked";
+
 /**
  * Pair every denied tool call in one transcript with the `tool_use` it
  * answers. AskUserQuestion rejections are answers to Claude, not blocked
  * commands, so they are skipped.
+ *
+ * An approved permission prompt leaves no trace in the transcript, so Bash
+ * calls that ran and match one of `askRules` (`permissions.ask` entries) are
+ * reported as kind `asked`: they waited on the user though nothing denied
+ * them.
  */
-export function extractDenials(lines: Iterable<string>): Denial[] {
+export function extractDenials(
+  lines: Iterable<string>,
+  askRules: string[] = [],
+): Denial[] {
+  const askPatterns = askRules.flatMap((rule) => {
+    const pattern = bashRulePattern(rule);
+    return pattern ? [{ rule, pattern }] : [];
+  });
   const toolUses = new Map<string, ContentBlock>();
   const denials: Denial[] = [];
 
@@ -85,20 +99,37 @@ export function extractDenials(lines: Iterable<string>): Denial[] {
       continue;
     }
 
-    if (!entry.toolDenialKind) continue;
-    const use = toolUses.get(contentBlocks(entry)[0]?.tool_use_id ?? "");
-    const tool = use?.name ?? "unknown";
-    if (tool === "AskUserQuestion") continue;
+    const record = (
+      kind: string,
+      use: ContentBlock | undefined,
+      reason: string,
+    ) =>
+      denials.push({
+        timestamp: entry.timestamp ?? "",
+        sessionId: entry.sessionId ?? "",
+        cwd: entry.cwd ?? "",
+        kind,
+        tool: use?.name ?? "unknown",
+        command: describeInput(use?.input ?? {}),
+        reason,
+      });
 
-    denials.push({
-      timestamp: entry.timestamp ?? "",
-      sessionId: entry.sessionId ?? "",
-      cwd: entry.cwd ?? "",
-      kind: entry.toolDenialKind,
-      tool,
-      command: describeInput(use?.input ?? {}),
-      reason: describeResult(entry.toolUseResult),
-    });
+    if (!entry.toolDenialKind) {
+      for (const block of contentBlocks(entry)) {
+        const use = toolUses.get(block.tool_use_id ?? "");
+        const command = use?.input?.command;
+        if (use?.name !== "Bash" || typeof command !== "string") continue;
+        const subs = simpleCommands(command);
+        const asked = askPatterns.find(({ pattern }) =>
+          subs.some((sub) => pattern.test(sub))
+        );
+        if (asked) record(ASKED, use, `permissions.ask: ${asked.rule}`);
+      }
+      continue;
+    }
+    const use = toolUses.get(contentBlocks(entry)[0]?.tool_use_id ?? "");
+    if (use?.name === "AskUserQuestion") continue;
+    record(entry.toolDenialKind, use, describeResult(entry.toolUseResult));
   }
 
   return denials;
@@ -113,19 +144,26 @@ async function* transcripts(dir: string): AsyncGenerator<string> {
 }
 
 /** Every denial under `dir` (recursively), oldest first. */
-export async function readAllDenials(dir: string): Promise<Denial[]> {
+export async function readAllDenials(
+  dir: string,
+  askRules: string[] = [],
+): Promise<Denial[]> {
   const denials: Denial[] = [];
   for await (const path of transcripts(dir)) {
     denials.push(
-      ...extractDenials((await Deno.readTextFile(path)).split("\n")),
+      ...extractDenials(
+        (await Deno.readTextFile(path)).split("\n"),
+        askRules,
+      ),
     );
   }
   return denials.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 }
 
-type Stopper = "hook" | "rule/prompt" | "automode" | "user";
+type Stopper = "hook" | "rule/prompt" | "automode" | "user" | "asked";
 
 function stopper(d: Denial): Stopper {
+  if (d.kind === ASKED) return "asked";
   if (d.kind.startsWith("automode")) return "automode";
   if (d.kind === "user-rejected") return "user";
   return /hook error|is forbidden/.test(d.reason) ? "hook" : "rule/prompt";
@@ -133,21 +171,54 @@ function stopper(d: Denial): Stopper {
 
 const ASSIGNMENT = /^\w+=(?:"[^"]*"|'[^']*'|\S*)\s*/;
 
-// The first real command name: `cd dir`, VAR=value and `timeout N` are
-// scaffolding, not what the call was for.
+// The simple commands of a command line with the scaffolding peeled off:
+// `(`, loop/branch keywords, VAR=value and `timeout N` are not what the call
+// was for.
+function simpleCommands(command: string): string[] {
+  return splitCommand(command).flatMap((part) => part.split("\n")).map(
+    (raw) => {
+      let sub = raw.trim().replace(/^\(\s*/, "")
+        .replace(/^(?:do|then|else|!)\s+/, "");
+      while (ASSIGNMENT.test(sub)) sub = sub.replace(ASSIGNMENT, "");
+      return sub.replace(/^timeout\s+\S+\s+/, "");
+    },
+  );
+}
+
+// `gh api` and `gh pr` are different decisions; `curl -s` and `curl` are not.
+const SUBCOMMAND_TOOLS = new Set(["gh", "git", "deno", "bun", "npm", "nix"]);
+
 function commandName(command: string): string {
-  for (const raw of splitCommand(command)) {
-    let sub = raw.replace(/^\(\s*/, "");
-    while (ASSIGNMENT.test(sub)) sub = sub.replace(ASSIGNMENT, "");
-    sub = sub.replace(/^timeout\s+\S+\s+/, "");
-    const name = sub.split(/\s+/)[0];
-    if (name && name !== "cd") return name;
+  for (const sub of simpleCommands(command)) {
+    const [name, subcommand] = sub.split(/\s+/);
+    if (!name || name === "cd") continue;
+    return SUBCOMMAND_TOOLS.has(name) && /^[a-z][\w-]*$/.test(subcommand ?? "")
+      ? `${name} ${subcommand}`
+      : name;
   }
   return command.split(/\s+/)[0];
 }
 
-// Hook denials group by the rule that fired; everything else by command name.
+/**
+ * A matcher for one simple command from a `Bash(...)` permission rule:
+ * `Bash(gh api:*)` and `Bash(gh api *)` both match `gh api` and
+ * `gh api repos/x`. Non-Bash rules yield null.
+ */
+export function bashRulePattern(rule: string): RegExp | null {
+  const body = /^Bash\((.+)\)$/.exec(rule)?.[1];
+  if (!body) return null;
+  const source = body.replace(/:\*$/, " *").split("*")
+    .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&"))
+    .join(".*")
+    .replace(/ \.\*$/, "(?: .*)?");
+  return new RegExp(`^${source}$`, "s");
+}
+
+// Hook denials and asked calls group by the rule that fired (an asked call's
+// first command is often scaffolding like `git log` before the `gh api`);
+// everything else by command name.
 function groupKey(d: Denial): string {
+  if (stopper(d) === "asked") return d.reason;
   if (stopper(d) === "hook") {
     return d.reason
       .replace(/^PreToolUse:\w+ hook error: /, "")
@@ -189,6 +260,16 @@ function cursorPath(): string {
   return join(stateHome, "triage-denied-commands", "collected-through");
 }
 
+// The live settings, not the repository copy: that is what Claude Code
+// enforces, and `hms` merges the managed ask rules into it.
+function askRules(): string[] {
+  const settings = JSON.parse(
+    Deno.readTextFileSync(join(home(), ".claude", "settings.json")),
+  );
+  const rules: unknown[] = settings.permissions?.ask ?? [];
+  return rules.filter((rule): rule is string => typeof rule === "string");
+}
+
 function readCollectedThrough(): string | null {
   try {
     return Deno.readTextFileSync(cursorPath()).trim() || null;
@@ -210,7 +291,7 @@ async function list(args: string[]): Promise<void> {
     : readCollectedThrough();
 
   const projectsDir = join(home(), ".claude", "projects");
-  const denials = (await readAllDenials(projectsDir)).filter(
+  const denials = (await readAllDenials(projectsDir, askRules())).filter(
     (d) => collectedThrough === null || d.timestamp > collectedThrough,
   );
 

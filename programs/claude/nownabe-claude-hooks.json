@@ -26,6 +26,10 @@
       "gh pr edit *": {
         "reason": "Allow gh pr edit",
         "multiline": true
+      },
+      "^gh\\s+api(?=\\s)(?!\\s+graphql\\b)(?!.*\\s(?:-X|--method)[= ]?\\s*(?!GET\\b)\\w)(?!.*\\s(?:-[fF]|--(?:field|raw-field|input)\\b))": {
+        "type": "regex",
+        "reason": "Allow gh api REST reads (GET without fields)"
       }
     },
     "forbiddenPatterns": {
@@ -68,9 +72,9 @@
         "reason": "`curl` is forbidden.",
         "suggestion": "For GitHub data use `claude-tools gh <command>` or `gh release download`; for public web pages use WebFetch. Anything else, ask the user to run it themselves (`! curl ...`) and paste the result."
       },
-      "^gh\\s+api\\b.*\\s(?:-X|--method)[= ]?\\s*(?:PUT|PATCH|DELETE)\\b": {
+      "^gh\\s+api(?=\\s)(?!\\s+graphql\\b)(?:.*\\s(?:-X|--method)[= ]?\\s*(?:POST|PUT|PATCH|DELETE)\\b|(?!.*\\s(?:-X|--method)[= ]?\\s*GET\\b).*\\s(?:-[fF]|--(?:field|raw-field|input)\\b))": {
         "type": "regex",
-        "reason": "`gh api` with a write method (PUT, PATCH, DELETE) is forbidden.",
+        "reason": "`gh api` writes (POST, PUT, PATCH, DELETE, or fields without `-X GET`) are forbidden.",
         "suggestion": "Repository and organization settings are managed as code. Describe the change to the user and let them apply it."
       },
       "claude\\.ai/(?:code/)?session_[A-Za-z0-9]|Claude-Session:|Co-Authored-By:\\s*Claude|Generated with \\[?Claude Code": {

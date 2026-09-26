@@ -2,7 +2,12 @@
 
 import assert from "node:assert/strict";
 import { join } from "node:path";
-import { extractDenials, readAllDenials, summarize } from "./denials.ts";
+import {
+  bashRulePattern,
+  extractDenials,
+  readAllDenials,
+  summarize,
+} from "./denials.ts";
 
 function toolUse(id: string, name: string, input: unknown): string {
   return JSON.stringify({
@@ -87,6 +92,65 @@ Deno.test("extractDenials ignores malformed lines and results without a denial",
   ];
 
   assert.deepEqual(extractDenials(lines), []);
+});
+
+Deno.test("extractDenials reports calls that ran after a permissions.ask prompt", () => {
+  const result = (id: string) =>
+    JSON.stringify({
+      type: "user",
+      timestamp: "2026-09-19T13:50:00.000Z",
+      message: { content: [{ type: "tool_result", tool_use_id: id }] },
+    });
+  const lines = [
+    toolUse("a", "Bash", { command: "gh api repos/o/r/pulls" }),
+    result("a"),
+    toolUse("b", "Bash", {
+      command: "for n in 1 2; do\n  gh api repos/o/r/pulls/$n\ndone",
+    }),
+    result("b"),
+    toolUse("c", "Bash", { command: "gh apikeys list && gh pr view 1" }),
+    result("c"),
+    toolUse("d", "Bash", { command: "gh api -X DELETE repos/o/r" }),
+    denial("d", "permission-rule", "2026-09-19T13:51:00.000Z", "forbidden"),
+  ];
+  const rules = ["Bash(gh api:*)", "WebFetch(domain:x)"];
+
+  assert.deepEqual(
+    extractDenials(lines, rules).map((d) => [d.kind, d.command, d.reason]),
+    [
+      ["asked", "gh api repos/o/r/pulls", "permissions.ask: Bash(gh api:*)"],
+      [
+        "asked",
+        "for n in 1 2; do\n  gh api repos/o/r/pulls/$n\ndone",
+        "permissions.ask: Bash(gh api:*)",
+      ],
+      ["permission-rule", "gh api -X DELETE repos/o/r", "forbidden"],
+    ],
+  );
+});
+
+Deno.test("bashRulePattern matches prefix and glob rules on word boundaries", () => {
+  const prefix = bashRulePattern("Bash(gh api:*)")!;
+  const glob = bashRulePattern("Bash(curl *)")!;
+
+  assert.ok(prefix.test("gh api") && prefix.test("gh api repos/x"));
+  assert.ok(!prefix.test("gh apikeys"));
+  assert.ok(glob.test("curl -s https://x") && !glob.test("curly"));
+});
+
+Deno.test("summarize groups asked calls by rule and splits gh subcommands", () => {
+  const base = { timestamp: "", sessionId: "", cwd: "", tool: "Bash" };
+  const asked = { kind: "asked", reason: "permissions.ask: Bash(gh api:*)" };
+  const lines = summarize([
+    { ...base, ...asked, command: "gh api repos/x" },
+    { ...base, ...asked, command: "git log -1 && gh api user" },
+    { ...base, kind: "user-rejected", command: "gh pr merge 1", reason: "" },
+  ]).split("\n");
+
+  assert.deepEqual(lines, [
+    "2\tasked\tpermissions.ask: Bash(gh api:*)\tgh api repos/x",
+    "1\tuser\tgh pr\tgh pr merge 1",
+  ]);
 });
 
 Deno.test("summarize groups by what stopped the call and the command name", () => {
