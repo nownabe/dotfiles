@@ -2,7 +2,8 @@
 name: triage-denied-commands
 description: >
   Collect the commands Claude Code did not execute — blocked by a hook or permission rule, by the
-  auto mode classifier, or rejected at the prompt — from sessions not yet triaged, and decide per
+  auto mode classifier, or rejected at the prompt — and the ones that waited on a `permissions.ask`
+  prompt, from sessions not yet triaged, and decide per
   group whether to turn it into a claude-tools command (with a hook that steers Claude to it), allow
   it explicitly, block it explicitly, or keep it as is. Use when the user asks to review blocked,
   denied or stopped commands, or to tune the allow/deny rules from session history (e.g.,
@@ -39,12 +40,16 @@ commit messages and GitHub are not.
 ## Workflow
 
 The collector is `denials.ts` next to this file. Run it from the repository root; it reads only the
-transcripts and its own state directory:
+transcripts, the `permissions.ask` rules of `~/.claude/settings.json` and its own state directory:
 
 ```bash
 STATE="${XDG_STATE_HOME:-$HOME/.local/state}/triage-denied-commands"
-deno run --allow-env=HOME,XDG_STATE_HOME --allow-read="$HOME/.claude/projects,$STATE" --allow-write="$STATE" .claude/skills/triage-denied-commands/denials.ts <list|mark> ...
+deno run --allow-env=HOME,XDG_STATE_HOME --allow-read="$HOME/.claude/projects,$HOME/.claude/settings.json,$STATE" --allow-write="$STATE" .claude/skills/triage-denied-commands/denials.ts <list|mark> ...
 ```
+
+An approved prompt leaves no trace in a transcript, so the collector infers it: a Bash call that ran
+and has a simple command matching a current `permissions.ask` rule is listed with kind `asked`. Ask
+rules removed since then are not replayed.
 
 (`deno test --allow-read --allow-write .claude/skills/triage-denied-commands/` runs its check.)
 
@@ -74,6 +79,11 @@ The stopper column is derived from `kind` and `reason`:
 | `rule/prompt` | command name (`cd …`, `VAR=`, `timeout` peeled off) | a `permissions.deny` rule, or the prompt was declined                           |
 | `automode`    | command name                                        | the auto mode classifier                                                        |
 | `user`        | command name                                        | the user, at the prompt                                                         |
+| `asked`       | the `permissions.ask` rule                          | a prompt the user approved — the call ran, but waited on them                   |
+
+A command name keeps its subcommand for `gh`, `git`, `deno`, `bun`, `npm` and `nix` (`gh api`, not
+`gh`). An `asked` group mixes whatever the matched command was chained with; tally its endpoints or
+arguments from the step 1 JSON before recommending.
 
 Merge groups that are one decision (all `hook` rows usually are) and split a row when its example
 shows two different tasks — the JSON from step 1 has the full commands. Show the user one table:
@@ -83,7 +93,10 @@ recommendation. Recommend:
 - **Keep as is** for hook denials whose `suggestion` already steers Claude to the right tool — the
   rule is doing its job. Recommend a change only when the suggestion misleads or the match is a
   false positive.
-- **Allow** for read-only or otherwise routine commands the user has been approving by hand.
+- **Allow** for read-only or otherwise routine commands the user has been approving by hand —
+  most `asked` groups. When only part of an ask rule is routine (`gh api` reads but not writes),
+  narrow it: allow the routine part with an `allowedPatterns` regex, forbid the rest, and drop the
+  ask rule.
 - **Block** for commands the user keeps rejecting, or that a deny rule catches but Claude keeps
   retrying — a forbidden pattern carries a suggestion, a deny rule does not.
 - **Tool** when a group is one recurring task (fetching the same kind of data with `curl` or
