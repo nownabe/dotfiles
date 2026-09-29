@@ -126,11 +126,6 @@
         AddKeysToAgent = "yes";
       };
     };
-
-    mise = {
-      enable = true;
-      enableZshIntegration = true;
-    };
   };
 
   services.ssh-agent.enable = true;
