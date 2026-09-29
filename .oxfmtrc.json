@@ -3,6 +3,7 @@
     "programs/claude/hooks/**",
     "programs/claude/lib/**",
     "programs/claude/tools/**",
-    ".claude/skills/**/*.ts"
+    ".claude/skills/**/*.ts",
+    "programs/nvim/config/lazy-lock.json"
   ]
 }
