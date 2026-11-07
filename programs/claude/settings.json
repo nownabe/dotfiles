@@ -49,6 +49,8 @@
       "Bash(curl *)",
       "Bash(wget *)",
       "Bash(sudo *)",
+      "Bash(op *)",
+      "Bash(op.exe *)",
       "Read(**/.env*)",
       "Read(**/*.pem)",
       "Read(**/*.key)",
@@ -63,7 +65,8 @@
       "Read(**/.npmrc)",
       "Read(~/.ssh/**)",
       "Read(~/.aws/**)",
-      "Read(~/.gcloud/**)"
+      "Read(~/.gcloud/**)",
+      "Read(~/.config/op/**)"
     ],
     "ask": ["Bash(gh issue close:*)"]
   },
