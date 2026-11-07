@@ -66,6 +66,7 @@
       mo
       bubblewrap
       socat
+      _1password-cli # op
 
       # Fonts
       noto-fonts-cjk-sans
