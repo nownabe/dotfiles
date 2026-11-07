@@ -17,6 +17,7 @@
         aqua = final.callPackage ./packages/aqua.nix { };
         chikuwa = final.callPackage ./packages/chikuwa.nix { };
         claude-code = final.callPackage ./packages/claude-code.nix { inherit (prev) claude-code; };
+        kurumi = final.callPackage ./packages/kurumi.nix { };
         mo = final.callPackage ./packages/mo.nix { };
       };
       pkgs = import nixpkgs {
