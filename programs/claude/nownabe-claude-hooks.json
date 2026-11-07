@@ -72,6 +72,11 @@
         "reason": "`curl` is forbidden.",
         "suggestion": "For GitHub data use `claude-tools gh <command>` or `gh release download`; for public web pages use WebFetch. Anything else, ask the user to run it themselves (`! curl ...`) and paste the result."
       },
+      "^(?:(?:timeout\\s+\\S+|env(?:\\s+\\S+=\\S*)*|command|exec|nohup)\\s+)*(?:\\S*/)?op(?:\\.exe)?(?:\\s|$)": {
+        "type": "regex",
+        "reason": "`op` (1Password CLI) is forbidden.",
+        "suggestion": "Secrets read through `op` would be written into the conversation log. Ask the user to run the command themselves (`! op ...`) and to share only non-secret output."
+      },
       "^gh\\s+api(?=\\s)(?!\\s+graphql\\b)(?:.*\\s(?:-X|--method)[= ]?\\s*(?:POST|PUT|PATCH|DELETE)\\b|(?!.*\\s(?:-X|--method)[= ]?\\s*GET\\b).*\\s(?:-[fF]|--(?:field|raw-field|input)\\b))": {
         "type": "regex",
         "reason": "`gh api` writes (POST, PUT, PATCH, DELETE, or fields without `-X GET`) are forbidden.",
