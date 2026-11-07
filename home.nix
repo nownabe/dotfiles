@@ -57,6 +57,7 @@
       fzf
       yq-go
       jq
+      kurumi
       curl
       zip
       unzip
