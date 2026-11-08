@@ -8,7 +8,26 @@
     enabled: true,
   },
 
+  // The datasource also refreshes the hex sha256 by matching it against the
+  // release's checksum file or assets; an SRI hash would not match.
+  customManagers: [
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^packages/kurumi\\.nix$/"],
+      matchStrings: [
+        'tag = "(?<currentValue>[^"]+)";\\s*sha256 = "(?<currentDigest>[0-9a-f]{64})";',
+      ],
+      datasourceTemplate: "github-release-attachments",
+      depNameTemplate: "nownabe/kurumi",
+    },
+  ],
+
   packageRules: [
+    {
+      matchManagers: ["custom.regex"],
+      matchDepNames: ["nownabe/kurumi"],
+      semanticCommitScope: "nix",
+    },
     // nixpkgs is pinned to the `nixpkgs-unstable` branch, so there is no version
     // for Renovate to bump — lockFileMaintenance is what actually moves the inputs.
     {
